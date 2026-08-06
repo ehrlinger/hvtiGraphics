@@ -13,10 +13,17 @@ never saw the recipe. Override per task by naming another persona explicitly.
 `house-style.md` is **generated — do not edit it.** Edit the vault sources and
 recompose:
 
+Clone the composer alongside this repo, then run it from wherever you put it:
+
 ```
-Rscript ~/Documents/GitHub/ehrlinger-personal/tools/house-style/compose-house-style.R \
-  --repo hvti_graphics
+git clone https://github.com/ehrlinger/ehrlinger-personal ../ehrlinger-personal
+Rscript ../ehrlinger-personal/tools/house-style/compose-house-style.R --repo hvti_graphics
 ```
+
+It reads the canonical sources from `~/Documents/ObsidianVault/memory/` when
+that exists, and otherwise falls back to the copy mirrored inside the composer
+repo — which is what CI uses, since a runner has no vault. Every run prints
+which directory it read, so you can tell the two apart.
 
 CI fails the build when the artifact drifts from those sources. That check
 exists because this repo carried hand-synced copies of the same documents until
