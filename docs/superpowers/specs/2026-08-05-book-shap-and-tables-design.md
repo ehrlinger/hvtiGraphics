@@ -32,7 +32,8 @@ makes this a correction as much as an addition:
 ## Scope
 
 A rename to **HVTI Recipes**, edition **3.0.0**; three new chapters; rewrites
-of the prose that frames the book as figures-only.
+of the prose that frames the book as figures-only; and a varPro pass covering
+one correctness fix and three uncovered entry points.
 
 Out of scope: any change to `hvtiRtables`, `hvtiRutilities`, or
 `ggRandomForests` themselves. This is book-side work only. **The repository
@@ -172,6 +173,63 @@ lifecycle.** No version numbers, no roadmap language, no "planned" or "not yet"
 claims. That framing is what made the existing two notes go stale, and
 `hvtiRtables` is still moving.
 
+### varPro pass: `varpro.qmd` and `varpro_partial.qmd`
+
+Both existing chapters are edited in place. **No new chapter** — each item
+below belongs next to material already there, and relocating it would only
+split the varPro story across three files.
+
+#### Correctness: `method = "rnd"` on every `gg_partial_varpro(object = )`
+
+`ggRandomForests` 3.5.1 is a test-and-docs-only release fixing a `gcc-UBSAN`
+additional issue CRAN raised against 3.5.0. It introduces **no new varPro
+features**. What it does carry is an instruction the book is on the wrong side
+of: any `gg_partial_varpro(object = )` call reaches `varPro::partialpro()`,
+which grows its own isolation forest and lets `isopro()` default to
+`method = "unsupv"`, handing `randomForestSRC` a zero-length `yvar.wt` pointer
+(`entry.c:184`). 3.5.1 corrected its own `?gg_partial_varpro` `\donttest`
+example to pass `method = "rnd"`.
+
+The book has five call sites, none passing it:
+
+| Site | Call |
+|---|---|
+| `varpro_partial.qmd:64` | `gg_partial_varpro(object = o_reg, nvars = 6)` |
+| `varpro_partial.qmd:79` | `... o_cls, scale = "prob"` |
+| `varpro_partial.qmd:91` | `... o_cls, scale = "logodds"` |
+| `varpro_partial.qmd:108` | `... o_surv, scale = "surv"` |
+| `varpro_partial.qmd:120` | `... o_surv, scale = "rmst"` |
+
+Add `method = "rnd"` to each, and a short note in that chapter's `## Pitfalls`
+saying why. The behaviour is benign — the pointer is formed, never
+dereferenced, and the real fix belongs upstream (`kogalur/randomForestSRC`
+PR #478) — but the book teaches the pattern and readers copy chunks verbatim.
+That is the reason to fix it: not that the book breaks, but that it propagates.
+
+**No version dependency.** `gg_partial_varpro()` already takes `...` and passes
+it to `partialpro()` in the installed 3.5.0, so this lands today and does not
+wait on 3.5.1 being released. (3.5.1 is unreleased as of this spec — tags stop
+at `v3.5.0`.)
+
+#### Coverage: three entry points absent book-wide
+
+`gg_sdependent()`, `gg_beta_uvarpro()`, and `varpro_feature_names()` appear in
+no `.qmd` in the book. Each gets added to `varpro.qmd` beside its existing
+sibling:
+
+- **`gg_sdependent()`** — next to the existing "Unsupervised variable
+  dependence" section, which already covers `gg_udependent()`. Covering one
+  dependency graph and not the other is the least defensible of the three gaps.
+- **`gg_beta_uvarpro()`** — a subsection under "Beta-refined importance". That
+  section currently says `gg_beta_varpro()` is regression-only without noting
+  that an unsupervised path exists.
+- **`varpro_feature_names()`** — this one is a usability trap, not a missing
+  figure, so it earns a `## Pitfalls` entry rather than a plot. A `varpro` fit
+  narrows its predictors twice, so the variables you can ask for are not the
+  variables you passed in; a reader who asks for a dropped variable hits a
+  confusing failure with no guidance. `ggRandomForests` 3.5.0 added vignette
+  coverage for exactly this.
+
 ### Rewrite: `tables.qmd` (part intro)
 
 Remove the "planned but not yet written" claim. Route the reader across all
@@ -191,13 +249,21 @@ pushed, because that version's API surface is not yet settled. The other work
 is independent of it:
 
 1. Rename and edition bump (title, README, preface, delete stale `.tex`)
-2. `rf_shap.qmd`
-3. `data_tables.qmd`
-4. `tables.qmd` and `qt_tables.qmd` rewrites, `_quarto.yml` wiring
-5. `hv_tables.qmd` — blocked on the hvtiRtables push
+2. varPro `method = "rnd"` fix — five call sites, independent of everything else
+3. `rf_shap.qmd`
+4. varPro coverage pass (`gg_sdependent`, `gg_beta_uvarpro`,
+   `varpro_feature_names`)
+5. `data_tables.qmd`
+6. `tables.qmd` and `qt_tables.qmd` rewrites, `_quarto.yml` wiring
+7. `hv_tables.qmd` — blocked on the hvtiRtables push
 
-Steps 1–4 can land as a PR without step 5. The rename goes first so the new
-chapters are written into a book that already knows what it is.
+Steps 1–6 can land as a PR without step 7. The rename goes first so the new
+chapters are written into a book that already knows what it is. Step 2 is
+sequenced early because it is a one-argument correctness fix with no
+dependencies, and it should not be held hostage to the chapter work.
+
+Steps 3 and 4 both touch the Random Forests part, and steps 5–7 the Tables
+part; they do not conflict.
 
 ## Build prerequisites
 
@@ -227,6 +293,13 @@ If `packages.qmd` enumerates book dependencies, add `hvtiRtables` there.
   edition badge, reading `3.0.0`.
 - The preface and README describe a book about figures *and* tables. A reader
   who lands on `index.qmd` should not conclude tables are an appendix.
+- Every `gg_partial_varpro(object = )` call in the book passes
+  `method = "rnd"`. Verify by grep, not by eye: the count of
+  `gg_partial_varpro(object` occurrences equals the count of `method = "rnd"`
+  occurrences in `varpro_partial.qmd`.
+- `gg_sdependent`, `gg_beta_uvarpro`, and `varpro_feature_names` each appear at
+  least once in `varpro.qmd`. `varpro.qmd` re-renders from a cleared freeze —
+  it gains executable chunks, so a cached pass proves nothing.
 - Every new chapter has all three of `## When to use it`, `## Build it`,
   `## Pitfalls`.
 - The book builds to HTML. PDF is not a gate — `cairo_pdf` is unavailable on
@@ -241,3 +314,12 @@ If `packages.qmd` enumerates book dependencies, add `hvtiRtables` there.
 - **SHAP compute time inflating book build.** `gg_shap()` goes through
   `kernelshap`. Keep `newdata` and `bg_n` small enough that the chapter renders
   quickly, and say in the text that production use wants larger values.
+- **varPro coverage additions inflating `varpro.qmd` render time.** The chapter
+  already fits four forests. `gg_sdependent()` and `gg_beta_uvarpro()` need a
+  `uvarpro` fit; reuse the one the existing `gg_udependent()` section builds
+  rather than growing another.
+- **`gg_sdependent()` and `gg_beta_uvarpro()` are unexercised by the book
+  today,** so their data requirements are unverified here. Both may share
+  `gg_udependent()`'s all-numeric constraint. Confirm against a real fit during
+  implementation rather than assuming, and record what they need in the
+  chapter's pitfalls.
