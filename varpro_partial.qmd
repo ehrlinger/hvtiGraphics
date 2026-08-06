@@ -148,4 +148,3 @@ mortality outputs; for a figure a reviewer reads, prefer `surv` or `rmst`.
   pointer. Nothing breaks in practice — the pointer is formed, never
   dereferenced — but the real fix belongs upstream. Set it anyway: every call
   in this chapter does, because these are the chunks readers copy.
-```
