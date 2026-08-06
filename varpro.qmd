@@ -245,9 +245,9 @@ isolated node is a variable that carries information the others do not.
 The graph shows you the structure; `gg_sdependent()` gives you the ranked table
 behind it. Both read the same lasso-coefficient matrix, but where
 `gg_udependent()` draws nodes and edges, `gg_sdependent()` returns one row per
-variable carrying a signal score, that variable's degree in the graph, and a flag
-for whether it landed in `sdependent()`'s detected signal set. Reach for it when
-you need to *name* the variables rather than point at a picture.
+candidate variable carrying a signal score, that variable's degree in the graph,
+and a flag for whether it landed in `sdependent()`'s detected signal set. Reach
+for it when you need to *name* the variables rather than point at a picture.
 
 ```{r}
 #| label: fig-varpro-sdependent
@@ -257,15 +257,22 @@ plot(gg_sdependent(uv)) + theme_hv_manuscript()
 ```
 
 Highlighted variables are the detected signal set, and the caption reports how
-many of them cleared the threshold. Two arguments carry over from
-`gg_udependent()`, and they are the two worth knowing. `threshold` (default 0.25)
-is how strong a dependency has to be before it counts as an edge, so raising it
-shrinks the signal set. `directed` (default `TRUE`) keeps the two directions of a
-pair apart, because "j explains i" and "i explains j" are separate lasso
-coefficients and need not agree; set it `FALSE` when you only want to know that
-two variables are dependent, not which way the dependency reads. The `degree`
-column rides along in the returned data frame even though the plot does not draw
-it, so a variable with a middling score but a high degree is worth a second look.
+many of them cleared the threshold. Four arguments carry over from
+`gg_udependent()`: `threshold`, `q.signal`, `directed`, and `min.degree`.
+`threshold` (default 0.25) only builds the dependency graph — it decides which
+entries of the lasso-coefficient matrix count as an edge — so raising it shrinks
+the signal set solely by isolating nodes, which then get dropped before scoring
+ever runs. The argument that actually sizes the signal set is `q.signal` (default
+0.75): a variable is flagged as signal when its degree in that graph clears
+`min.degree` (`NULL` by default, which falls back to 1 for a directed graph or 2
+for an undirected one) *and* its score clears the `q.signal` quantile of every
+score in the fit. Raise `q.signal` for a shorter, more conservative list; lower it
+for a longer one. `directed` (default `TRUE`) keeps the two directions of a pair
+apart, because "j explains i" and "i explains j" are separate lasso coefficients
+and need not agree; set it `FALSE` when you only want to know that two variables
+are dependent, not which way the dependency reads. The `degree` column rides
+along in the returned data frame even though the plot does not draw it, so a
+variable with a middling score but a high degree is worth a second look.
 
 ## Pitfalls
 
@@ -297,8 +304,9 @@ it, so a variable with a middling score but a high degree is worth a second look
   confusing way to find out that the name you asked for was never a column.
   `varpro_feature_names()` maps them back.
 
-For the housing fit that is 30 feature names off an 81-column frame, 14 of them
-encoded level names, recovering 26 original columns:
+For the housing fit above, `o$xvar.names` runs 30 feature names against the
+81-column frame we handed `varpro()`, 14 of them encoded level names, and
+`varpro_feature_names()` recovers the 26 original columns:
 
 ```{r}
 #| label: varpro-feature-names
@@ -307,3 +315,9 @@ length(o$xvar.names)                         # what the fit reports
 setdiff(o$xvar.names, names(housing))        # encoded level names
 varpro_feature_names(o$xvar.names, housing)  # mapped back to real columns
 ```
+
+That gap between what a fit reports and what your data frame actually holds is
+the same seam that runs through every extractor in this chapter: the score, the
+graph, and the ranked table all read straight from the fitted object, and
+`varpro_feature_names()` is the one step that translates its column names back
+into ones you can hand to `housing[, ...]`.
