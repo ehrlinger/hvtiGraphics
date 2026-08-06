@@ -128,7 +128,7 @@ ordering rule as the [legends](legends.qmd) chapter: what runs last wins.
 ```{r}
 #| label: fig-rf_shap-beeswarm
 #| fig-cap: "The per-observation attributions behind that ranking, one point per patient per variable, showing the spread a mean absolute value hides"
-#| fig-height: 5.5
+#| fig-height: 8
 shap_beeswarm(gs) + theme_hv_manuscript(legend.position = "right")
 ```
 

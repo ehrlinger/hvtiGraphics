@@ -38,6 +38,7 @@ the constructor is the only thing that changes.
 | Error convergence | `gg_error()` | OOB error vs. number of trees |
 | Predicted survival | `gg_rfsrc()`, `gg_survival()` | per-observation and grouped survival |
 | Variable importance | `gg_vimp()` | VIMP ranking of predictors |
+| SHAP attribution | `gg_shap()` | per-observation, per-variable attribution |
 | Variable dependence | `gg_variable()`, `gg_partial_rfsrc()` | marginal and partial effects |
 | ROC / Brier | `gg_roc()`, `gg_brier()` | classification performance |
 | varPro | varPro constructors | rule-based variable selection |
