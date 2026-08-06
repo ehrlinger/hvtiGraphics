@@ -62,6 +62,7 @@ book:
         - varpro_partial.qmd
     - part: tables.qmd
       chapters:
+        - data_tables.qmd
         - qt_tables.qmd
         - figure_tables.qmd
     - part: publications.qmd
