@@ -21,6 +21,10 @@ denominators. And `gt` is the right tool when the table's destination is
 an HTML document, this book included, rather than a Word file bound for a
 journal.
 
+That splits the work along a clean line: hand-built `gt` for understanding and
+for the web, the `hv_*()` functions in
+[manuscript tables](hv_tables.qmd) when it goes to a manuscript.
+
 ## When to use it
 
 Open almost any clinical manuscript and the first table you meet is a

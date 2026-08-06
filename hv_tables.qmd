@@ -1,0 +1,336 @@
+# Manuscript tables
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(hvtiRtables)
+library(gtsummary)
+library(flextable)
+```
+
+The [publication tables](qt_tables.qmd) chapter built a Table 1 by hand with
+`gt`, which is the right tool when the table's destination is this book or
+another HTML document. This chapter covers the other destination. When the table
+is going into a manuscript, it has to land in a Word file that a coordinator can
+paste into the submission draft, and it has to obey the CORR "Table Construction
+for Manuscripts" rules once it gets there. `hvtiRtables` is the package that
+takes a `gtsummary` summary the rest of the way.
+
+## When to use it
+
+Most of the rules in that memo come down to one idea: everything a reader sees
+in the table should be *in* the table. A header that spans two columns by
+merging their cells, a hidden quarter-inch spacer column doing the alignment, a
+caption floating in a text box positioned over the grid, a footnote living as an
+extra row inside the table's own frame — each of these puts content in a layer
+that the table structure itself does not account for. They look fine on your
+screen. They come apart when the manuscript is re-flowed into the journal's
+template, and they are invisible to a screen reader.
+
+So the house style asks for a flat table: one header row, no merged cells, and
+footnotes and the abbreviation key written as ordinary paragraphs below the
+table rather than tucked inside it. That is a fussy thing to build by hand in
+Word, and a fussy thing to keep correct across the six revisions a table goes
+through. Reach for `hvtiRtables` whenever the table is manuscript-bound, and let
+the package hold the rules.
+
+There are two house formats, and the difference between them is exactly the
+merge question. `hv_man_table()` builds the flat CORR style described above.
+`hv_man_table_jtcvs()` builds what JTCVS editorial asks for at submission, which
+is the opposite: a two-row header with each group name spanning its own
+sub-columns, and lettered footnotes attached to specific cells. Same numbers,
+two different shapes, chosen by where the table is going.
+
+## The data it needs
+
+Any data frame `gtsummary::tbl_summary()` accepts. We use
+`generate_survival_data()` again, the same simulated cohort the
+[Table 1](qt_tables.qmd) and [dataset description](data_tables.qmd) chapters
+work from, so you can read the three against one dataset.
+
+```{r}
+#| label: hv-data
+dta <- hvtiRutilities::generate_survival_data(n = 200, seed = 42)
+table(dta$sex)
+```
+
+## Build it
+
+### Summarise, then convert — `hv_man_table()`
+
+You build the summary with `gtsummary` the way you normally would. The one thing
+worth setting deliberately is `statistic`, because the house convention for a
+continuous variable is a median with the 15th and 85th percentiles rather than a
+mean and SD. That convention is what the default footnotes describe, so the two
+need to agree.
+
+```{r}
+#| label: hv-summary
+tbl <- tbl_summary(
+  dta,
+  by        = sex,
+  include   = c(age, bmi, gfr_bs, diabetes),
+  statistic = list(all_continuous() ~ "{median} ({p15}, {p85})")
+)
+```
+
+`hv_man_table()` converts that into a `flextable` carrying the house rules: a
+single non-merged header row, Times New Roman, and the house font size.
+
+```{r}
+#| label: hv-flextable
+ft <- hv_man_table(tbl)
+ft
+```
+
+Font size defaults to 12 points; pass `font_size = 11` for a table wide enough
+that 12 will not fit the page. Rounding stays where you set it, in
+`tbl_summary()`'s own `statistic` and `digits` arguments, rather than being
+re-specified here.
+
+The structural check is easy to run on the object itself. A compliant table has
+exactly one header row and no cell spanning more than one column.
+
+```{r}
+#| label: hv-flat-check
+nrow(ft$header$dataset)              # header rows
+max(as.vector(ft$header$spans$rows)) # widest header span
+max(as.vector(ft$body$spans$rows))   # widest body span
+```
+
+### Write the Word file — `hv_man_table_save()`
+
+`hv_man_table_save()` writes the `.docx`. Footnotes default to
+`hv_man_footnotes()`, the two notes that are universal to the house rules rather
+than specific to any one study.
+
+```{r}
+#| label: hv-footnotes
+hv_man_footnotes()
+```
+
+The `*` marks the non-missing-value count in the wording the rules require, and
+the `†` explains the median-and-percentiles format. Each symbol is appended as a
+superscript reference mark on the table's header, and the text itself is written
+as a real paragraph after the table. That is the part `flextable::footnote()`
+cannot do for you: it renders footnote text as an extra row inside the table's
+own frame, which is the violation the whole exercise is meant to avoid.
+
+The abbreviation key works the same way, as a `Key:` paragraph below the
+footnotes, sorted alphabetically.
+
+```{r}
+#| label: hv-save
+#| eval: false
+hv_man_table_save(
+  ft,
+  file = "table1.docx",
+  abbreviations = c(
+    BMI  = "body mass index",
+    eGFR = "estimated glomerular filtration rate"
+  )
+)
+```
+
+Override the footnotes with ordinary list operations. `footnotes = NULL`
+suppresses both, ``modifyList(hv_man_footnotes(), list(`†` = "..."))`` replaces
+one, and ``c(hv_man_footnotes(), list(`‡` = "..."))`` adds a study-specific note
+alongside the defaults.
+
+### Check what you wrote — `hv_check_docx()`
+
+Writing the file and trusting it are different things, and the failure modes
+here are structural rather than visual. `hv_check_docx()` reads a `.docx` and
+reports the three patterns the rules name: text positioned in a floating layer
+over the table, a hidden spacer column, and a footnote embedded as a row inside
+the table frame. It returns one row per finding, so zero rows means clean.
+
+```{r}
+#| label: hv-check
+out <- tempfile(fileext = ".docx")
+hv_man_table_save(ft, out, abbreviations = c(BMI = "body mass index"))
+hv_check_docx(out)
+```
+
+It never modifies the file, and it does not care who wrote it, so it also works
+on a table a co-author sends back after editing it in Word. That is the case
+worth remembering. Your own output is compliant by construction; the round trip
+through somebody else's copy of Word is where a merged cell or a text box
+actually gets introduced.
+
+Two of the three detectors are structural and reliable. The hidden-column test
+deliberately requires a column to be *both* completely empty and narrower than a
+tenth of an inch, because the house JTCVS templates use empty half-inch gutter
+columns on purpose and either condition alone would flag them. The
+embedded-footnote detector is a pattern match on the last row of a table, so
+treat what it reports as a prompt to look rather than proof.
+
+## Variations
+
+### JTCVS submissions
+
+The JTCVS path starts somewhere different. `hv_tbl_summary()` is a wrapper over
+`gtsummary::tbl_summary()` written to the interface the biostats team already
+knows from the `%summarytable` SAS macro: you give it a grouped, ordered
+variable list and sort the variables into type buckets, instead of using
+`gtsummary`'s tidyselect arguments.
+
+```{r}
+#| label: hv-jtcvs-summary
+tbl_j <- hv_tbl_summary(
+  dta,
+  by     = "sex",
+  groups = list(
+    "Demographics" = c("age", "bmi"),
+    "Comorbidity"  = c("gfr_bs", "diabetes")
+  ),
+  continuous  = c("age", "bmi", "gfr_bs"),
+  categorical = c("diabetes"),
+  compare     = "pvalue"
+)
+```
+
+`groups` is the macro's `LIST=`, and it does double duty: it fixes the display
+order and it supplies the section headers that break the table into blocks.
+`continuous`, `binary`, and `categorical` are `CON1=`, `CAT1=`, and `CAT2=`.
+Every variable named in `groups` has to appear in exactly one bucket and every
+bucketed variable has to appear in `groups`, which is a strict rule but a
+forgiving one to debug, since the error names the variables that fell through.
+Continuous variables are summarised as median with the percentile pair from
+`percentiles` (15th and 85th by default) and tested non-parametrically
+throughout, so there is no per-variable normality decision to make or defend.
+
+`compare` adds the trailing comparison column: `"pvalue"`, `"smd"`, `"both"`, or
+`"none"`. The result carries two attributes that the renderer wants, and you
+pass them straight through.
+
+```{r}
+#| label: hv-jtcvs-attrs
+attr(tbl_j, "hv_stat_label")
+attr(tbl_j, "hv_trailing")
+```
+
+`hv_man_table_jtcvs()` then builds the merged shape. Its own `groups` argument
+is a different thing entirely from `hv_tbl_summary()`'s: here it maps each
+`stat_` column to its spanning header label, and you write the group's N into
+the label text yourself.
+
+```{r}
+#| label: hv-jtcvs-table
+n_sex <- table(dta$sex)
+
+ft_j <- hv_man_table_jtcvs(
+  tbl_j,
+  groups = c(
+    stat_1 = sprintf("Female (n=%d)", n_sex[["Female"]]),
+    stat_2 = sprintf("Male (n=%d)",   n_sex[["Male"]])
+  ),
+  trailing   = attr(tbl_j, "hv_trailing"),
+  stat_label = attr(tbl_j, "hv_stat_label")
+)
+ft_j
+```
+
+Compare the structure with the flat table above and the two modes separate
+cleanly: two header rows here instead of one, spanning header cells, and
+full-width shaded section rows in the body.
+
+```{r}
+#| label: hv-jtcvs-structure
+nrow(ft_j$header$dataset)
+max(as.vector(ft_j$header$spans$rows))
+max(as.vector(ft_j$body$spans$rows))
+```
+
+JTCVS marks each p-value with a superscript letter naming the test behind it,
+which is the same thing `%summarytable` does. `hv_test_footnotes_jtcvs()` reads
+the test `gtsummary` recorded for each row and builds those footnotes, including
+the body-row indices, so you are not counting rows by hand.
+
+```{r}
+#| label: hv-jtcvs-footnotes
+fn <- hv_test_footnotes_jtcvs(tbl_j)
+fn
+```
+
+Letters follow a fixed order rather than order of appearance, so two tables in
+one manuscript that use the same tests get the same letters. Pass the result
+to `hv_man_table_save_jtcvs()`, which adds the bold caption paragraph above the
+table and renders the lettered notes below it.
+
+```{r}
+#| label: hv-jtcvs-save
+#| eval: false
+hv_man_table_save_jtcvs(
+  ft_j,
+  file      = "table1_jtcvs.docx",
+  caption   = "Table 1. Baseline Characteristics",
+  footnotes = fn,
+  abbreviations = c(eGFR = "estimated glomerular filtration rate")
+)
+```
+
+The caption is not auto-numbered; write the number into the string yourself.
+
+## Read it
+
+The two chunks worth reading closely in either format are the header and the
+denominators.
+
+In the flat table, the header carries each group's N, so the column tells you
+its own denominator without a trip to the caption. Read it before you read any
+percentage in the column beneath it. The `*` footnote is doing real work here,
+because the count it describes is the count of *non-missing* values, which is
+not always the group N. When a variable has missing data, those two numbers
+separate, and the footnote is what tells a reader which one they are looking at.
+
+In the JTCVS table, the N sits in its own sub-column beside each group's
+statistic, one pair per group. That layout exists so a reader can see per-variable
+availability at a glance rather than inferring it, which is the same information
+the flat table's footnote conveys in prose.
+
+Then the section headers. Both formats break the variable list into labelled
+blocks, and those blocks are an editorial claim about what belongs with what. A
+reader scanning a Table 1 reads the block labels before the rows. Get them
+wrong and a comorbidity reads as a demographic.
+
+## Pitfalls
+
+- **`hv_tbl_summary()` output goes to `hv_man_table_jtcvs()`, not
+  `hv_man_table()`.** This is the one that will actually bite you, because it
+  fails silently rather than erroring. `hv_tbl_summary()` packs each cell as
+  `"{N_obs} ||| {stat}"`, and the `|||` is a sentinel that
+  `hv_man_table_jtcvs()` splits on to build its paired N and statistic
+  sub-columns. `hv_man_table()` does not split on it, so the cells render
+  literally as `77 ||| 46 (30, 62)` and you get a table that looks like a bug in
+  the package. Build the flat CORR table from a plain `tbl_summary()`, as the
+  first recipe above does, and keep `hv_tbl_summary()` for the JTCVS path.
+
+- **`groups` means two different things.** In `hv_tbl_summary()` it is a named
+  *list* of section label to variable names, the row structure. In
+  `hv_man_table_jtcvs()` it is a named *character vector* of `stat_` column to
+  spanning header label, the column structure. They sit two calls apart in the
+  same pipeline and neither will accept the other's value, so the error you get
+  is at least immediate.
+
+- **A standardised mean difference needs exactly two groups.** `compare = "smd"`
+  and `compare = "both"` are only defined between two groups and error
+  otherwise. The version of this that costs an afternoon is a `by` variable that
+  is a factor carrying a level nothing in the data has — after a cohort filter,
+  say. It looks like two groups when you `table()` it and counts as three here.
+  `droplevels()` on the filtered frame is the fix. `compare = "pvalue"` works at
+  any number of groups.
+
+- **Footnote row indices count the section-header rows.** When you write
+  footnotes for `hv_man_table_save_jtcvs()` by hand, `row` indexes the rendered
+  body rows *including* the section headers the renderer interleaves, not the
+  rows of your original summary. Count off the printed table, not the data
+  frame. For test footnotes, let `hv_test_footnotes_jtcvs()` compute the indices,
+  which is most of why it exists.
+
+- **The check is not automatic.** `hv_man_table_save()` and
+  `hv_man_table_save_jtcvs()` write compliant output, but neither one inspects
+  the file afterwards. If you want the check, run `hv_check_docx()` on the path
+  yourself. It is cheap, and the moment to do it is after the table has been
+  through anyone else's hands.

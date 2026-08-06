@@ -64,6 +64,7 @@ book:
       chapters:
         - data_tables.qmd
         - qt_tables.qmd
+        - hv_tables.qmd
         - figure_tables.qmd
     - part: publications.qmd
       chapters:
