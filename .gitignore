@@ -16,8 +16,8 @@
 /site_libs/
 
 # Generated book deliverables (produced by `quarto render`)
-/HVTI-ggplot-graphics-recipes.tex
-/HVTI-ggplot-graphics-recipes.pdf
+/HVTI-Recipes.tex
+/HVTI-Recipes.pdf
 
 # Old/auxiliary LaTeX build leftovers
 *.log
