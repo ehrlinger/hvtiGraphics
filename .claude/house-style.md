@@ -1,3 +1,27 @@
+<!--
+  GENERATED FILE - DO NOT EDIT.
+
+  Composed by tools/house-style/compose-house-style.R in the
+  ehrlinger-personal repository. Edit the sources in the Obsidian vault
+  (memory/), then recompose. Editing this file directly will be reverted
+  by the next compose and flagged by --check.
+
+  repo:            hvti_graphics
+  profile:         book
+  default persona: (a)
+  sources:
+    writing-voice.md               sha256:c32b3886f897
+    writing-reader-profile.md      sha256:1dbeec1cd525
+    writing-context.md             sha256:87d5555936e1
+    r-package-structure.md         sha256:207bf5097790
+-->
+
+# House Style — hvti_graphics
+
+Default reader persona for this repository: **(a)**. Write for one persona at a time.
+
+---
+
 # John Ehrlinger — Writing Voice Fingerprint
 
 Reference for keeping documentation and prose in a consistent human voice.
@@ -136,3 +160,85 @@ Why it works: familiar opener ("we know that risk is not constant"), a
 rhetorical-question hook ("So why do we so often..."), one carried picture
 (early/flat/late), understatement ("the usual diagnostics"), and "we"/"you"
 throughout. No forced tricolon, no padded feature list, no overselling.
+
+---
+
+# Reader Profiles — documentation audiences
+
+A menu of selectable audiences for the `ehrlinger-writing` harness. Write for
+ONE persona at a time, not a blend. The active persona is chosen per task
+(explicit choice → repo `CLAUDE.md` default → ask). The `hvti_graphics` recipes
+book defaults to persona (a); the public CRAN packages (`ggRandomForests`,
+`temporal_hazard`) default to persona (d).
+
+*Retitled 2026-07-16: this was "HVTI graphics documentation", but the harness
+also governs two public CRAN packages whose readers have no HVTI context. See
+(d).*
+
+## (a) HVTI/CORR biostatistician — DEFAULT for the recipes book
+
+The biostats team (Austin, Kelsey, Wendy) adopting the house plotting style.
+
+- **Already knows:** R, ggplot2, survival analysis, the CORR datasets.
+- **Wants from a recipe:** all three at once — runnable code to copy, a call on
+  which plot to use, and the meaning of a specific argument. They open a recipe
+  for any of the three, often in the same sitting.
+- **Lands when:** the code runs as written, the argument is shown in context,
+  the recipe says when to use the plot, and the figure comes with a reading
+  guide.
+- **Bounces when:** the recipe opens with a wall of code before saying what the
+  plot is for, or shows a figure with no guide on how to read it.
+- **Watch for:** the reader hand-rolling a plot in raw ggplot instead of using
+  the `hvtiPlotR`/`ggRandomForests` constructor that already makes it. Second,
+  drifting off house style by skipping the `hv_*` theme or the two-step S3
+  workflow.
+
+## (b) Clinical researcher / surgeon — figure consumer
+
+Clinical researchers and surgeons do not read the book. They receive the
+exported figure. Persona (a) is the one who, on their behalf, picks the right
+plot and writes or says how to read it. So this is not a prose audience — it is
+a constraint on persona (a)'s prose: when writing for the biostatistician,
+remember the figure will be handed to a clinician who never saw the recipe. The
+recipe should make the figure self-explanatory, so the reading guide carries
+over to the person who only sees the plot.
+
+
+---
+
+# Project Context — HVTI graphics ecosystem
+
+Why we write the way we do. The harness reads this so prose carries the right
+assumptions about purpose and constraints.
+
+## The ecosystem
+
+- **hvtiPlotR** — ggplot2 themes and plot constructors; the R replacement for
+  the historical `plot.sas` macro.
+- **ggRandomForests** — graphics for random forests and variable priority
+  (varPro), built on randomForestSRC.
+- **temporal_hazard** — additive (Blackstone, Naftel, and Turner, 1986) hazard
+  models in pure R.
+- **hvti_graphics** — this recipes book, which ties the three together into a
+  house style for clinical figures.
+
+## Purpose
+
+A single source of ggplot2 recipes for publication-quality, house-style figures
+for HVTI CORR (Cardiovascular Outcomes Registries and Research, Cleveland Clinic
+Heart & Vascular Institute) publications and presentations. Each recipe pairs a
+figure with the code that produces it, so the next person starts from a working
+script instead of a blank one.
+
+Two ideas run through the book: a figure is built in two steps (a constructor
+prepares and validates the data, then `plot()` hands you a bare ggplot you finish
+with `+`), and every example stands on its own with its own sample data.
+
+## Constraints that shape the writing
+
+- **CORR publication standards** — figures must meet journal expectations.
+- **Reproducibility** — Git, renv, dataset manifests; every figure regenerable.
+- **No PHI** — never in code, prose, or example data.
+- **R-first** — R is the working language; SAS is the heritage we migrate from.
+- **SAS-migration heritage** — many readers trust SAS output, so we say when the
+  R version matches the original (the way we checked temporal_hazard fit for fit).
