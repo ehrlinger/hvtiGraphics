@@ -7,9 +7,10 @@ going. The figure's content is decided once and its appearance as many times as
 you have audiences, and because every recipe makes its own data, you can always
 go back to a working example and adapt it.
 
-One thing is deliberately left for later: tables lean on `gt` directly until a
-companion `hvtiRtables` package gives them the same house treatment the plots
-get.
+Tables split along the same line as everything else: `gt` for anything headed
+into this book or another HTML document, and `hvtiRtables` for the manuscript
+Word tables, turning a `gtsummary` summary into CORR's flat-header format (or
+JTCVS's merged one).
 
 A version note: the random-forest chapters run on the `ggRandomForests` 3.x API
 (varPro priority, partial dependence, ROC), a line that is still moving — pin the
