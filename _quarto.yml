@@ -55,6 +55,7 @@ book:
         - rf_error.qmd
         - rf_predicted.qmd
         - rf_vimp.qmd
+        - rf_shap.qmd
         - rf_dependence.qmd
         - rf_roc.qmd
         - varpro.qmd
