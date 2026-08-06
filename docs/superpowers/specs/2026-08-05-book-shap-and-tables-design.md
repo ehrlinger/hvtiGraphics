@@ -1,11 +1,15 @@
-# SHAP and table chapters for the HVTI graphics recipe book
+# HVTI Recipes 3.0.0: SHAP and table chapters, and a rename
 
 Date: 2026-08-05
 Status: approved, ready for planning
 
 ## Problem
 
-Two bodies of work have matured outside the book and are not represented in it.
+The book is called "HVTI ggplot graphics recipes" and is no longer that. It
+already carries `consort.qmd`, `sankey.qmd`, `upset.qmd`, and a `gt` tables
+part that are not ggplot recipes, and this change adds three more chapters that
+widen the gap. Separately, two bodies of work have matured outside the book and
+are not represented in it.
 
 1. **SHAP.** `ggRandomForests` 3.5.0 exports `gg_shap()` and three render
    helpers (`shap_importance()`, `shap_beeswarm()`, `shap_dependence()`). The
@@ -27,10 +31,38 @@ makes this a correction as much as an addition:
 
 ## Scope
 
-Three new chapters, two rewrites of existing prose, one `_quarto.yml` change.
+A rename to **HVTI Recipes**, edition **3.0.0**; three new chapters; rewrites
+of the prose that frames the book as figures-only.
 
 Out of scope: any change to `hvtiRtables`, `hvtiRutilities`, or
-`ggRandomForests` themselves. This is book-side work only.
+`ggRandomForests` themselves. This is book-side work only. **The repository
+stays `hvti_graphics`** and the published URL stays
+`https://ehrlinger.github.io/hvti_graphics/` — renaming the repo would move the
+gh-pages path, breaking the README badges and any saved links, and GitHub's
+repo redirect does not cover gh-pages. The title is what readers see; the slug
+is plumbing.
+
+## Rename
+
+Only two lines in tracked source carry the old title, but the figure-centric
+framing runs deeper and has to move with it.
+
+| File | Change |
+|---|---|
+| `_quarto.yml:6` | `title:` → `"HVTI Recipes"` |
+| `_quarto.yml:8` | `subtitle:` → descriptive text, e.g. "Figures, tables, and R recipes for CORR manuscripts". **Drop the version string.** |
+| `README.md:1` | Heading → `# HVTI Recipes` |
+| `README.md:5` | Edition badge → `edition-3.0.0` |
+| `README.md:8–12` | Lede reframe: "a working catalog of the figures we draw" → figures *and* tables |
+| `README.md:17–21` | Replace the 2.0.0 edition paragraph with 3.0.0 notes |
+| `index.qmd:17–19` | "a figure is built in two steps" — the constructor/`plot()` framing is figure-only; generalise or scope it explicitly to figures |
+| `index.qmd:24–31` | Parts tour: tables are currently an afterthought ("the last parts handle tables and getting a finished figure out the door"). Give the Tables part its own standing. |
+| `HVTI-ggplot-graphics-recipes.tex` | **Delete.** Untracked 458 KB `keep-tex: true` leftover from May; regenerates under the new name. |
+
+The version string lives in **one** place after this: the README edition badge.
+It currently appears twice with two different values (`_quarto.yml:8` says
+"Version 2.1", `README.md:5` says `edition-2.0.0`), which is how they drifted
+apart in the first place.
 
 ## Chapter structure
 
@@ -158,12 +190,14 @@ the migration promise at `qt_tables.qmd:18` with a forward pointer: hand-built
 pushed, because that version's API surface is not yet settled. The other work
 is independent of it:
 
-1. `rf_shap.qmd`
-2. `data_tables.qmd`
-3. `tables.qmd` and `qt_tables.qmd` rewrites, `_quarto.yml` wiring
-4. `hv_tables.qmd` — blocked on the hvtiRtables push
+1. Rename and edition bump (title, README, preface, delete stale `.tex`)
+2. `rf_shap.qmd`
+3. `data_tables.qmd`
+4. `tables.qmd` and `qt_tables.qmd` rewrites, `_quarto.yml` wiring
+5. `hv_tables.qmd` — blocked on the hvtiRtables push
 
-Steps 1–3 can land as a PR without step 4.
+Steps 1–4 can land as a PR without step 5. The rename goes first so the new
+chapters are written into a book that already knows what it is.
 
 ## Build prerequisites
 
@@ -188,6 +222,11 @@ If `packages.qmd` enumerates book dependencies, add `hvtiRtables` there.
   chapters, so a green full-book build is not evidence that a new chapter works.
 - No occurrence of the stale claims remains: grep the book source for
   "not yet written" and "will migrate to".
+- No occurrence of the old title remains: grep tracked source for "ggplot
+  graphics recipes". The version string appears exactly once, in the README
+  edition badge, reading `3.0.0`.
+- The preface and README describe a book about figures *and* tables. A reader
+  who lands on `index.qmd` should not conclude tables are an appendix.
 - Every new chapter has all three of `## When to use it`, `## Build it`,
   `## Pitfalls`.
 - The book builds to HTML. PDF is not a gate — `cairo_pdf` is unavailable on
