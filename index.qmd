@@ -16,7 +16,10 @@ drawn.
 
 Two ideas run through the whole book. First, a figure is built in two steps: a
 constructor prepares and validates the data, then `plot()` hands you a bare
-ggplot you finish with the usual `+`. Second, every example stands on its own.
+ggplot you finish with the usual `+`. That two-step shape is the figure
+pattern, not a universal one, though the tables keep the same division of
+labour between preparing the data and rendering it. Second, every example
+stands on its own.
 It generates its own sample data, so you can copy a chunk, run it, and see the
 figure before you point it at your own analysis. The aim is the one we hold for
 all of this team's tooling: make the right path the easy path.
@@ -26,6 +29,9 @@ conventions, and *Formatting* the styling layers -- themes, colours, legends --
 you add on top of any figure. The catalog itself is three parts: *time-to-event*
 figures, *distribution and count* figures, and *relationship and trajectory*
 figures, one chapter per plot. *Specialty plots* handles the design diagrams
-(CONSORT, Sankey, covariate balance), a part on *random forests* covers model
-visualization, and the last parts handle tables and getting a finished figure
-out the door.
+(CONSORT, Sankey, covariate balance), and a part on *random forests* covers
+model visualization. *Tables* takes the manuscript's other exhibit: taking
+inventory of the data you have, building the Table 1 that summarises it, and
+the small tables that ride alongside a figure. *Publication themes* closes the
+book on getting finished work out the door, at journal size, poster size, and
+slide size.

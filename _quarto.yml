@@ -3,8 +3,8 @@ project:
   output-dir: _book
 
 book:
-  title: "HVTI ggplot graphics recipes"
-  subtitle: "Version 2.1"
+  title: "HVTI Recipes"
+  subtitle: "Figures, tables, and R recipes for CORR manuscripts"
   author: "John Ehrlinger <ehrlinj@ccf.org>"
   date: today
   page-navigation: true

@@ -1,23 +1,39 @@
-# HVTI ggplot graphics recipes
+# HVTI Recipes
 
 [![Publish](https://github.com/ehrlinger/hvti_graphics/actions/workflows/publish.yml/badge.svg)](https://github.com/ehrlinger/hvti_graphics/actions/workflows/publish.yml)
 [![Site](https://img.shields.io/badge/read-ehrlinger.github.io%2Fhvti__graphics-1f6feb)](https://ehrlinger.github.io/hvti_graphics/)
-[![Version](https://img.shields.io/badge/edition-2.0.0-blue)](https://github.com/ehrlinger/hvti_graphics/releases)
+[![Version](https://img.shields.io/badge/edition-3.0.0-blue)](https://github.com/ehrlinger/hvti_graphics/releases)
 [![License: CC BY 4.0](https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey)](https://creativecommons.org/licenses/by/4.0/)
 
-A working catalog of the figures we draw for CORR manuscripts and
-presentations — Kaplan-Meier curves, propensity-balance plots, spaghetti plots,
-CONSORT diagrams, random-forest visualizations — each paired with the code that
-produces it. The aim is the one we hold for all of this team's tooling: start
-from a working recipe, not a blank script.
+A working catalog of the figures and tables we build for CORR manuscripts and
+presentations: Kaplan-Meier curves, propensity-balance plots, spaghetti plots,
+CONSORT diagrams, random-forest visualizations, the Table 1 that opens the
+paper. Each is paired with the code that produces it. The aim is the one we
+hold for all of this team's tooling: start from a working recipe, not a blank
+script.
 
 **Read it here:** <https://ehrlinger.github.io/hvti_graphics/>
 
-This is the **2.0.0** edition: the full figure catalog plus dedicated chapters
-on varPro partial dependence and on slides/presentations; numbers-at-risk
-composites and the canonical cluster Sankey from hvtiPlotR 2.5.0; and a
-house figure-conventions pass (in-panel legends and annotations). Every chapter
-runs on the current `hvti*`, `ggRandomForests`, and `varPro` APIs.
+This is the **3.0.0** edition, and the first under the new name. The old title
+promised ggplot recipes. But the book already carried CONSORT diagrams,
+Sankeys, upset plots, and a tables part by then, and the name had stopped
+describing what was in it. Tables are a subject here, not an appendix to the
+figures.
+
+New in this edition is SHAP attribution for random forests. VIMP tells you how
+much worse the forest predicts when a variable is permuted, one number per
+variable, a statement about the model. SHAP tells you how much a variable moved
+*this* observation's prediction. So you reach for VIMP when you want to know
+what drives the model, and for SHAP when a reviewer asks why one patient scored
+the way they did.
+
+The Tables part now covers both ends of a table's life: `hvtiRutilities` for the
+inventory you run before deciding what Table 1 should contain, and
+`hvtiRtables` for Word output that meets the CORR manuscript rules. The varPro
+chapters picked up the entry points they were missing — unsupervised dependence
+and beta-refined unsupervised importance — and every `gg_partial_varpro()` call
+now passes `method = "rnd"`, with the chapter's pitfalls explaining why you want
+it in your own scripts too.
 
 ## Who it's for
 
