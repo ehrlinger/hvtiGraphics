@@ -46,20 +46,26 @@ overlay a population life table.
 
 - **A figure is built in two steps.** A constructor (`hv_survival()`,
   `gg_varpro()`, …) prepares and validates the data, then `plot()` hands you a
-  bare ggplot you finish with the usual `+`. The recipes lean on this so styling
-  stays in your hands.
+  bare ggplot you finish with the usual `+`. That two-step shape is the figure
+  pattern, not a universal one, though the tables keep the same division of
+  labour between preparing the data and rendering it. The recipes lean on it so
+  styling stays in your hands.
 - **Every example stands on its own.** Each chunk generates its own sample data,
-  so you can copy it, run it, and see the figure before you point it at your own
+  so you can copy it, run it, and see the result before you point it at your own
   analysis.
 
 ## The packages underneath
 
 The recipes are built on the `hvti*` packages we maintain — chiefly
 [hvtiPlotR](https://github.com/ehrlinger/hvtiPlotR) (themes and plot
-constructors) — together with
-[ggRandomForests](https://github.com/ehrlinger/ggRandomForests) for forest and
+constructors), with
+[hvtiRutilities](https://github.com/ehrlinger/hvtiRutilities) for data
+dictionaries, manifests, and the synthetic cohorts the examples run on, and
+[hvtiRtables](https://github.com/ehrlinger/hvtiRtables) for the manuscript Word
+tables. Alongside them,
+[ggRandomForests](https://github.com/ehrlinger/ggRandomForests) covers forest and
 varPro graphics and
-[TemporalHazard](https://github.com/ehrlinger/temporal_hazard) for
+[TemporalHazard](https://github.com/ehrlinger/temporal_hazard) the
 additive-hazard models, with `ggplot2` underneath. Where a package gives you a
 helper we use it; where it does not (a plain density or box plot), we fall back
 to bare `ggplot2` and style it to match.

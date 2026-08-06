@@ -23,17 +23,22 @@ This whole part treats a forest analysis as two steps, always in the same order.
 First, **fit** a forest with `randomForestSRC::rfsrc()` [@R-randomForestSRC]: it
 grows the trees, computes the OOB predictions, and (optionally) variable
 importance. Second, **visualize** the fitted object with a `ggRandomForests`
-[@R-ggRandomForests] `gg_*()` constructor. Each constructor extracts a tidy slice
-of the forest -- error rates, predicted survival, variable importance, partial
-dependence -- and returns a lightweight object with `plot()` and `autoplot()`
-methods that produce `ggplot` graphics. Because every `gg_*()` plot is a standard
-`ggplot`, the house style applies exactly as everywhere else in the book: add
+[@R-ggRandomForests] `gg_*()` function. Each one extracts a tidy slice of the
+forest -- error rates, predicted survival, variable importance, partial
+dependence. Most of them return a lightweight object with `plot()` and
+`autoplot()` methods that produce `ggplot` graphics. `gg_shap()` is the one that
+works differently: it hands back the attributions as a plain data frame, and
+three named renderers draw them. Either way what you end up holding is a standard
+`ggplot`, so the house style applies exactly as everywhere else in the book: add
 `+ theme_hv_manuscript()`.
 
-The chapters that follow take one fitted forest and read a different slice of it;
-the constructor is the only thing that changes.
+Most of the chapters that follow take one fitted forest and read a different
+slice of it, changing only the function they call. SHAP attribution is the
+exception, and it is worth knowing before you get there: `gg_shap()` works on
+regression and classification forests, not survival ones, so that chapter fits
+its own forest on different data and says why where it does.
 
-| Chapter | Constructor | Shows |
+| Chapter | Function | Shows |
 |---|---|---|
 | Error convergence | `gg_error()` | OOB error vs. number of trees |
 | Predicted survival | `gg_rfsrc()`, `gg_survival()` | per-observation and grouped survival |

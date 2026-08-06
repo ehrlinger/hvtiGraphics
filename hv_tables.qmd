@@ -10,11 +10,12 @@ library(flextable)
 ```
 
 The [publication tables](qt_tables.qmd) chapter built a Table 1 by hand with
-`gt`. This chapter takes the same summary to a different destination. When the
-table is going into a manuscript, it has to land in a Word file that a
-coordinator can paste into the submission draft, and it has to obey the CORR
-"Table Construction for Manuscripts" rules once it gets there. `hvtiRtables` is
-the package that takes a `gtsummary` summary the rest of the way.
+`gt`. This chapter takes the same cohort to a different destination, and to the
+statistics that destination asks for. When the table is going into a manuscript,
+it has to land in a Word file that a coordinator can paste into the submission
+draft, and it has to obey the CORR "Table Construction for Manuscripts" rules
+once it gets there. `hvtiRtables` [@R-hvtiRtables] is the package that takes a
+`gtsummary` [@R-gtsummary] summary the rest of the way.
 
 `gt` writes Word too, so the obvious shortcut is `gtsave()`, and it is a fair
 thing to ask about before installing another package. We take that question
@@ -66,8 +67,9 @@ table(dta$sex)
 You build the summary with `gtsummary` the way you normally would. Two things
 are worth setting deliberately. The first is `statistic`, because the house
 convention for a continuous variable is a median with the 15th and 85th
-percentiles rather than a mean and SD, and that convention is what the default
-footnotes describe. The second is less obvious: `gtsummary` writes its own
+percentiles rather than the mean and SD the
+[publication tables](qt_tables.qmd) chapter builds by hand, and that convention
+is what the default footnotes describe. The second is less obvious: `gtsummary` writes its own
 footnote describing the same statistics, and marks the group headers with a
 superscript `1` pointing at it. Leave it in and the finished document carries two
 footnote systems saying the same thing in two different marker schemes, one of

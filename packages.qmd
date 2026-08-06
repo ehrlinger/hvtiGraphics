@@ -35,12 +35,20 @@ What each one is for:
   chapter.
 - **gt** [@R-gt]: publication-quality tables, and the right choice when the
   table's destination is this book or another HTML document.
-- **hvtiRtables**: manuscript tables. It takes a `gtsummary` summary and renders
-  it through `flextable` into a Word table that follows the CORR "Table
-  Construction for Manuscripts" rules: flat headers with nothing merged, no
-  hidden spacer columns, and footnotes and the abbreviation key as text below
-  the table. A JTCVS mode swaps in that journal's merged spanning headers and
-  lettered footnotes instead.
+- **hvtiRtables** [@R-hvtiRtables]: manuscript tables. It takes a `gtsummary`
+  summary and renders it through `flextable` into a Word table that follows the
+  CORR "Table Construction for Manuscripts" rules: flat headers with nothing
+  merged, no hidden spacer columns, and footnotes and the abbreviation key as
+  text below the table. A JTCVS mode swaps in that journal's merged spanning
+  headers and lettered footnotes instead.
+- **gtsummary** [@R-gtsummary] and **flextable** [@R-flextable]: the two
+  packages `hvtiRtables` is built on. `gtsummary::tbl_summary()` computes the
+  baseline summary and `flextable` is the Word rendering layer. You call the
+  first one directly in the manuscript tables chapter; the second mostly stays
+  under the hood.
+- **kernelshap** [@R-kernelshap]: the SHAP engine behind `gg_shap()`. It loads
+  in the SHAP attribution chapter, and it is the one dependency in the book
+  whose cost you feel, so that chapter says what the two size arguments buy you.
 - **patchwork** [@R-patchwork]: composes several plots into one figure with
   shared labels and panel tags.
 - **survival** [@R-survival; @survival-book]: the `Surv()` objects and

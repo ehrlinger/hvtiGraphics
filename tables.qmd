@@ -15,13 +15,16 @@ library(gt)
 Four chapters follow, in the order you would actually meet them.
 [Describing a dataset](data_tables.qmd) is the reconnaissance: `proc_contents()`,
 `proc_means()`, and `data_dictionary()` tell you which variables you are holding,
-what type each one came in as, and how much of each is populated. You cannot
+what type each one came in as, and how much of each is populated. That chapter
+owns the dictionary; the [data governance](data_governance.qmd) chapter puts the
+same artifact to work alongside labels and manifests. You cannot
 decide what belongs in a Table 1 until you know that.
 [Publication tables](qt_tables.qmd) then builds the Table 1 pattern by hand with
 `gt`, a row group at a time.
-[Manuscript tables](hv_tables.qmd) takes the same summary the other way, through
-`hvtiRtables` into a Word file that follows the CORR table rules, which is the
-route to take once the table is bound for a journal rather than the web. And
+[Manuscript tables](hv_tables.qmd) takes the same cohort the other way, through
+`hvtiRtables` into a Word file that follows the CORR table rules and the house
+median-and-percentiles convention, which is the route to take once the table is
+bound for a journal rather than the web. And
 [tables that accompany figures](figure_tables.qmd) pulls the companion numbers --
 numbers at risk, participation counts -- straight off the same `hv_*()` object
 that drew the figure, so the table and its figure cannot disagree.

@@ -148,7 +148,14 @@ good at hiding one. The `age` minimum of 1 in this simulated cohort is the kind
 of thing you would query on real data.
 
 `data_dictionary()` answers *what do I hand someone else*. It is the one of the
-three you save to a file.
+three you save to a file, and the [data governance](data_governance.qmd) chapter
+files it beside the manifest for exactly that reason. Read it column by column,
+with most of the attention on `pct_missing` and `n_unique`. High missingness
+flags a variable you cannot lean on without saying so. A distinct-value count
+that surprises you, two levels where you expected continuous or a thousand where
+you expected a category, usually means a typing or coding problem upstream,
+caught here before it reaches a model. The `summary` column is your sanity check
+on range: a negative age or an ejection fraction above 100 shows up immediately.
 
 None of the three is a publication table. They are the reconnaissance you do
 before deciding what the publication table should contain, and

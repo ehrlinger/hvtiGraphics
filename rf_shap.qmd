@@ -51,10 +51,19 @@ survival fit the other recipes in this part lean on will not work here, and
 handing one over gets you an error naming the family rather than a plot.
 
 So we switch to `breast`, the Wisconsin breast cancer data that ships with
-randomForestSRC and that the varPro chapter also uses: 32 predictors, thirty
+randomForestSRC and that both varPro chapters use: 32 predictors, thirty
 features read off the digitized image of a fine needle aspirate plus tumour size
 and the count of positive nodes, and a two-level outcome, `N` for nonrecurrence
 and `R` for recurrence.
+
+One difference from those chapters is worth stating rather than leaving in the
+code. They fit `breast` as it ships; we drop its four incomplete rows with
+`na.omit()` first, taking 198 patients down to 194. The fit is not what needs
+this -- `rfsrc()` handles the missing values either way. It is `newdata` that
+needs it. Hand `gg_shap()` a row carrying a missing predictor and the
+attribution stops with `no records in the NA-processed data`, an error raised
+downstream in `randomForestSRC` rather than anywhere you were looking. Dropping
+the four rows once, up front, keeps that out of the way.
 
 ```{r}
 #| label: shap-fit

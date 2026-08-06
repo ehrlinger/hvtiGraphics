@@ -31,7 +31,8 @@ figures, *distribution and count* figures, and *relationship and trajectory*
 figures, one chapter per plot. *Specialty plots* handles the design diagrams
 (CONSORT, Sankey, covariate balance), and a part on *random forests* covers
 model visualization. *Tables* takes the manuscript's other exhibit: taking
-inventory of the data you have, building the Table 1 that summarises it, and
-the small tables that ride alongside a figure. *Publication themes* closes the
+inventory of the data you have, building the Table 1 that summarises it,
+sending that table to Word in the shape a journal will accept, and the
+small tables that ride alongside a figure. *Publication themes* closes the
 book on getting finished work out the door, at journal size, poster size, and
 slide size.
