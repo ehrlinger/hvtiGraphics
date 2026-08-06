@@ -21,13 +21,19 @@ are not represented in it.
    `proc_means()` and rebuilt `data_dictionary()` on top of them. Neither
    appears in the book.
 
-The book also carries two claims about `hvtiRtables` that are now false, which
-makes this a correction as much as an addition:
+The book also carries **three** claims about `hvtiRtables` that are now false,
+which makes this a correction as much as an addition:
 
 - `tables.qmd:15` — "A companion `hvtiRtables` package ... is planned but not
   yet written."
 - `qt_tables.qmd:18` — "once a dedicated table package matures, **these tables
   will migrate to the planned hvtiRtables package**."
+- `packages.qmd:36-38` — "**gt**: publication-quality tables. We use it
+  directly for now; a companion `hvtiRtables` package **is planned** to give
+  tables the same house treatment the plots get."
+
+All three describe where the package *is* rather than what it *does*, which is
+precisely why all three went stale together.
 
 ## Scope
 
@@ -94,13 +100,35 @@ compliant, attach it to a figure.
 
 ## Chapter specifications
 
-Every chapter follows the part's established shape: `## When to use it`,
-`## Build it`, `## Pitfalls`. Prose follows the `ehrlinger-writing` harness,
-reader persona (a) HVTI/CORR biostatistician.
+Every chapter follows the part's established shape, as set by `rf_vimp.qmd` and
+`varpro.qmd`: `# Title`, a hidden `setup` chunk, `## When to use it`,
+`## The data it needs`, `## Build it`, `## Read it`, `## Variations`,
+`## Pitfalls`. Prose follows the `ehrlinger-writing` harness, reader persona
+(a) HVTI/CORR biostatistician.
 
 ### `rf_shap.qmd`
 
-Builds an `rfsrc` fit, calls `gg_shap(object, newdata, bg_n = 50)`, then shows
+**Verified against real fits on 2026-08-05; three constraints the chapter must
+respect.**
+
+1. **`gg_shap()` rejects survival forests.** It errors with "only regression and
+   classification forests are supported in this version; got family 'surv'."
+   `pbc` — the dataset `rf_vimp.qmd` and most of the part use — is therefore
+   unusable here. The chapter uses the `breast` classification fit instead,
+   which `varpro.qmd` already establishes.
+2. **`newdata` must contain predictors only.** Leaving the outcome column in
+   fails inside `kernelshap` with `all(colnames(X) %in% colnames(bg_X)) is not
+   TRUE` — a stack trace through `prepare_bg()` that names neither the outcome
+   nor `newdata`. This is the chapter's most valuable pitfall.
+3. **It is slow.** Measured on `breast` (32 predictors, `ntree = 200`):
+   30 obs / `bg_n = 30` took 99 s, 20/20 took 48 s, 15/15 took 28 s. The
+   chapter uses **20 / 20**, cached by `freeze` after the first render.
+
+`gg_shap()` returns a long `data.frame` — `id`, `vars`, `shap`, `value`,
+`value_label`, one row per observation × variable. All three renderers return a
+plain `ggplot`, so they take `+ theme_hv_manuscript()`, not patchwork's `&`.
+
+Builds an `rfsrc` fit, calls `gg_shap(object, newdata, bg_n = )`, then shows
 the three renderers:
 
 - `shap_importance()` — global ranking, mean absolute SHAP per variable.
@@ -235,6 +263,14 @@ sibling:
 Remove the "planned but not yet written" claim. Route the reader across all
 four chapters and say what each is for.
 
+### Rewrite: `packages.qmd` gt entry
+
+`packages.qmd:36-38` still frames `gt` as a stopgap ("We use it directly for
+now") against a planned package. Give `hvtiRtables` its own bullet describing
+what it does — manuscript-compliant Word output through `flextable` — and let
+the `gt` bullet stand on its own merits rather than as a placeholder. Add
+`gtsummary` if the new chapters use it directly.
+
 ### Rewrite: `qt_tables.qmd` framing
 
 Keep the chapter. Building a Table 1 by hand teaches what is in one, and `gt`
@@ -286,8 +322,10 @@ If `packages.qmd` enumerates book dependencies, add `hvtiRtables` there.
   on its own (`quarto render rf_shap.qmd`), confirming the R code actually
   executes. `execute: freeze: auto` will serve a cached success for untouched
   chapters, so a green full-book build is not evidence that a new chapter works.
-- No occurrence of the stale claims remains: grep the book source for
-  "not yet written" and "will migrate to".
+- No occurrence of the stale claims remains. Grep the book source for
+  `not yet written`, `will migrate to`, `is planned`, and `for now` — the third
+  claim (`packages.qmd`) uses none of the first two phrasings, which is how it
+  was missed on the first pass.
 - No occurrence of the old title remains: grep tracked source for "ggplot
   graphics recipes". The version string appears exactly once, in the README
   edition badge, reading `3.0.0`.
@@ -318,8 +356,10 @@ If `packages.qmd` enumerates book dependencies, add `hvtiRtables` there.
   already fits four forests. `gg_sdependent()` and `gg_beta_uvarpro()` need a
   `uvarpro` fit; reuse the one the existing `gg_udependent()` section builds
   rather than growing another.
-- **`gg_sdependent()` and `gg_beta_uvarpro()` are unexercised by the book
-  today,** so their data requirements are unverified here. Both may share
-  `gg_udependent()`'s all-numeric constraint. Confirm against a real fit during
-  implementation rather than assuming, and record what they need in the
-  chapter's pitfalls.
+- ~~`gg_sdependent()` and `gg_beta_uvarpro()` data requirements unverified.~~
+  **Resolved 2026-08-05.** Both run on the `uvarpro` fit `varpro.qmd:211`
+  already builds, return 12-row `data.frame`s, and plot as plain `ggplot`
+  objects taking `+ theme_hv_manuscript()`. No extra fit needed.
+  `varpro_feature_names(o$xvar.names, housing)` also confirmed: the `housing`
+  regression fit exposes **30** of the data's **81** columns, which is the
+  concrete number the pitfall should quote.
