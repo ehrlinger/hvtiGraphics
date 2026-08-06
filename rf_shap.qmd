@@ -12,9 +12,9 @@ library(hvtiPlotR)
 
 ## When to use it
 
-The previous chapter ranked predictors by permutation importance: shuffle a
-variable among the out-of-bag patients, see how much worse the forest predicts,
-and the size of that drop is the variable's importance. One number per variable,
+The [variable importance](rf_vimp.qmd) chapter ranked predictors by permutation
+importance: shuffle a variable among the out-of-bag patients, see how much worse
+the forest predicts, and the size of that drop is the variable's importance. One number per variable,
 and it is a statement about the forest. VIMP answers "what is this model built
 on?"
 
@@ -36,8 +36,8 @@ lot like VIMP, but you cannot go the other way and recover a patient from a VIMP
 bar.
 
 `gg_shap()`, from ggRandomForests [@R-ggRandomForests], computes those
-attributions using the kernelshap package and hands back one row per
-observation per variable. Three renderers draw it: `shap_importance()` for the
+attributions using the kernelshap package [@R-kernelshap] and hands back one row
+per observation per variable. Three renderers draw it: `shap_importance()` for the
 cohort ranking, `shap_beeswarm()` for the per-patient spread behind that
 ranking, and `shap_dependence()` for one variable across its range. As
 everywhere else in this part, each returns a bare ggplot you finish with a house
@@ -51,9 +51,10 @@ survival fit the other recipes in this part lean on will not work here, and
 handing one over gets you an error naming the family rather than a plot.
 
 So we switch to `breast`, the Wisconsin breast cancer data that ships with
-randomForestSRC and that the varPro chapter also uses: 32 tumour measurements
-per patient and a two-level outcome, `N` for nonrecurrence and `R` for
-recurrence.
+randomForestSRC and that the varPro chapter also uses: 32 predictors, thirty
+features read off the digitized image of a fine needle aspirate plus tumour size
+and the count of positive nodes, and a two-level outcome, `N` for nonrecurrence
+and `R` for recurrence.
 
 ```{r}
 #| label: shap-fit
@@ -84,21 +85,31 @@ of nonrecurrence. Pass `which.class = 2` to explain recurrence instead.
 `shap_importance()` collapses the receipts into a ranking. It takes the mean
 absolute attribution for each variable across the explained patients and draws
 the bars sorted, which gives you the SHAP counterpart to the VIMP figure in the
-last chapter.
+[variable importance](rf_vimp.qmd) chapter. Thirty-two bars need the vertical
+room, so this chunk sets `fig-height: 8`; leave it at the book default and the
+labels run into each other.
 
 ```{r}
 #| label: fig-rf_shap-importance
 #| fig-cap: "Global SHAP importance for the breast classification forest, ranking predictors by mean absolute attribution across the explained observations"
+#| fig-height: 8
 shap_importance(gs) + theme_hv_manuscript()
 ```
 
-Two of the three variables at the top, tumour size and positive nodes, are the
-staging measurements rather than the morphology panel, which is a reassuring
-place for a breast recurrence model to land. Read the scale carefully: this is a
-probability, so a bar at 0.03 says the variable moved the predicted probability
-of nonrecurrence by about three percentage points on average, in one direction
-or the other. Absolute value is doing work in that sentence, and it is exactly
-what the next figure takes back apart.
+Three bars separate from the pack, each about twice the fourth, and only two of
+them are what you would expect. Tumour size and positive nodes are the staging
+measurements rather than the image panel, which is a reassuring place for a
+breast recurrence model to land. The third, `worst_smoothness`, is one of the
+thirty image features, and it ties `pnodes` for the top bar: the two means agree
+to five decimal places on twenty patients. So read the top of this ranking as a
+group of three rather than a first, second, and third, and check for a tie like
+that one before you tell a co-author which variable came out on top.
+
+The scale needs care too. This is a probability, so a bar at 0.03 says the
+variable moved the predicted probability of nonrecurrence by about three
+percentage points on average, in one direction or the other. Absolute value is
+doing work in that sentence, and it is exactly what the next figure takes back
+apart.
 
 ## Read it
 
@@ -107,11 +118,18 @@ clinician will ask about: the sign, and whether every patient looks alike.
 `shap_beeswarm()` puts both back by plotting all 640 attributions, one point per
 patient per variable.
 
+Colour carries half of what this plot says, so the key has to survive the theme.
+`theme_hv_manuscript()` sets `legend.position = "none"`, which is the right
+default for the single-series figures elsewhere in the book and wrong here.
+Whatever you hand the theme in `...` is applied after its own settings, so
+`theme_hv_manuscript(legend.position = "right")` puts the key back. Same
+ordering rule as the [legends](legends.qmd) chapter: what runs last wins.
+
 ```{r}
 #| label: fig-rf_shap-beeswarm
 #| fig-cap: "The per-observation attributions behind that ranking, one point per patient per variable, showing the spread a mean absolute value hides"
 #| fig-height: 5.5
-shap_beeswarm(gs) + theme_hv_manuscript()
+shap_beeswarm(gs) + theme_hv_manuscript(legend.position = "right")
 ```
 
 The plot encodes two variables at once, and getting them straight is the whole
@@ -140,6 +158,26 @@ direction, not the individual points.
 
 ## Variations
 
+### Show only the top predictors
+
+Thirty-two bars is a supplement, not a results figure. `shap_importance()` has
+no `nvar` argument, so the trimming happens to the data rather than to the plot.
+`gg_shap()` returns `vars` as a factor ordered by mean absolute attribution with
+the most important level last, so the top ten are the last ten levels.
+`droplevels()` is the part that is easy to forget: leave the unused levels on
+and the trimmed variables keep their slots on the axis as empty rows.
+
+```{r}
+#| label: fig-rf_shap-importance-top
+#| fig-cap: "The same SHAP ranking restricted to the top ten predictors, the version that goes in a results figure"
+top10 <- tail(levels(gs$vars), 10)
+shap_importance(droplevels(gs[gs$vars %in% top10, ])) + theme_hv_manuscript()
+```
+
+Ten is the same cut the [variable importance](rf_vimp.qmd) chapter makes, for
+the same reason: it puts the eye on the predictors that matter and leaves the
+full ranking available as a supplement.
+
 ### One variable across its range
 
 The beeswarm compresses each variable into a strip. `shap_dependence()` pulls
@@ -149,17 +187,29 @@ per patient rather than per grid point.
 
 ```{r}
 #| label: fig-rf_shap-dependence
-#| fig-cap: "SHAP dependence for mean_radius, plotting each patient's attribution against their own value of the predictor"
-shap_dependence(gs, xvar = "mean_radius") + theme_hv_manuscript()
+#| fig-cap: "SHAP dependence for pnodes, plotting each patient's attribution against their own number of positive nodes"
+shap_dependence(gs, xvar = "pnodes") + theme_hv_manuscript()
 ```
 
-This one comes back flat. The attributions scatter inside a couple of percentage
-points of zero with no trend against radius, and that is an answer rather than a
-failed plot: on these patients, this forest was not using `mean_radius`, which
-is consistent with where it sits in the ranking above. Swap in a variable from
-the top of that ranking, `pnodes` say, and the same call draws a clear downward
-band, more involved nodes pulling the prediction away from nonrecurrence. Leave
-`xvar` off entirely and you get the top-ranked variable by default.
+The trend is clear and it runs downward. The eleven node-negative patients sit
+at or just above zero, nodal status nudging their predicted probability of
+nonrecurrence up, and the four patients with five or more involved nodes drop to
+between -0.04 and -0.11, pulling it down by four to eleven percentage points.
+The vertical spread among those eleven patients at zero nodes is the part a
+partial dependence curve would have averaged away: the same nodal status is
+worth a different amount to different patients, depending on what else is in
+their record.
+
+Read the direction, not the shape. Four patients carry the whole right-hand side
+of this panel, so nothing about the curvature between five and twenty nodes is
+worth interpreting.
+
+Not every variable comes back this way. Ask for `mean_radius`, nineteenth in the
+ranking, and the attributions scatter inside a couple of percentage points of
+zero with no trend against radius at all. That is an answer rather than a failed
+plot: on these patients, this forest was not using radius, which is consistent
+with where it sits in the ranking. Leave `xvar` off entirely and you get the
+top-ranked variable by default.
 
 For a factor predictor the same function draws boxplots by level instead of a
 scatter, so the call does not change when the variable does.

@@ -12,9 +12,9 @@ library(hvtiPlotR)
 
 ## When to use it
 
-Variable importance (the previous chapter) ranks predictors but says nothing
-about *how* a predictor moves the prediction. Once VIMP tells you bilirubin
-matters, the next question is the shape of that effect: does predicted survival
+[Variable importance](rf_vimp.qmd) ranks predictors but says nothing about *how*
+a predictor moves the prediction. Once VIMP tells you bilirubin matters, the
+next question is the shape of that effect: does predicted survival
 fall steadily as bilirubin climbs, drop off a cliff past some threshold, or
 level out at the high end? Dependence plots answer that. Reach for them whenever
 you have a forest that predicts well and you need to describe what a specific
@@ -38,9 +38,10 @@ finish with a house theme.
 ## The data it needs
 
 Like VIMP, dependence plots read from a fitted `rfsrc` object, not a raw data
-frame. We reuse the `pbc` survival forest from the previous chapter, fit on the
-primary biliary cirrhosis cohort: one row per patient, a follow-up time, an
-event indicator, and a panel of liver labs.
+frame. We reuse the `pbc` survival forest from the
+[variable importance](rf_vimp.qmd) chapter, fit on the primary biliary cirrhosis
+cohort: one row per patient, a follow-up time, an event indicator, and a panel
+of liver labs.
 
 ```{r}
 #| label: rf-fit
