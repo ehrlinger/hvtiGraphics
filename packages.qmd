@@ -33,9 +33,14 @@ What each one is for:
 - **TemporalHazard** [@R-TemporalHazard]: our R port of the SAS/C HAZARD
   module, for parametric and nonparametric hazard modeling. It loads in its own
   chapter.
-- **gt** [@R-gt]: publication-quality tables. We use it directly for now; a
-  companion `hvtiRtables` package is planned to give tables the same house
-  treatment the plots get.
+- **gt** [@R-gt]: publication-quality tables, and the right choice when the
+  table's destination is this book or another HTML document.
+- **hvtiRtables**: manuscript tables. It takes a `gtsummary` summary and renders
+  it through `flextable` into a Word table that follows the CORR "Table
+  Construction for Manuscripts" rules: flat headers with nothing merged, no
+  hidden spacer columns, and footnotes and the abbreviation key as text below
+  the table. A JTCVS mode swaps in that journal's merged spanning headers and
+  lettered footnotes instead.
 - **patchwork** [@R-patchwork]: composes several plots into one figure with
   shared labels and panel tags.
 - **survival** [@R-survival; @survival-book]: the `Surv()` objects and

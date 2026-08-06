@@ -13,11 +13,13 @@ library(dplyr)
 library(hvtiPlotR)
 ```
 
-This chapter builds publication-ready tables directly with the `gt`
-package. The recipes here are deliberately self-contained; once a
-dedicated table package matures, **these tables will migrate to the
-planned hvtiRtables package** and the call sites will collapse to a
-single helper.
+This chapter builds the table by hand, directly with `gt`. That is worth
+doing for two reasons. Assembling a Table 1 a row group at a time is how
+you learn what is actually in one: which variables earn a row, which
+summary each variable type asks for, and where a reader expects the
+denominators. And `gt` is the right tool when the table's destination is
+an HTML document, this book included, rather than a Word file bound for a
+journal.
 
 ## When to use it
 

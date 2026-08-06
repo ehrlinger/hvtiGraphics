@@ -1,11 +1,9 @@
 {
-  "hash": "7827008009530e5cf214f65d59ac3351",
+  "hash": "0b959ba68e06dd98740e4bb81fec478c",
   "result": {
     "engine": "knitr",
-    "markdown": "# Tables {.unnumbered}\n\nA figure rarely travels alone. The survival curve wants its numbers at risk, the\nmanuscript wants its Table 1, and the trend plot reads better next to the counts\nbehind it. This part covers the tables that accompany our figures, built with\n`gt`.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(gt)\n```\n:::\n\n\nWe use `gt` directly here. A companion `hvtiRtables` package -- to give tables\nthe same house treatment hvtiPlotR gives plots -- is planned but not yet written,\nso treat these recipes as the current standard rather than the final one. Two\nchapters follow: publication summary tables (the Table 1 pattern), and the tables\nthat pair with a specific figure, pulled straight from the same `hv_*()` object\nthat drew it.\n",
-    "supporting": [
-      "tables_files"
-    ],
+    "markdown": "# Tables {.unnumbered}\n\nA figure rarely travels alone. The survival curve wants its numbers at risk, the\nmanuscript wants its Table 1, and the trend plot reads better next to the counts\nbehind it. This part covers those tables, and the plainer one that comes before\nany of them: the description of the dataset you are working from.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nlibrary(gt)\n```\n:::\n\n\nThree chapters follow, in the order you would actually meet them.\n[Describing a dataset](data_tables.qmd) is the reconnaissance: `proc_contents()`,\n`proc_means()`, and `data_dictionary()` tell you which variables you are holding,\nwhat type each one came in as, and how much of each is populated. You cannot\ndecide what belongs in a Table 1 until you know that.\n[Publication tables](qt_tables.qmd) then builds the Table 1 pattern by hand with\n`gt`, a row group at a time. And\n[tables that accompany figures](figure_tables.qmd) pulls the companion numbers --\nnumbers at risk, participation counts -- straight off the same `hv_*()` object\nthat drew the figure, so the table and its figure cannot disagree.\n",
+    "supporting": [],
     "filters": [
       "rmarkdown/pagebreak.lua"
     ],

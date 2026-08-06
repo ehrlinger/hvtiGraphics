@@ -46,8 +46,10 @@ dim(dta)
 
 `proc_contents()` prints what SAS prints: a header carrying the observation and
 variable counts, then one row per variable with its creation position, name, SAS
-type, format, and label. Next to those it adds two things you would otherwise go
-looking for separately, the R class and a completeness count.
+type, format, and label. Next to those it adds three columns you would otherwise
+go looking for separately: `class`, the R type sitting behind the SAS one;
+`n_unique`, how many distinct values the column holds; and `pct_missing`, how
+much of it is empty.
 
 ```{r}
 #| label: dd-contents
@@ -113,9 +115,12 @@ and nothing was dropped.
 
 ### The whole dictionary — `data_dictionary()`
 
-`data_dictionary()` is `proc_contents()` in creation order with one column
-added: a compact `summary` giving min, median, and max for a numeric variable,
-the levels for a factor, the TRUE percentage for a logical.
+`data_dictionary()` is `proc_contents()` in creation order with the SAS-storage
+columns dropped and a summary put in their place. Out go `num`, `type`, and
+`format`, which describe how a value is stored rather than what it is. In comes
+a compact `summary` giving min, median, and max for a numeric variable, the
+levels for a factor, the TRUE percentage for a logical. That leaves six columns:
+`variable`, `label`, `class`, `n_unique`, `pct_missing`, and `summary`.
 
 ```{r}
 #| label: dd-dictionary
