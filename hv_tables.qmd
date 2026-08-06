@@ -10,12 +10,16 @@ library(flextable)
 ```
 
 The [publication tables](qt_tables.qmd) chapter built a Table 1 by hand with
-`gt`, which is the right tool when the table's destination is this book or
-another HTML document. This chapter covers the other destination. When the table
-is going into a manuscript, it has to land in a Word file that a coordinator can
-paste into the submission draft, and it has to obey the CORR "Table Construction
-for Manuscripts" rules once it gets there. `hvtiRtables` is the package that
-takes a `gtsummary` summary the rest of the way.
+`gt`. This chapter takes the same summary to a different destination. When the
+table is going into a manuscript, it has to land in a Word file that a
+coordinator can paste into the submission draft, and it has to obey the CORR
+"Table Construction for Manuscripts" rules once it gets there. `hvtiRtables` is
+the package that takes a `gtsummary` summary the rest of the way.
+
+`gt` writes Word too, so the obvious shortcut is `gtsave()`, and it is a fair
+thing to ask about before installing another package. We take that question
+seriously below, after the recipe, and answer it by saving one summary both ways
+and unzipping the two files.
 
 ## When to use it
 
@@ -59,11 +63,16 @@ table(dta$sex)
 
 ### Summarise, then convert — `hv_man_table()`
 
-You build the summary with `gtsummary` the way you normally would. The one thing
-worth setting deliberately is `statistic`, because the house convention for a
-continuous variable is a median with the 15th and 85th percentiles rather than a
-mean and SD. That convention is what the default footnotes describe, so the two
-need to agree.
+You build the summary with `gtsummary` the way you normally would. Two things
+are worth setting deliberately. The first is `statistic`, because the house
+convention for a continuous variable is a median with the 15th and 85th
+percentiles rather than a mean and SD, and that convention is what the default
+footnotes describe. The second is less obvious: `gtsummary` writes its own
+footnote describing the same statistics, and marks the group headers with a
+superscript `1` pointing at it. Leave it in and the finished document carries two
+footnote systems saying the same thing in two different marker schemes, one of
+which lands as an extra row inside the table's own frame. Drop it, and the house
+footnotes are the only ones in the file.
 
 ```{r}
 #| label: hv-summary
@@ -72,7 +81,9 @@ tbl <- tbl_summary(
   by        = sex,
   include   = c(age, bmi, gfr_bs, diabetes),
   statistic = list(all_continuous() ~ "{median} ({p15}, {p85})")
-)
+) |>
+  remove_footnote_header() |>
+  remove_footnote_body()
 ```
 
 `hv_man_table()` converts that into a `flextable` carrying the house rules: a
@@ -94,10 +105,20 @@ exactly one header row and no cell spanning more than one column.
 
 ```{r}
 #| label: hv-flat-check
-nrow(ft$header$dataset)              # header rows
-max(as.vector(ft$header$spans$rows)) # widest header span
-max(as.vector(ft$body$spans$rows))   # widest body span
+shape <- function(x) {
+  c(header_rows = nrow(x$header$dataset),
+    header_span = max(as.vector(x$header$spans$rows)),
+    body_span   = max(as.vector(x$body$spans$rows)))
+}
+rbind(hv_man_table  = shape(ft),
+      as_flex_table = shape(as_flex_table(tbl)))
 ```
+
+Read that as a check on your own table rather than as a scoreboard. Plain
+`gtsummary::as_flex_table()` reports the same three numbers on the same summary,
+because a `by`-grouped summary has nothing in it that wants merging in the first
+place. The numbers earn their keep further down, as the contrast against the
+JTCVS shape.
 
 ### Write the Word file — `hv_man_table_save()`
 
@@ -110,12 +131,15 @@ than specific to any one study.
 hv_man_footnotes()
 ```
 
-The `*` marks the non-missing-value count in the wording the rules require, and
-the `†` explains the median-and-percentiles format. Each symbol is appended as a
-superscript reference mark on the table's header, and the text itself is written
-as a real paragraph after the table. That is the part `flextable::footnote()`
-cannot do for you: it renders footnote text as an extra row inside the table's
-own frame, which is the violation the whole exercise is meant to avoid.
+The `*` gives the non-missing-value count the wording the rules require, and the
+`†` explains the median-and-percentiles format. Each symbol is appended as a
+superscript reference mark on the `N` column header, or on the first column when
+there is no `N` column, which is the case here: both marks land on
+`Characteristic`. The text itself is written as a real paragraph after the table.
+That is the part
+`flextable::footnote()` cannot do for you: it renders footnote text as an extra
+row inside the table's own frame, which is the violation the whole exercise is
+meant to avoid.
 
 The abbreviation key works the same way, as a `Key:` paragraph below the
 footnotes, sorted alphabetically.
@@ -134,9 +158,10 @@ hv_man_table_save(
 ```
 
 Override the footnotes with ordinary list operations. `footnotes = NULL`
-suppresses both, ``modifyList(hv_man_footnotes(), list(`†` = "..."))`` replaces
-one, and ``c(hv_man_footnotes(), list(`‡` = "..."))`` adds a study-specific note
-alongside the defaults.
+suppresses both, ``hv_man_footnotes()["†"]`` keeps one, ``modifyList(hv_man_footnotes(),
+list(`†` = "..."))`` replaces one, and ``c(hv_man_footnotes(), list(`‡` = "..."))``
+adds a study-specific note alongside the defaults. Keeping only the `†` is worth
+knowing about, for reasons the reading guide below gets to.
 
 ### Check what you wrote — `hv_check_docx()`
 
@@ -165,6 +190,65 @@ tenth of an inch, because the house JTCVS templates use empty half-inch gutter
 columns on purpose and either condition alone would flag them. The
 embedded-footnote detector is a pattern match on the last row of a table, so
 treat what it reports as a prompt to look rather than proof.
+
+### Why not `gt::gtsave()`?
+
+The honest answer starts with a concession: `gt` writes Word, and writes it
+well. `gt::gtsave(as_gt(tbl), "table1.docx")` hands you a `.docx` with the right
+numbers on an unmerged grid, and `hv_check_docx()` finds nothing wrong with it.
+The shortcut does not mangle the table.
+
+What `gt` has no mechanism for is putting anything *outside* the table. The
+house rules want the footnotes and the abbreviation key as ordinary document
+paragraphs below the table; a note in `gt` is a row in the table. Save the same
+summary both ways and the difference is countable. A `.docx` is a zip archive
+whose `word/document.xml` holds the body: `<w:tbl>` wraps the table, `<w:tr>` is
+a row, and `<w:gridSpan>` is a merged cell.
+
+```{r}
+#| label: hv-docx-scan
+docx_scan <- function(path) {
+  d <- tempfile()
+  dir.create(d)
+  unzip(path, exdir = d)
+  x <- paste(readLines(file.path(d, "word", "document.xml"), warn = FALSE),
+             collapse = "")
+  tbl_xml <- regmatches(x, regexpr("<w:tbl xmlns.*</w:tbl>", x))
+  paras <- regmatches(sub(".*</w:tbl>", "", x),
+                      gregexpr("<w:p[ >].*?</w:p>", sub(".*</w:tbl>", "", x)))[[1]]
+  data.frame(
+    rows_in_table     = sum(gregexpr("<w:tr[ >]", tbl_xml)[[1]] > 0),
+    merged_cells      = sum(gregexpr("<w:gridSpan", tbl_xml)[[1]] > 0),
+    paras_after_table = sum(grepl("<w:t[ >]", paras))
+  )
+}
+```
+
+`out` is still the file `hv_man_table_save()` wrote a moment ago. Give `gt` the
+same footnote to place and let it choose where.
+
+```{r}
+#| label: hv-vs-gtsave
+gt_out <- tempfile(fileext = ".docx")
+gt::gtsave(
+  gt::tab_source_note(as_gt(tbl), "Median (15th, 85th percentile)."),
+  gt_out
+)
+
+rbind(hv_man_table_save = docx_scan(out),
+      gt_gtsave         = docx_scan(gt_out))
+```
+
+Five rows against six. `gt`'s extra row is the footnote itself, merged across
+all three columns and sitting inside the table frame, which is the violation the
+package exists to route around, arriving by the shortest available path. The
+three paragraphs after `hv_man_table_save()`'s table are the two default
+footnotes and the `Key:` line. `gt`'s file has nothing after its table, because
+in `gt` there is nowhere else for that text to go.
+
+That is the whole of the difference, and it is enough. The grid `gt` draws is
+fine. It is the material around the grid, which is most of what the CORR memo
+legislates, that the house functions exist to place.
 
 ## Variations
 
@@ -238,9 +322,8 @@ full-width shaded section rows in the body.
 
 ```{r}
 #| label: hv-jtcvs-structure
-nrow(ft_j$header$dataset)
-max(as.vector(ft_j$header$spans$rows))
-max(as.vector(ft_j$body$spans$rows))
+rbind(hv_man_table       = shape(ft),
+      hv_man_table_jtcvs = shape(ft_j))
 ```
 
 JTCVS marks each p-value with a superscript letter naming the test behind it,
@@ -275,25 +358,33 @@ The caption is not auto-numbered; write the number into the string yourself.
 
 ## Read it
 
-The two chunks worth reading closely in either format are the header and the
-denominators.
+The part worth reading closely in either format is the denominator: which N
+belongs to the percentage in front of you, and where the table says so.
 
-In the flat table, the header carries each group's N, so the column tells you
-its own denominator without a trip to the caption. Read it before you read any
-percentage in the column beneath it. The `*` footnote is doing real work here,
-because the count it describes is the count of *non-missing* values, which is
-not always the group N. When a variable has missing data, those two numbers
-separate, and the footnote is what tells a reader which one they are looking at.
+The flat table says so once, in the header. `N = 77` and `N = 123` are group
+sizes, and every percentage in the column beneath is taken against them. That is
+all the counting the table does. Where a variable has missing data, plain
+`tbl_summary()` reports it as an `Unknown` row underneath that variable rather
+than by adjusting a denominator, so read the rows, not the header, for
+availability. Note what this means for the default `*` footnote: it describes a
+count of non-missing values, and a flat table built this way prints no such
+count. On a table with no missing data the note is harmless but idle; on one
+with missing data it points at a number that is not there. Either give the table
+that count or leave the `*` out, with ``footnotes = hv_man_footnotes()["†"]``.
 
-In the JTCVS table, the N sits in its own sub-column beside each group's
-statistic, one pair per group. That layout exists so a reader can see per-variable
-availability at a glance rather than inferring it, which is the same information
-the flat table's footnote conveys in prose.
+The JTCVS table says so on every row. The N sub-column beside each group's
+statistic repeats the group N alongside the number it divides, so a reader
+comparing two rows never has to track back to the header. It is the same
+quantity the flat header carries, printed where it is used rather than once at
+the top.
 
-Then the section headers. Both formats break the variable list into labelled
-blocks, and those blocks are an editorial claim about what belongs with what. A
-reader scanning a Table 1 reads the block labels before the rows. Get them
-wrong and a comorbidity reads as a demographic.
+Then the section headers, which are a JTCVS feature and not a flat-table one.
+`hv_tbl_summary()`'s `groups` breaks the variable list into labelled blocks, and
+those blocks are an editorial claim about what belongs with what. A reader
+scanning a Table 1 reads the block labels before the rows. Get them wrong and a
+comorbidity reads as a demographic. The flat table has no blocks at all. It
+lists the variables in the order you gave `include`, and that order is the only
+structural claim you get to make, so make it deliberately.
 
 ## Pitfalls
 
