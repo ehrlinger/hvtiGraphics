@@ -13,7 +13,6 @@
     writing-voice.md               sha256:6ca5d2b7682a
     writing-reader-profile.md      sha256:179212de138c
     writing-context.md             sha256:87d5555936e1
-    r-package-structure.md         sha256:23804617f4ff
 -->
 
 # House Style — hvti_graphics
