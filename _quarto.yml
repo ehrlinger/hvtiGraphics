@@ -3,8 +3,8 @@ project:
   output-dir: _book
 
 book:
-  title: "HVTI ggplot graphics recipes"
-  subtitle: "Version 2.1"
+  title: "HVTI Recipes"
+  subtitle: "Figures, tables, and R recipes for CORR manuscripts"
   author: "John Ehrlinger <ehrlinj@ccf.org>"
   date: today
   page-navigation: true
@@ -55,13 +55,16 @@ book:
         - rf_error.qmd
         - rf_predicted.qmd
         - rf_vimp.qmd
+        - rf_shap.qmd
         - rf_dependence.qmd
         - rf_roc.qmd
         - varpro.qmd
         - varpro_partial.qmd
     - part: tables.qmd
       chapters:
+        - data_tables.qmd
         - qt_tables.qmd
+        - hv_tables.qmd
         - figure_tables.qmd
     - part: publications.qmd
       chapters:

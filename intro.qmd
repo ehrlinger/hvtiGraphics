@@ -1,12 +1,14 @@
 # Introduction
 
-This book is intended to be a single source of GGPlot2 @Wickham2009 recipes for generating publication quality plots for HVTI CORR publications and presentations. The compendium is collected from figures we have included over the course of publications.
+This book is intended to be a single source of recipes for the exhibits that go into HVTI CORR publications and presentations: the figures, drawn with ggplot2 @Wickham2009, and the tables that travel with them. The compendium is collected from the figures and tables we have included over the course of publications.
 
-The book is divided into multiple parts collecting different bits of information. The *Getting Started* part gives a brief introduction to how we use R and which packages we use to create figures.
+The book is divided into multiple parts collecting different bits of information. The *Getting Started* part gives a brief introduction to how we use R and which packages we use. The catalog parts that follow are one chapter per exhibit, and the *Tables* part is where the manuscript's other exhibit lives -- the inventory you run on a new extract, the Table 1 that summarises it, the Word table a journal asks for, and the small tables that ride alongside a figure.
 
 If you take one thing from this book, take the shape of the workflow: construct,
 plot, decorate, save. An `hv_*()` constructor does the analysis and hands you a
 bare ggplot. You add scales, labels, and a theme. You save it for wherever it is
 going. The figure's content is decided once and its appearance as many times as
 you have audiences, and because every recipe makes its own data, you can always
-go back to a working example and adapt it.
+go back to a working example and adapt it. A table is built the same way, a
+summary object first and a renderer second, so the shape carries over even
+though the functions do not.

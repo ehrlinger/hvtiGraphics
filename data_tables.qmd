@@ -1,0 +1,183 @@
+# Describing a dataset
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(hvtiRutilities)
+```
+
+## When to use it
+
+The first thing most of us do with a new SAS dataset is run `PROC CONTENTS`,
+then `PROC MEANS`. Neither one produces a table anybody will publish. You run
+them because you cannot decide what belongs in Table 1 until you know what you
+are holding: which variables are there, what type each one came in as, and how
+much of each is actually populated.
+
+That is this recipe. It is the *pre-analysis* table, the one that runs before
+the Table 1 in the [publication tables](qt_tables.qmd) chapter has a shape.
+`hvtiRutilities` gives you both procedures under the names you already type,
+`proc_contents()` and `proc_means()`, plus `data_dictionary()`, which flattens
+the first into the one-page artifact you hand a collaborator.
+
+Reach for it whenever a dataset is new to you, has just been re-extracted, or
+arrives with someone telling you it is "the same as last time." Ten seconds of
+`proc_contents()` catches the variable that came back as character this quarter,
+or the one that is four-fifths missing, while it is still cheap to ask about.
+
+## The data it needs
+
+Any data frame. Labels, when the columns carry them, are picked up and
+reported; unlabelled columns fall back to the variable name. We use
+`generate_survival_data()`, the same simulated cohort the
+[publication tables](qt_tables.qmd) chapter builds its Table 1 from, so you can
+read the two chapters against one dataset.
+
+```{r}
+#| label: dd-data
+dta <- hvtiRutilities::generate_survival_data(n = 200, seed = 42)
+dim(dta)
+```
+
+## Build it
+
+### What is in this dataset — `proc_contents()`
+
+`proc_contents()` prints what SAS prints: a header carrying the observation and
+variable counts, then one row per variable with its creation position, name, SAS
+type, format, and label. Next to those it adds three columns you would otherwise
+go looking for separately: `class`, the R type sitting behind the SAS one;
+`n_unique`, how many distinct values the column holds; and `pct_missing`, how
+much of it is empty.
+
+```{r}
+#| label: dd-contents
+proc_contents(dta)
+```
+
+Variables come back sorted alphabetically, matching SAS's *Alphabetic List of
+Variables and Attributes*. Pass `order = "varnum"` for creation order instead.
+The `num` column reports creation position either way, so the original order is
+always recoverable by eye.
+
+Two columns repay a slow read. `type` is deliberately two-valued, `Char` or
+`Num`, because that is all SAS storage offers: `sex` is a factor in R and
+reports `Char` here, while `class` keeps the R truth alongside it. Then
+`pct_missing`, which is where the surprises live. Here 23 of the 24 variables
+are complete and `iv_reop` is 83.5% missing, which is exactly right for a
+reoperation follow-up time. It exists only for the 33 patients who had a
+reoperation. Missingness with a reason is structure; missingness you cannot
+account for is a question for whoever built the extract.
+
+### What the numbers look like — `proc_means()`
+
+`proc_means()` summarises the numeric columns you name, defaulting to SAS's own
+default five statistics.
+
+```{r}
+#| label: dd-means
+proc_means(dta, vars = c("age", "bmi", "gfr_bs"))
+```
+
+Omit `vars` and every numeric column is analysed, the way `PROC MEANS` behaves
+with no `VAR` statement. `stats =` takes the SAS keywords you already know,
+including `"median"`, `"q1"`, `"q3"`, `"nmiss"`, `"stderr"`, and any `"pNN"`
+percentile.
+
+Quantiles are worth one note. They use `stats::quantile(type = 2)`, which is the
+R equivalent of SAS's `QNTLDEF=5`, not R's own `type = 7` default. On a large
+sample the two agree. On the small, even-numbered subgroups a clinical
+stratification hands you, they do not: for `c(1, 2, 3, 4)` the first quartile is
+1.5 in SAS and 1.75 under R's default. The median agrees, which is how the
+disagreement stays hidden.
+
+### Stratified by a class variable
+
+Give it `class =` and you get the same table once per group, the `CLASS`
+statement by another name.
+
+```{r}
+#| label: dd-means-class
+proc_means(dta, vars = c("age", "bmi"), class = "sex")
+```
+
+Rows sort by analysis variable first, then by class level, so you read a
+variable's groups down the page rather than hunting across. A factor class
+variable orders by its declared levels rather than alphabetically, matching
+SAS's `ORDER=INTERNAL`, which is what keeps an ordered clinical scale in
+clinical sequence.
+
+Check the `n` column against your cohort size. Rows with a missing value in any
+class variable are dropped, again matching SAS, so a total that comes up short
+tells you how many patients had no group to sit in. Here 77 and 123 add to 200,
+and nothing was dropped.
+
+### The whole dictionary — `data_dictionary()`
+
+`data_dictionary()` is `proc_contents()` in creation order with the SAS-storage
+columns dropped and a summary put in their place. Out go `num`, `type`, and
+`format`, which describe how a value is stored rather than what it is. In comes
+a compact `summary` giving min, median, and max for a numeric variable, the
+levels for a factor, the TRUE percentage for a logical. That leaves six columns:
+`variable`, `label`, `class`, `n_unique`, `pct_missing`, and `summary`.
+
+```{r}
+#| label: dd-dictionary
+data_dictionary(dta)
+```
+
+That summary column is what makes the table hand-off-able, and it is also where
+degenerate variables announce themselves. `lvmsi_b` reads `40 / 40 / 40` with an
+`n_unique` of 1, so it is a constant. A constant costs a row in Table 1 and
+tells the reader nothing. Send this frame through `write.csv()` and you have the
+data-dictionary appendix a protocol or a data-sharing agreement asks for.
+
+## Read it
+
+Three outputs, three questions.
+
+`proc_contents()` answers *what is here*: names, types, labels, and how complete
+each column is. Read it top to bottom once, then read `pct_missing` on its own,
+column-first rather than row-first. That single pass is most of the value.
+
+`proc_means()` answers *what do the numbers look like*: centre, spread, and
+range per variable, and per group once you add `class =`. Read `min` and `max`
+before you read the mean. Impossible values show up at the ends, and a mean is
+good at hiding one. The `age` minimum of 1 in this simulated cohort is the kind
+of thing you would query on real data.
+
+`data_dictionary()` answers *what do I hand someone else*. It is the one of the
+three you save to a file, and the [data governance](data_governance.qmd) chapter
+files it beside the manifest for exactly that reason. Read it column by column,
+with most of the attention on `pct_missing` and `n_unique`. High missingness
+flags a variable you cannot lean on without saying so. A distinct-value count
+that surprises you, two levels where you expected continuous or a thousand where
+you expected a category, usually means a typing or coding problem upstream,
+caught here before it reaches a model. The `summary` column is your sanity check
+on range: a negative age or an ejection fraction above 100 shows up immediately.
+
+None of the three is a publication table. They are the reconnaissance you do
+before deciding what the publication table should contain, and
+[Table 1](qt_tables.qmd) comes after.
+
+## Pitfalls
+
+- **`pct_missing` is `NaN`, not `0`, when the frame has no rows.** Filter a
+  cohort down to nothing and every `pct_missing` comes back `NaN`, because
+  `mean(is.na(x))` over an empty vector is 0/0. The table looks broken and is
+  in fact reporting honestly: the proportion of missing values among no values
+  is undefined, and a `0` there would assert that nothing is missing. If you
+  format the column for display, handle `NaN` explicitly rather than letting it
+  print raw next to real percentages, and treat it as the signal it is that your
+  filter removed everything.
+
+- **`class =` groups on the stored value, not the printed one.** Two values that
+  render identically but differ underneath stay separate groups, and you get
+  back two rows that look like duplicates of each other. A trailing space in a
+  character code does it, and so does a numeric group variable whose values
+  differ below print precision. The behaviour is correct, since grouping on the
+  rendered string would quietly merge values that are genuinely distinct, but it
+  will mislead you if you are diagnosing from printed output alone. When a group
+  count looks doubled, run `unique()` or `table()` on the class variable and
+  compare what you get to what the table showed you.

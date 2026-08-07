@@ -1,10 +1,10 @@
 # Data governance and reproducibility
 
-Every other chapter in this book ends in a figure. This one comes first in
-practice, because reproducible analysis starts before the first plot. A
-documented dataset, typed and labelled variables, and a manifest pinning the
-exact extract are the difference between a figure you can defend in review and
-one you cannot. The `hvtiRutilities` [@R-hvtiRutilities] package supplies the
+Most chapters in this book end in a figure, and the four in the *Tables* part
+end in a table. This one comes first in practice, because reproducible analysis
+starts before either. A documented dataset, typed and labelled variables, and a
+manifest pinning the exact extract are the difference between a figure you can
+defend in review and one you cannot. The `hvtiRutilities` [@R-hvtiRutilities] package supplies the
 primitives for that work: synthetic data for examples, a data dictionary, label
 and type maps, dataset manifests, and version diffs.
 
@@ -58,11 +58,13 @@ check, a manifest, and a comparison report. We walk them in order.
 
 ### Step 1: a data dictionary
 
-A data dictionary is the human-readable index of an extract. `data_dictionary()`
-returns a per-column summary as a data frame, one row per variable, with the
-variable name, its label, its class, the count of distinct values, the percent
-missing, and a compact distribution summary. It renders straight through `gt()`
-into a table you can drop into a supplement.
+A data dictionary is the human-readable index of an extract, and it is the first
+artifact worth saving next to the analysis. `data_dictionary()` returns a
+per-column summary as a data frame, one row per variable, which renders straight
+through `gt()` into a table you can drop into a supplement. The
+[describing a dataset](data_tables.qmd) chapter takes the six columns apart and
+says how to read them; here we want the artifact itself, dated and filed with
+everything else that pins this analysis down.
 
 ```{r}
 #| label: dict
@@ -165,15 +167,9 @@ compare_datasets(old, new)
 
 ## Read it
 
-Two of these artifacts are reports you read, not just files you store.
-
-A **data dictionary** is read column by column, and the two columns that earn the
-most attention are percent-missing and distinct values. High missingness flags a
-variable you cannot lean on without saying so. A distinct-value count that
-surprises you, two levels where you expected continuous, a thousand where you
-expected a category, usually means a typing or coding problem upstream, caught
-here before it reaches a model. The distribution summary is your sanity check on
-range: a negative age or an ejection fraction above 100 shows up immediately.
+One of these artifacts is a report you read rather than a file you store. The
+data dictionary is a report too, but its reading guide lives with the function,
+over in [describing a dataset](data_tables.qmd).
 
 A **dataset-comparison report** is read for the diff, not the totals. A change in
 row count is expected on re-delivery and is fine if it matches what the warehouse

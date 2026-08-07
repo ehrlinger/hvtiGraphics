@@ -13,11 +13,17 @@ library(dplyr)
 library(hvtiPlotR)
 ```
 
-This chapter builds publication-ready tables directly with the `gt`
-package. The recipes here are deliberately self-contained; once a
-dedicated table package matures, **these tables will migrate to the
-planned hvtiRtables package** and the call sites will collapse to a
-single helper.
+This chapter builds the table by hand, directly with `gt`. That is worth
+doing for two reasons. Assembling a Table 1 a row group at a time is how
+you learn what is actually in one: which variables earn a row, which
+summary each variable type asks for, and where a reader expects the
+denominators. And `gt` is the right tool when the table's destination is
+an HTML document, this book included, rather than a Word file bound for a
+journal.
+
+That splits the work along a clean line: hand-built `gt` for understanding and
+for the web, the `hv_*()` functions in
+[manuscript tables](hv_tables.qmd) when it goes to a manuscript.
 
 ## When to use it
 
@@ -37,7 +43,9 @@ and a spread (mean and standard deviation, or median and interquartile range);
 categorical variables get a count and a percentage. We build the table here from
 `hvtiRutilities::generate_survival_data()`, which returns a richly labelled
 patient-level cohort with a natural grouping variable (`sex`), so the recipe
-runs end to end before you point it at your own data.
+runs end to end before you point it at your own data. It is the same cohort
+[describing a dataset](data_tables.qmd) took inventory of, so if you want to see
+where the variables below came from, that chapter is one click back.
 
 ```{r}
 #| label: t1_data
@@ -56,9 +64,19 @@ each summary readable and lets you check the numbers before they are dressed up.
 
 We summarise three continuous baseline variables (age, BMI, baseline
 eGFR) as mean and standard deviation within each `sex` group. Mean and SD are
-the conventional pair when a variable is roughly symmetric; for a skewed
+the textbook pair when a variable is roughly symmetric; for a skewed
 variable (cost, time on bypass) you would report median and interquartile range
 instead, since a mean dragged by a long tail misrepresents the typical patient.
+
+Know before you copy this that mean and SD are not what a CORR manuscript table
+reports. The house convention is a median with the 15th and 85th percentiles,
+whatever the shape, so that one summary covers the symmetric and the skewed
+variable alike and there is no per-variable normality call to defend to a
+reviewer. [Manuscript tables](hv_tables.qmd) builds the table that way and
+prints the footnote that documents it. We stay with mean and SD here because
+this chapter is assembling a table by hand for the web, and because holding the
+two conventions side by side is the fastest way to see what the house one buys
+you.
 
 ```{r}
 #| label: t1_numeric
@@ -133,8 +151,10 @@ table1 <- num_summary |>
 table1
 ```
 
-The table renders as static HTML in the book and as a publication-quality
-PDF or Word object when the document is rendered to those formats.
+The table renders as static HTML here, which is what `gt` is for. When the same
+numbers have to reach a journal, hand the summary to
+[manuscript tables](hv_tables.qmd) instead and let `hvtiRtables` place the
+footnotes and the abbreviation key where the CORR rules want them.
 
 ## Pitfalls
 

@@ -61,7 +61,7 @@ On a regression fit the y-axis is the response in its own units. Here that is
 ```{r}
 #| label: fig-varpro_partial
 #| fig-cap: "Partial-dependence curves for the top six predictors of the housing regression fit, plotted on the response scale in dollars of sale price"
-plot(gg_partial_varpro(object = o_reg, nvars = 6)) & theme_hv_manuscript()
+plot(gg_partial_varpro(object = o_reg, nvars = 6, method = "rnd")) & theme_hv_manuscript()
 ```
 
 `plot()` returns a `patchwork` panel, so we theme it with `&`. A rising curve is
@@ -76,7 +76,7 @@ bounded 0 to 1 and the scale a clinician expects.
 ```{r}
 #| label: fig-varpro_partial-prob
 #| fig-cap: "Partial dependence for the breast classification fit on the probability scale, bounded zero to one"
-plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "prob")) &
+plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "prob", method = "rnd")) &
   theme_hv_manuscript()
 ```
 
@@ -88,7 +88,7 @@ diagnose.
 ```{r}
 #| label: fig-varpro_partial-logodds
 #| fig-cap: "The same classification partial dependence on the log-odds scale, linear in the model's own terms and the only scale showing the causal contrast"
-plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "logodds")) &
+plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "logodds", method = "rnd")) &
   theme_hv_manuscript()
 ```
 
@@ -105,7 +105,7 @@ units-safe horizon without guessing.
 ```{r}
 #| label: fig-varpro_partial-surv
 #| fig-cap: "Partial dependence for the pbc survival fit on the survival-probability scale at the median follow-up horizon"
-plot(gg_partial_varpro(object = o_surv, nvars = 4, scale = "surv")) &
+plot(gg_partial_varpro(object = o_surv, nvars = 4, scale = "surv", method = "rnd")) &
   theme_hv_manuscript()
 ```
 
@@ -117,7 +117,7 @@ higher-is-better. It answers "how much time does this variable buy?" rather than
 ```{r}
 #| label: fig-varpro_partial-rmst
 #| fig-cap: "Partial dependence for the pbc survival fit on the restricted-mean-survival-time scale, read as event-free time within the horizon"
-plot(gg_partial_varpro(object = o_surv, nvars = 4, scale = "rmst")) &
+plot(gg_partial_varpro(object = o_surv, nvars = 4, scale = "rmst", method = "rnd")) &
   theme_hv_manuscript()
 ```
 
@@ -141,4 +141,10 @@ mortality outputs; for a figure a reviewer reads, prefer `surv` or `rmst`.
 - **The `causal` contrast only shows on `logodds`.** On the bounded probability
   and survival scales it is hidden by design, so do not expect the virtual-twins
   estimate there.
-```
+- **Set `method` to `"rnd"` on every `gg_partial_varpro()` call.** Its `...`
+  forwards straight to `varPro::partialpro()`, which grows its own isolation
+  forest for the partial-dependence draws; leave `method` unset and that forest
+  defaults to `unsupv`, handing `randomForestSRC` a zero-length `yvar.wt`
+  pointer. Nothing breaks in practice — the pointer is formed, never
+  dereferenced — but the real fix belongs upstream. Set it anyway: every call
+  in this chapter does, because these are the chunks readers copy.

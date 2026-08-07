@@ -2,8 +2,8 @@
 
 A figure rarely travels alone. The survival curve wants its numbers at risk, the
 manuscript wants its Table 1, and the trend plot reads better next to the counts
-behind it. This part covers the tables that accompany our figures, built with
-`gt`.
+behind it. This part covers those tables, and the plainer one that comes before
+any of them: the description of the dataset you are working from.
 
 ```{r}
 #| label: load-tables
@@ -12,9 +12,19 @@ behind it. This part covers the tables that accompany our figures, built with
 library(gt)
 ```
 
-We use `gt` directly here. A companion `hvtiRtables` package -- to give tables
-the same house treatment hvtiPlotR gives plots -- is planned but not yet written,
-so treat these recipes as the current standard rather than the final one. Two
-chapters follow: publication summary tables (the Table 1 pattern), and the tables
-that pair with a specific figure, pulled straight from the same `hv_*()` object
-that drew it.
+Four chapters follow, in the order you would actually meet them.
+[Describing a dataset](data_tables.qmd) is the reconnaissance: `proc_contents()`,
+`proc_means()`, and `data_dictionary()` tell you which variables you are holding,
+what type each one came in as, and how much of each is populated. That chapter
+owns the dictionary; the [data governance](data_governance.qmd) chapter puts the
+same artifact to work alongside labels and manifests. You cannot
+decide what belongs in a Table 1 until you know that.
+[Publication tables](qt_tables.qmd) then builds the Table 1 pattern by hand with
+`gt`, a row group at a time.
+[Manuscript tables](hv_tables.qmd) takes the same cohort the other way, through
+`hvtiRtables` into a Word file that follows the CORR table rules and the house
+median-and-percentiles convention, which is the route to take once the table is
+bound for a journal rather than the web. And
+[tables that accompany figures](figure_tables.qmd) pulls the companion numbers --
+numbers at risk, participation counts -- straight off the same `hv_*()` object
+that drew the figure, so the table and its figure cannot disagree.

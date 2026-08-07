@@ -93,8 +93,11 @@ Look for:
   the forest, never the *direction* or *shape* of its effect. Bilirubin sitting
   at the top says the forest leans on it heavily, not that higher bilirubin
   means worse survival (it does, but the plot does not show that). For the shape
-  of an effect, see the variable- and partial-dependence plots in the next
+  of an effect, see the [variable and partial dependence](rf_dependence.qmd)
   chapter.
+- **One number per variable, not per patient.** VIMP is a statement about the
+  model as a whole; for a statement about the individual, one number per
+  variable per observation, see the [SHAP attribution](rf_shap.qmd) chapter.
 
 ## Variations
 

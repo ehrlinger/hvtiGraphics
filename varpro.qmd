@@ -99,7 +99,7 @@ makes it a *selection* rather than just a ranking.
 
 ## Variations
 
-### Beta-refined importance (regression only)
+### Beta-refined importance
 
 `gg_beta_varpro()` is regression-only. Within each release region it fits a
 lasso and reports the refined slope (β) coefficients instead of a VIMP-style
@@ -116,6 +116,31 @@ plot(gg_beta_varpro(o)) + theme_hv_manuscript()
 The per-rule lasso refinement (`beta.varpro`) is the expensive step; under
 Quarto's `freeze` the result is cached after the first render. Because these are
 lasso-refined β coefficients rather than importance scores, they can be negative.
+
+`gg_beta_uvarpro()` is the same idea for a fit with no outcome at all.
+`varPro::uvarpro()` grows the forest without a response (the unsupervised
+section later in this chapter has the full treatment), and the lasso inside each
+region asks how well the *other* variables explain the released one. Average
+those absolute coefficients and you get one importance per variable, on the same
+lasso scale but answering a question about the design rather than about
+`SalePrice`. We fit it on the numeric `housing` predictors and reuse that fit for
+the dependency graph in @fig-varpro-udependent.
+
+```{r}
+#| label: fig-varpro-beta-uvarpro
+#| fig-cap: "Beta-refined importance for the unsupervised housing fit, the outcome-free counterpart to the regression beta plot above"
+#| fig-height: 6
+set.seed(42)
+num_cols <- names(housing)[vapply(housing, is.numeric, logical(1))]
+uv <- uvarpro(housing[, setdiff(num_cols, "SalePrice")], ntree = 100)
+plot(gg_beta_uvarpro(uv)) + theme_hv_manuscript()
+```
+
+The two are told apart by the object you hand them. `gg_beta_varpro()` needs a
+regression `varpro` fit and reports a slope on the outcome; `gg_beta_uvarpro()`
+needs a `uvarpro` fit and reports how much the rest of the design explains each
+variable. Bars at or above the dashed cutoff are flagged as selected, and that
+cutoff sits at `mean(beta_mean)` unless you set `cutoff` yourself.
 
 ### Individual variable priority
 
@@ -193,9 +218,9 @@ alias for `gg_partial_varpro()`, so reach for the new name.)
 
 ## Unsupervised variable dependence
 
-Everything above needs an outcome. `varPro::uvarpro()` drops that requirement:
-it fits an *unsupervised* forest and scores how strongly each variable depends
-on the others, with no response to predict. `gg_udependent()` reads those
+The beta plot in @fig-varpro-beta-uvarpro was a first taste of an *unsupervised*
+fit. `varPro::uvarpro()` grows a forest with no response to predict, then scores
+how strongly each variable depends on the others. `gg_udependent()` reads those
 cross-variable scores and draws them as a dependency graph — nodes are
 variables, edges the dependencies between them — so you can see which predictors
 travel together before any modelling. Reach for it when you want to understand
@@ -206,17 +231,48 @@ collinear measurements.
 #| label: fig-varpro-udependent
 #| fig-cap: "Unsupervised dependency graph among the numeric housing predictors, where thick edges mark strongly interdependent variables"
 #| fig-height: 5.5
-set.seed(42)
-num_cols <- names(housing)[vapply(housing, is.numeric, logical(1))]
-uv <- uvarpro(housing[, setdiff(num_cols, "SalePrice")], ntree = 100)
 plot(gg_udependent(uv)) + theme_hv_manuscript()
 ```
 
-We fit it on the numeric `housing` predictors (with the `SalePrice` outcome and
-the factor columns dropped — the dependency graph is built from a numeric
-distance and cannot square a mixed-type design). A thick edge between two
-variables means the forest finds them strongly interdependent; an isolated node
-is a variable that carries information the others do not.
+This is the same `uv` fit, built on the numeric `housing` predictors with the
+`SalePrice` outcome and the factor columns dropped, because the dependency graph
+comes from a numeric distance and cannot square a mixed-type design. A thick edge
+between two variables means the forest finds them strongly interdependent; an
+isolated node is a variable that carries information the others do not.
+
+### Signal-variable detection
+
+The graph shows you the structure; `gg_sdependent()` gives you the ranked table
+behind it. Both read the same lasso-coefficient matrix, but where
+`gg_udependent()` draws nodes and edges, `gg_sdependent()` returns one row per
+candidate variable carrying a signal score, that variable's degree in the graph,
+and a flag for whether it landed in `sdependent()`'s detected signal set. Reach
+for it when you need to *name* the variables rather than point at a picture.
+
+```{r}
+#| label: fig-varpro-sdependent
+#| fig-cap: "Signal-variable detection for the same unsupervised housing fit, ranking each variable by its dependency signal score with the detected signal set highlighted"
+#| fig-height: 5.5
+plot(gg_sdependent(uv)) + theme_hv_manuscript()
+```
+
+Highlighted variables are the detected signal set, and the caption reports how
+many of them cleared the threshold. Four arguments carry over from
+`gg_udependent()`: `threshold`, `q.signal`, `directed`, and `min.degree`.
+`threshold` (default 0.25) only builds the dependency graph — it decides which
+entries of the lasso-coefficient matrix count as an edge — so raising it shrinks
+the signal set solely by isolating nodes, which then get dropped before scoring
+ever runs. The argument that actually sizes the signal set is `q.signal` (default
+0.75): a variable is flagged as signal when its degree in that graph clears
+`min.degree` (`NULL` by default, which falls back to 1 for a directed graph or 2
+for an undirected one) *and* its score clears the `q.signal` quantile of every
+score in the fit. Raise `q.signal` for a shorter, more conservative list; lower it
+for a longer one. `directed` (default `TRUE`) keeps the two directions of a pair
+apart, because "j explains i" and "i explains j" are separate lasso coefficients
+and need not agree; set it `FALSE` when you only want to know that two variables
+are dependent, not which way the dependency reads. The `degree` column rides
+along in the returned data frame even though the plot does not draw it, so a
+variable with a middling score but a high degree is worth a second look.
 
 ## Pitfalls
 
@@ -240,3 +296,28 @@ is a variable that carries information the others do not.
   and `gg_partial_varpro()` displays are unreadable walls; cap them with `nvar`
   (the boxplot) and `nvars` (which variables `partialpro` even computes, the
   expensive step).
+- **`o$xvar.names` is not a list of columns you can subset with.** A `varpro`
+  fit reports the features its rules actually use, and it one-hot encodes every
+  factor it keeps, so a `Neighborhood` column comes back as
+  `NeighborhoodNoRidge`, `NeighborhoodNridgHt`, and `NeighborhoodStoneBr`. Hand
+  those to `housing[, ...]` and you get an undefined-columns error, which is a
+  confusing way to find out that the name you asked for was never a column.
+  `varpro_feature_names()` maps them back.
+
+For the housing fit above, `o$xvar.names` runs 30 feature names against the
+81-column frame we handed `varpro()`, 14 of them encoded level names, and
+`varpro_feature_names()` recovers the 26 original columns:
+
+```{r}
+#| label: varpro-feature-names
+ncol(housing)                                # what you handed it
+length(o$xvar.names)                         # what the fit reports
+setdiff(o$xvar.names, names(housing))        # encoded level names
+varpro_feature_names(o$xvar.names, housing)  # mapped back to real columns
+```
+
+That gap between what a fit reports and what your data frame actually holds is
+the same seam that runs through every extractor in this chapter: the score, the
+graph, and the ranked table all read straight from the fitted object, and
+`varpro_feature_names()` is the one step that translates its column names back
+into ones you can hand to `housing[, ...]`.
