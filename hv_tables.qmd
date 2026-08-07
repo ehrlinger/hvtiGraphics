@@ -171,7 +171,22 @@ Writing the file and trusting it are different things, and the failure modes
 here are structural rather than visual. `hv_check_docx()` reads a `.docx` and
 reports the three patterns the rules name: text positioned in a floating layer
 over the table, a hidden spacer column, and a footnote embedded as a row inside
-the table frame. It returns one row per finding, so zero rows means clean.
+the table frame. It returns one row per finding.
+
+The three are not equally certain, and it is worth knowing which is which
+before you trust an empty result. The first two are structural: a floating
+layer leaves a `w:framePr` or a text box in the file, and a hidden column is a
+grid column that is both entirely empty and under a tenth of an inch wide.
+Either is a fact about the document, so finding none means there are none. The
+third is a heuristic — it looks for a footnote marker at the start of a cell in
+the table's last row — so it can miss a footnote row that opens some other way.
+Zero rows means the two structural checks are clean and nothing matched the
+footnote pattern, which is close to but not quite the same as a clean file.
+
+Both conditions matter on the hidden-column check. Our own JTCVS tables carry
+deliberate empty gutter columns half an inch wide between the group pairs, so a
+check on emptiness alone would flag the house format as a violation of the
+house rules.
 
 ```{r}
 #| label: hv-check
