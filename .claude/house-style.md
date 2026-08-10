@@ -1,10 +1,10 @@
 <!--
   GENERATED FILE - DO NOT EDIT.
 
-  Composed by tools/house-style/compose-house-style.R in the
-  ehrlinger-personal repository. Edit the sources in the Obsidian vault
-  (memory/), then recompose. Editing this file directly will be reverted
-  by the next compose and flagged by --check.
+  Composed by compose-house-style.R in the ehrlinger/house-style
+  repository. Edit the sources in the Obsidian vault (memory/), then
+  recompose. Editing this file directly will be reverted by the next
+  compose and flagged by --check.
 
   repo:            hvti_graphics
   profile:         book
