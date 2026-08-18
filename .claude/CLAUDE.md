@@ -16,9 +16,15 @@ recompose:
 Clone the composer alongside this repo, then run it from wherever you put it:
 
 ```
-git clone https://github.com/ehrlinger/house-style ../house-style
+git clone --branch house-style-v1 https://github.com/ehrlinger/house-style ../house-style
 Rscript ../house-style/compose-house-style.R --repo hvti_graphics
 ```
+
+Clone the `house-style-v1` **tag**, not the default branch — that is the ref
+CI pins. Composing against a newer composer than CI validates with produces a
+clean local result and a red build, which is the confusion the pin exists to
+prevent. The tag moves when the standard changes, and every repo reports drift
+until it recomposes.
 
 To check for drift without rewriting the artifact, add `--check` — that is what
 CI runs. Exit codes: 0 clean, 1 usage error or missing source, 2 drift.
