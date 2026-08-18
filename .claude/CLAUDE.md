@@ -16,9 +16,12 @@ recompose:
 Clone the composer alongside this repo, then run it from wherever you put it:
 
 ```
-git clone https://github.com/ehrlinger/ehrlinger-personal ../ehrlinger-personal
-Rscript ../ehrlinger-personal/tools/house-style/compose-house-style.R --repo hvti_graphics
+git clone https://github.com/ehrlinger/house-style ../house-style
+Rscript ../house-style/compose-house-style.R --repo hvti_graphics
 ```
+
+To check for drift without rewriting the artifact, add `--check` — that is what
+CI runs. Exit codes: 0 clean, 1 usage error or missing source, 2 drift.
 
 It reads the canonical sources from `~/Documents/ObsidianVault/memory/` when
 that exists, and otherwise falls back to the copy mirrored inside the composer
