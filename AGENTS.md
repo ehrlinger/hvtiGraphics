@@ -88,11 +88,13 @@ will remind you.
 
 ## Gotchas
 
-- **`publish.yml` still triggers on `feat/plot-recipes`, a branch that no
-  longer exists on the remote.** It is dead config today, but the deploy step
-  uses `force_orphan: true`, so if that branch name is ever reused a push to it
-  would overwrite the entire published site from a feature branch. Remove the
-  trigger rather than relying on the branch staying gone.
+- **Never add a branch to `publish.yml`'s `push:` trigger.** The deploy step
+  uses `force_orphan: true`, which replaces the whole `gh-pages` history rather
+  than adding to it — so any branch listed there can overwrite the entire
+  published site with a partial book. It deploys from `main` only, plus
+  `workflow_dispatch` for a manual run. A long-lived `feat/plot-recipes` entry
+  sat here until 2026-08-21, outliving the branch itself; that is the shape of
+  the mistake to avoid re-introducing.
 - **`_quarto.yml` declares `theme: [cosmo, brand]` but there is no
   `_brand.yml`.** Quarto tolerates this and the book renders correctly today —
   the last publish succeeded in 1m 16s. Adding a `_brand.yml` to "fix" the
