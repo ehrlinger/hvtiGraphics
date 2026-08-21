@@ -2,7 +2,8 @@
 
 A short stack does most of the work in this book. `ggplot2` [@R-ggplot2] is the
 foundation; everything else either builds figures on top of it or supplies the
-modeling output we plot.
+modeling output we plot. If you have not installed any of it yet, skip to
+@sec-installing at the end of this chapter and come back.
 
 ```{r}
 #| label: load-packages
@@ -59,3 +60,38 @@ What each one is for:
 
 You do not need all of these for any single figure. Each chapter loads what it
 uses in its first chunk.
+
+## Installing the stack {#sec-installing}
+
+The HVTI packages are not on CRAN. They install from public GitHub
+repositories, and `hvtiverse` [@R-hvtiverse] is there so you do not have to
+name them one at a time:
+
+```r
+install.packages("pak")
+pak::pak("ehrlinger/hvtiverse")
+hvtiverse::hvtiverse_install()
+```
+
+That call installs the eleven family packages, and their dependencies bring in
+most of the rest of the stack with them: `ggplot2`, `patchwork`, `survival` and
+`ggalluvial` arrive with `hvtiPlotR`, `gtsummary` and `flextable` with
+`hvtiRtables`, `randomForestSRC` and `varPro` with `ggRandomForests`. Four
+packages the book uses are not reachable that way, and install on their own:
+
+```r
+pak::pak(c("gt", "kernelshap", "mlbench", "ehrlinger/ggsankey"))
+```
+
+Expect that second list to get shorter. It holds only what no family package
+depends on yet, so a package the family absorbs drops out of it — `gt` is the
+likely next one to go, as table work consolidates into `hvtiRtables`.
+
+Later, to find out whether an installed package has fallen behind its release:
+
+```r
+hvtiverse::hvtiverse_status()
+```
+
+It prints one row per family package, installed version against latest. That
+is the check worth running before you trust a figure you rendered a while ago.

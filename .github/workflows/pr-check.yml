@@ -2,15 +2,20 @@ name: PR check
 
 # Validate the book on pull requests WITHOUT deploying.
 #
-# Constraint: CI cannot run R — the book depends on local-source packages it
-# cannot install — so we render from the committed `_freeze/` cache, exactly the
-# way publish.yml does. Two protections:
+# Constraint: no R is set up here, so we render from the committed `_freeze/`
+# cache, exactly the way publish.yml does. That is a choice rather than a
+# limitation -- see AGENTS.md -- but every protection below depends on it
+# holding. Two protections:
 #
 #   1. Freeze gate. If a chapter's executable chunks changed but its
 #      `_freeze/<chapter>/` did not, the published site would keep serving the
 #      OLD output for the NEW code, silently and indefinitely. Because CI never
 #      re-executes R, nothing downstream can catch that — so it is blocking
-#      here. Prose-only edits are compared out and pass untouched.
+#      here. Prose-only edits are compared out and pass THIS gate. They do not
+#      pass the render below: `freeze: auto` invalidates a chapter's cache on
+#      any source change, prose included, so a code-bearing chapter still needs
+#      a re-render for a one-word edit. The gate is deliberately narrower than
+#      the render; it names a precise cause when it can.
 #   2. Render check. `quarto render --to html` must succeed. If `_freeze/` is
 #      current it renders from the cache with no R. If a chunk changed but
 #      `_freeze/` was NOT re-rendered, Quarto tries to execute it, finds no R,
