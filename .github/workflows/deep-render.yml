@@ -68,7 +68,7 @@ jobs:
           # "not on CRAN" is not the same as "not installable", and this job is
           # the proof.
           pak::pak(c(
-            "ehrlinger/hvtiverse",
+            "ehrlinger/hvtiR",
             "ehrlinger/hvtiPlotR",
             "ehrlinger/hvtiRutilities",
             "ehrlinger/hvtiRtables",

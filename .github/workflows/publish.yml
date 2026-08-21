@@ -4,7 +4,7 @@ name: Publish book to gh-pages
 #
 # No R is set up here, by choice: `quarto render` reuses the committed `_freeze/`
 # cache and never invokes R. The book's non-CRAN dependencies ARE installable on
-# a runner -- they live in public GitHub repos and `hvtiverse::hvtiverse_install()`
+# a runner -- they live in public GitHub repos and `hvtiR::install()`
 # fetches them -- but the published figures should be ones a person reviewed, not
 # ones a runner recomputed. Refresh `_freeze/` by re-rendering locally.
 #

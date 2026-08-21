@@ -63,14 +63,16 @@ uses in its first chunk.
 
 ## Installing the stack {#sec-installing}
 
-The HVTI packages are not on CRAN. They install from public GitHub
-repositories, and `hvtiverse` [@R-hvtiverse] is there so you do not have to
-name them one at a time:
+Install the family from GitHub. Two of these packages, `ggRandomForests` and
+`TemporalHazard`, are on CRAN as well, but the GitHub release comes first and
+CRAN follows it, so GitHub is where the whole family stays in step. `hvtiR`
+[@R-hvtiR] is there so you do not have to name eleven repositories one at a
+time:
 
 ```r
 install.packages("pak")
-pak::pak("ehrlinger/hvtiverse")
-hvtiverse::hvtiverse_install()
+pak::pak("ehrlinger/hvtiR")
+hvtiR::install()
 ```
 
 That call installs the eleven family packages, and their dependencies bring in
@@ -90,11 +92,12 @@ likely next one to go, as table work consolidates into `hvtiRtables`.
 Later, to find out whether an installed package has fallen behind its release:
 
 ```r
-hvtiverse::hvtiverse_status()
+hvtiR::status()
 ```
 
-It prints one row per family package, installed version against latest. That
-is the check worth running before you trust a figure you rendered a while ago.
+It prints one row per family package, installed version against what is on
+GitHub `main`. That is the check worth running before you trust a figure you
+rendered a while ago.
 
 ## What this build used {#sec-provenance}
 
@@ -136,5 +139,5 @@ knitr::kable(
 ```
 
 If that table is older than a family release you know about, the figures are
-too. `hvtiverse::hvtiverse_status()` tells you which packages have moved since,
-and @sec-installing has the re-render.
+too. `hvtiR::status()` tells you which packages have moved since, and
+@sec-installing has the re-render.
