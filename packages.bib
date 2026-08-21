@@ -1,3 +1,21 @@
+@Comment{
+  Package citations for the book. These entries deliberately DO NOT carry
+  version numbers.
+
+  They used to. Nothing regenerated them -- there is no knitr::write_bib() call
+  in this repo -- so every version string here was hand-entered once and then
+  decayed silently. On 2026-08-21 the file still claimed hvtiPlotR 2.3.1 against
+  an actual 2.7.6, and ggRandomForests 2.7.3.9014 against 3.5.2; two of the five
+  family packages had crossed a major since the strings were written, and two
+  recorded four-digit dev versions the versioning rule has since retired.
+
+  A citation that names a version readers cannot verify is worse than one that
+  names none. The versions this book was actually built against are written by
+  the render itself -- see "What this build used" in packages.qmd, and
+  sibling-versions.json at the repository root. That record cannot go stale
+  without the render going stale with it, which is the point.
+}
+
 @Manual{R-base,
   title = {R: A Language and Environment for Statistical Computing},
   author = {{R Core Team}},
@@ -12,7 +30,6 @@
   title = {consort: Create Consort Diagram},
   author = {Alim Dayim},
   year = {2026},
-  note = {R package version 1.2.3},
   url = {https://github.com/adayim/consort/},
 }
 
@@ -20,7 +37,6 @@
   title = {flextable: Functions for Tabular Reporting},
   author = {David Gohel and Panagiotis Skintzos},
   year = {2026},
-  note = {R package version 0.10.0},
   url = {https://ardata-fr.github.io/flextable-book/},
 }
 
@@ -28,7 +44,6 @@
   title = {ggalluvial: Alluvial Plots in ggplot2},
   author = {Jason Cory Brunson and Quentin D. Read},
   year = {2026},
-  note = {R package version 0.12.6},
   url = {http://corybrunson.github.io/ggalluvial/},
 }
 
@@ -36,7 +51,6 @@
   title = {ggplot2: Create Elegant Data Visualisations Using the Grammar of Graphics},
   author = {Hadley Wickham and Winston Chang and Lionel Henry and Thomas Lin Pedersen and Kohske Takahashi and Claus Wilke and Kara Woo and Hiroaki Yutani and Dewey Dunnington and Teun {van den Brand}},
   year = {2026},
-  note = {R package version 4.0.3},
   url = {https://ggplot2.tidyverse.org},
 }
 
@@ -44,7 +58,6 @@
   title = {ggRandomForests: Visually Exploring Random Forests},
   author = {John Ehrlinger},
   year = {2026},
-  note = {R package version 2.7.3.9014},
   url = {https://github.com/ehrlinger/ggRandomForests},
 }
 
@@ -52,7 +65,6 @@
   title = {ggsankey: Sankey, Alluvial and Sankey Bump Plots},
   author = {David Sjoberg},
   year = {2026},
-  note = {R package version 0.0.99999},
   url = {https://github.com/davidsjoberg/ggsankey},
 }
 
@@ -60,7 +72,6 @@
   title = {gt: Easily Create Presentation-Ready Display Tables},
   author = {Richard Iannone and Joe Cheng and Barret Schloerke and Shannon Haughton and Ellis Hughes and Alexandra Lauer and Romain François and JooYoung Seo and Ken Brevoort and Olivier Roy},
   year = {2026},
-  note = {R package version 1.3.0},
   url = {https://gt.rstudio.com},
 }
 
@@ -68,7 +79,6 @@
   title = {gtsummary: Presentation-Ready Data Summary and Analytic Result Tables},
   author = {Daniel D. Sjoberg and Joseph Larmarange and Michael Curry and Emily {de la Rua} and Jessica Lavery and Karissa Whiting and Emily C. Zabor},
   year = {2026},
-  note = {R package version 2.5.1},
   url = {https://github.com/ddsjoberg/gtsummary},
 }
 
@@ -76,7 +86,6 @@
   title = {hvtiPlotR: HVTI ggplot2 themes and clinical plot functions for the Cleveland Clinic Heart \& Vascular Institute},
   author = {John Ehrlinger},
   year = {2026},
-  note = {R package version 2.3.1},
   url = {https://github.com/ehrlinger/hvtiPlotR},
 }
 
@@ -84,7 +93,6 @@
   title = {hvtiRtables: Manuscript-Compliant Table Construction for HVTI CORR Group},
   author = {John Ehrlinger},
   year = {2026},
-  note = {R package version 0.9.4},
   url = {https://github.com/ehrlinger/hvtiRtables},
 }
 
@@ -92,7 +100,6 @@
   title = {hvtiverse: Install and Check the HVTI R Package Family},
   author = {John Ehrlinger},
   year = {2026},
-  note = {R package version 1.0.0},
   url = {https://github.com/ehrlinger/hvtiverse},
 }
 
@@ -101,7 +108,6 @@
 Cleveland Clinic},
   author = {John Ehrlinger},
   year = {2026},
-  note = {R package version 1.0.0.9004},
   url = {https://github.com/ehrlinger/hvtiRutilities},
 }
 
@@ -109,7 +115,6 @@ Cleveland Clinic},
   title = {kernelshap: Kernel SHAP},
   author = {Michael Mayer and David Watson},
   year = {2025},
-  note = {R package version 0.9.1},
   url = {https://github.com/ModelOriented/kernelshap},
 }
 
@@ -117,7 +122,6 @@ Cleveland Clinic},
   title = {knitr: A General-Purpose Package for Dynamic Report Generation in R},
   author = {Yihui Xie},
   year = {2025},
-  note = {R package version 1.51},
   url = {https://yihui.org/knitr/},
 }
 
@@ -125,7 +129,6 @@ Cleveland Clinic},
   title = {patchwork: The Composer of Plots},
   author = {Thomas Lin Pedersen},
   year = {2025},
-  note = {R package version 1.3.2},
   url = {https://patchwork.data-imaginist.com},
 }
 
@@ -133,7 +136,6 @@ Cleveland Clinic},
   title = {quarto: R Interface to Quarto Markdown Publishing System},
   author = {JJ Allaire and Christophe Dervieux},
   year = {2025},
-  note = {R package version 1.5.1},
   url = {https://github.com/quarto-dev/quarto-r},
 }
 
@@ -142,7 +144,6 @@ Cleveland Clinic},
 Classification (RF-SRC)},
   author = {Hemant Ishwaran and Udaya B. Kogalur},
   year = {2026},
-  note = {R package version 3.6.2},
   url = {https://www.randomforestsrc.org/},
 }
 
@@ -150,7 +151,6 @@ Classification (RF-SRC)},
   title = {survival: Survival Analysis},
   author = {Terry M Therneau},
   year = {2026},
-  note = {R package version 3.8-6},
   url = {https://github.com/therneau/survival},
 }
 
@@ -158,7 +158,6 @@ Classification (RF-SRC)},
   title = {TemporalHazard: Temporal Parametric Hazard Modeling},
   author = {John Ehrlinger},
   year = {2026},
-  note = {R package version 1.0.3},
   url = {https://ehrlinger.github.io/temporal_hazard/},
 }
 
@@ -167,7 +166,6 @@ Classification (RF-SRC)},
 Priority},
   author = {Min Lu and Aster K. Shear and Udaya B. Kogalur and Hemant Ishwaran},
   year = {2026},
-  note = {R package version 3.1.0},
   url = {https://www.varprotools.org/},
 }
 
@@ -273,7 +271,6 @@ Priority},
   title = {mlbench: Machine Learning Benchmark Problems},
   author = {Friedrich Leisch and Evgenia Dimitriadou},
   year = {2026},
-  note = {R package version 2.1-8},
   url = {https://CRAN.R-project.org/package=mlbench},
   doi = {10.32614/CRAN.package.mlbench},
 }

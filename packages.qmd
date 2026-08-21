@@ -95,3 +95,46 @@ hvtiverse::hvtiverse_status()
 
 It prints one row per family package, installed version against latest. That
 is the check worth running before you trust a figure you rendered a while ago.
+
+## What this build used {#sec-provenance}
+
+Every figure in this book is served from a cached render, so the versions that
+produced it are a property of the cache rather than of your session. The table
+below is written by the render itself, and it is the only trustworthy record of
+what the current cache was built against.
+
+```{r}
+#| label: sibling-versions
+#| echo: false
+#| message: false
+#| tbl-cap: "Family package versions this build was rendered against."
+siblings <- c(
+  "hvtiPlotR", "hvtiRutilities", "hvtiRtables",
+  "TemporalHazard", "ggRandomForests", "ggsankey"
+)
+versions <- vapply(
+  siblings,
+  function(p) as.character(utils::packageVersion(p)),
+  character(1)
+)
+
+# Written to the repository root, where the scheduled version check reads it.
+jsonlite::write_json(
+  list(
+    rendered = format(Sys.Date()),
+    r = paste(R.version$major, R.version$minor, sep = "."),
+    packages = as.list(versions)
+  ),
+  "sibling-versions.json",
+  auto_unbox = TRUE, pretty = TRUE
+)
+
+knitr::kable(
+  data.frame(Package = siblings, Version = unname(versions)),
+  row.names = FALSE
+)
+```
+
+If that table is older than a family release you know about, the figures are
+too. `hvtiverse::hvtiverse_status()` tells you which packages have moved since,
+and @sec-installing has the re-render.
