@@ -46,6 +46,8 @@ surface, and the gate below is the only thing standing in for one.
 | `pr-check.yml` | a changed chapter that runs code whose `_freeze/` was not updated, then `quarto render --to html` |
 | `publish.yml` | the render on `main`, then deploys `_book/` to `gh-pages` |
 | `house-style.yaml` | `.claude/house-style.md` drifting from the vault sources it was composed from |
+| `version-check.yml` | nothing — reports sibling version drift as a tracking issue, weekly |
+| `deep-render.yml` | the render, when run manually with the freeze bypassed |
 
 **CI does not run R.** Neither workflow sets up R, so every render in CI reads
 the committed `_freeze/` cache and never executes a chunk. That single
@@ -86,12 +88,44 @@ default or returned object, nothing in this repo changes — so no gate fires,
 and the published figures silently become output from a version of the package
 that no longer exists.
 
-The defence is to re-render the whole book locally after a sibling release and
-read what changed. `hvtiverse::hvtiverse_status()` is how you learn a release
-happened at all: it compares each installed family package against the latest
-on GitHub, so a row that has fallen behind is the prompt to re-render. It
-cannot gate anything, for the reason above — it is a habit, not a protection.
-Nothing will remind you to run it.
+**A plain re-render does not defend against this, and used to be prescribed
+here as though it did.** `freeze: auto` re-executes a chapter only when that
+chapter's *source* changes. After a sibling release nothing in this repo has
+changed, so `quarto render` reuses every cache and reports success without
+running a single line of R — verified 2026-08-21 by completing a full render
+with R removed from `PATH`. It produces a green log and byte-identical output,
+which reads as "checked, no drift" when nothing was checked. **Delete the cache
+first** — `rm -rf _freeze && quarto render --to html` — or nothing executes.
+
+What now covers it, in two pieces that do different jobs:
+
+| | when | cost | catches |
+|---|---|---|---|
+| `version-check.yml` (A) | weekly, and on demand | none — no R, no render | that versions have **moved** |
+| `deep-render.yml` (B) | `workflow_dispatch` only | installs the family, executes every chunk | that something has **broken** |
+
+Job A compares `sibling-versions.json` — written by the render itself, see
+"What this build used" in `packages.qmd` — against each sibling's `DESCRIPTION`
+on `main`. On divergence it opens or updates one reused tracking issue and
+**exits 0 regardless**. A red scheduled run on `main` would claim the book is
+broken, which is not what it learned; it learned that a re-render is due.
+
+Job A tells you when to press the button on job B. Neither replaces the other,
+and **breakage remains undetected until a human runs job B**. Say that plainly
+rather than treating the weekly green tick as assurance.
+
+`hvtiverse::hvtiverse_status()` does the same comparison locally, against
+installed versions rather than the recorded ones, and is the quicker check when
+you are already at a prompt.
+
+A caveat that will keep biting until it is closed: `sibling-versions.json`
+records the versions installed at the moment the chapter carrying it last
+executed. Chapter caches written at other times may have been built against
+other versions. The record becomes exact for the whole book after one forced
+full re-render (`rm -rf _freeze`), and approximate again as chapters are
+re-rendered piecemeal. Divergence can also mean the last render ran against
+unreleased local code — a sibling checkout on a feature branch — rather than
+against `main`; rule that out before re-rendering.
 
 ## Rules for this repo
 
@@ -119,11 +153,11 @@ Nothing will remind you to run it.
   `workflow_dispatch` for a manual run. A long-lived `feat/plot-recipes` entry
   sat here until 2026-08-21, outliving the branch itself; that is the shape of
   the mistake to avoid re-introducing.
-- **`_quarto.yml` declares `theme: [cosmo, brand]` but there is no
-  `_brand.yml`.** Quarto tolerates this and the book renders correctly today —
-  the last publish succeeded in 1m 16s. Adding a `_brand.yml` to "fix" the
-  dangling reference would restyle all 51 chapters at once. Leave it unless
-  restyling is the actual task.
+- **`_brand.yml` exists now** (added 2026-08-21, `#3366FF`, taken from
+  `hvtiPlotR::hv_theme_*`'s `accent` default), so `_quarto.yml`'s
+  `theme: [cosmo, brand]` is no longer a dangling reference. This entry used to
+  say the opposite and warn against adding one. A forced full re-render will
+  pick it up across all 51 chapters; that is expected, not drift.
 - **`.gitignore`'s note names three local-source dependencies
   (`TemporalHazard`, `hvtiRutilities`, `ggsankey`); the real set is larger** —
   `hvtiPlotR` and `hvtiRtables` are also local-source and load in far more

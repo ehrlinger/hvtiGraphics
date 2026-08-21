@@ -1,0 +1,132 @@
+name: Deep re-render
+
+# Job B of the freeze-drift defence. Expensive, manual, and the only thing here
+# that can catch actual breakage.
+#
+# Every other render in this repo reads the committed `_freeze/` cache and never
+# executes a chunk. That is deliberate -- the published figures should be ones a
+# person reviewed, not ones a runner recomputed -- but it means a sibling package
+# can change an argument default, a returned object's shape or a plotting
+# default and nothing in CI will ever find out.
+#
+# This job deletes the freeze, installs the family from GitHub and executes every
+# chunk against current package code. It does NOT deploy and does NOT commit: it
+# renders, reports, and uploads the result for a human to look at.
+#
+# Manual because the cost is real. hvtiPlotR pulls randomForestSRC, varPro and
+# the ragg/systemfonts graphics chain, and temporal_hazard's lint.yaml recorded a
+# run sitting queued 410 minutes on 2026-08-17 behind work that had already been
+# superseded. On a schedule this would reintroduce exactly that. The weekly
+# version-check.yml is what tells you to press the button.
+
+on:
+  workflow_dispatch:
+    inputs:
+      chapter:
+        description: "Single chapter to render (e.g. survival.qmd). Leave blank to render the whole book — the honest default."
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+
+jobs:
+  deep-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          # Public RSPM serves Linux binaries, which is the difference between
+          # this job taking minutes and taking most of an hour.
+          use-public-rspm: true
+
+      - name: Set up Pandoc
+        uses: r-lib/actions/setup-pandoc@v2
+
+      - name: Set up Quarto
+        uses: quarto-dev/quarto-actions/setup@v2
+
+      - name: Install system libraries for the graphics chain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libcurl4-openssl-dev libssl-dev libxml2-dev \
+            libfontconfig1-dev libfreetype6-dev libharfbuzz-dev libfribidi-dev \
+            libpng-dev libtiff5-dev libjpeg-dev
+
+      - name: Install the family and the book's CRAN packages
+        run: |
+          install.packages("pak")
+
+          # The family, from GitHub. Every one of these repositories is public;
+          # "not on CRAN" is not the same as "not installable", and this job is
+          # the proof.
+          pak::pak(c(
+            "ehrlinger/hvtiverse",
+            "ehrlinger/hvtiPlotR",
+            "ehrlinger/hvtiRutilities",
+            "ehrlinger/hvtiRtables",
+            "ehrlinger/temporal_hazard",
+            "ehrlinger/ggRandomForests",
+            "ehrlinger/ggsankey"
+          ))
+
+          # What the chapters load that no family package depends on.
+          pak::pak(c("gt", "kernelshap", "mlbench", "jsonlite", "knitr", "rmarkdown"))
+        shell: Rscript {0}
+
+      - name: Record what was actually installed
+        run: |
+          sibs <- c("hvtiPlotR", "hvtiRutilities", "hvtiRtables",
+                    "TemporalHazard", "ggRandomForests", "ggsankey")
+          for (p in sibs) {
+            cat(sprintf("%-18s %s\n", p, as.character(utils::packageVersion(p))))
+          }
+        shell: Rscript {0}
+
+      - name: Bypass the freeze
+        run: |
+          # `freeze: auto` re-executes only when a chapter's SOURCE changes, so a
+          # plain render after a sibling release is a no-op -- it reuses the cache
+          # and reports success without running a single line of R. Deleting the
+          # cache is what forces execution. Verified 2026-08-21.
+          rm -rf _freeze
+          echo "Freeze cache removed; every chunk will execute."
+
+      - name: Render against current package code
+        run: |
+          if [ -n "${{ inputs.chapter }}" ]; then
+            echo "Rendering single chapter: ${{ inputs.chapter }}"
+            quarto render "${{ inputs.chapter }}" --to html
+          else
+            quarto render --to html
+          fi
+
+      - name: Upload the freshly rendered book
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deep-render-result
+          path: |
+            _book/
+            sibling-versions.json
+          retention-days: 14
+          if-no-files-found: warn
+
+      - name: Upload the regenerated freeze cache
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          # Not committed from CI -- the freeze is a reviewed artefact, and a
+          # runner cannot look at a figure. Download this only if you have
+          # compared the rendered output and want to adopt it.
+          name: deep-render-freeze
+          path: _freeze/
+          retention-days: 14
+          if-no-files-found: warn

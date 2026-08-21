@@ -1,0 +1,12 @@
+{
+  "rendered": "2026-08-21",
+  "r": "4.6.1",
+  "packages": {
+    "hvtiPlotR": "2.7.4",
+    "hvtiRutilities": "1.0.10",
+    "hvtiRtables": "0.9.7",
+    "TemporalHazard": "1.2.1",
+    "ggRandomForests": "3.5.0",
+    "ggsankey": "0.0.99999"
+  }
+}
