@@ -26,9 +26,13 @@ new package carved out of the book.
 ## Definition of done
 
 - `quarto render --to html` succeeds.
-- If you changed an **executable chunk**, you re-rendered that chapter locally
-  and committed its `_freeze/<chapter>/` in the same commit. Prose-only edits
-  need no re-render.
+- If you changed a chapter that contains **any executable chunk**, you
+  re-rendered it locally and committed its `_freeze/<chapter>/` in the same
+  commit. This includes prose-only edits: `_quarto.yml` sets `freeze: auto`,
+  which keys on the source file changing rather than on the code changing, and
+  the freeze stores the chapter's whole rendered markdown. Edit a sentence
+  without re-rendering and CI fails with `Unable to locate an installed version
+  of R` — verified 2026-08-21. Only chapters with no chunks at all are exempt.
 - The rendered result was actually looked at. This repo's output is figures and
   tables; "it rendered" is not the same as "the figure is right".
 
@@ -43,9 +47,19 @@ surface, and the gate below is the only thing standing in for one.
 | `publish.yml` | the render on `main`, then deploys `_book/` to `gh-pages` |
 | `house-style.yaml` | `.claude/house-style.md` drifting from the vault sources it was composed from |
 
-**CI cannot run R.** The book depends on local-source packages a runner cannot
-install, so every render in CI reads the committed `_freeze/` cache and never
-executes a chunk. That single constraint explains most of what follows.
+**CI does not run R.** Neither workflow sets up R, so every render in CI reads
+the committed `_freeze/` cache and never executes a chunk. That single
+constraint explains most of what follows.
+
+Read that as a choice, not an impossibility. This file claimed until 2026-08-21
+that a runner "cannot install" the dependencies, and that is false: every
+package the book needs is on CRAN or in a **public** GitHub repo, and
+`hvtiverse::hvtiverse_install()` fetches the family in one call. The freeze
+stays anyway, for two reasons that outlive the correction. The published
+figures should be the ones a person reviewed, not ones a runner recomputed
+behind their back. And installing the compiled random-forest stack on every PR
+would trade a 1m 16s render for minutes of build time to reproduce output that
+is already committed.
 
 ## The one thing that destroys work
 
@@ -58,16 +72,25 @@ the freeze cache is the published result.
 
 `pr-check.yml` blocks the version of this it can see: chunk content changed in
 a PR without a matching `_freeze/` update. It compares chunk bodies, not whole
-files, so prose edits pass untouched.
+files, so prose edits pass the gate — but see the note above: they do not pass
+the render step that follows, because `freeze: auto` invalidates the cache on
+any source change. The gate is narrower than the failure it guards, so a
+prose-only PR to a code-bearing chapter fails at the render with a vaguer
+message than the gate would have given.
 
 **The version it cannot see is the dangerous one.** This book is a reverse
 dependency of `hvtiPlotR`, `ggRandomForests`, `TemporalHazard`,
 `hvtiRutilities` and `hvtiRtables`. When one of those changes an API, argument
 default or returned object, nothing in this repo changes — so no gate fires,
 and the published figures silently become output from a version of the package
-that no longer exists. The only defence is re-rendering the whole book locally
-after sibling releases and reading what changed. Do that deliberately; nothing
-will remind you.
+that no longer exists.
+
+The defence is to re-render the whole book locally after a sibling release and
+read what changed. `hvtiverse::hvtiverse_status()` is how you learn a release
+happened at all: it compares each installed family package against the latest
+on GitHub, so a row that has fallen behind is the prompt to re-render. It
+cannot gate anything, for the reason above — it is a habit, not a protection.
+Nothing will remind you to run it.
 
 ## Rules for this repo
 

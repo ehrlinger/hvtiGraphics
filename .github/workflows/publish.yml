@@ -2,11 +2,11 @@ name: Publish book to gh-pages
 
 # Renders the Quarto book to HTML and deploys it to the gh-pages branch.
 #
-# The book depends on local-source R packages (TemporalHazard, hvtiRutilities,
-# ggsankey) that are not on CRAN, so CI cannot execute the R chunks. Instead we
-# rely on Quarto's committed `_freeze/` cache: `quarto render` reuses the frozen
-# computational results and never invokes R. Refresh `_freeze/` by re-rendering
-# locally and committing it.
+# No R is set up here, by choice: `quarto render` reuses the committed `_freeze/`
+# cache and never invokes R. The book's non-CRAN dependencies ARE installable on
+# a runner -- they live in public GitHub repos and `hvtiverse::hvtiverse_install()`
+# fetches them -- but the published figures should be ones a person reviewed, not
+# ones a runner recomputed. Refresh `_freeze/` by re-rendering locally.
 #
 # HTML only here — the PDF/LaTeX format is built locally (it needs a TeX stack).
 
