@@ -56,7 +56,7 @@ constraint explains most of what follows.
 Read that as a choice, not an impossibility. This file claimed until 2026-08-21
 that a runner "cannot install" the dependencies, and that is false: every
 package the book needs is on CRAN or in a **public** GitHub repo, and
-`hvtiverse::hvtiverse_install()` fetches the family in one call. The freeze
+`hvtiR::install()` fetches the family in one call. The freeze
 stays anyway, for two reasons that outlive the correction. The published
 figures should be the ones a person reviewed, not ones a runner recomputed
 behind their back. And installing the compiled random-forest stack on every PR
@@ -114,7 +114,7 @@ Job A tells you when to press the button on job B. Neither replaces the other,
 and **breakage remains undetected until a human runs job B**. Say that plainly
 rather than treating the weekly green tick as assurance.
 
-`hvtiverse::hvtiverse_status()` does the same comparison locally, against
+`hvtiR::status()` does the same comparison locally, against
 installed versions rather than the recorded ones, and is the quicker check when
 you are already at a prompt.
 
