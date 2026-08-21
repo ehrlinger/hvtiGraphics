@@ -95,12 +95,19 @@ hv_ppt_palette("light", n = 4)
 ```
 
 These are the Okabe-Ito colourblind-safe hues, reordered for the background the
-figure will sit on. High-luminance colours come first on a dark slide and the
-darker ones first on a light slide, so the leading series always has the
-strongest contrast against the surface behind it. Black appears only in the
-light ordering, since on a dark panel there is nothing there to see. They are
-not CORR brand colours, and nothing stops a project from handing its own set to
-`scale_colour_manual()` instead.
+figure will sit on. The high-luminance ones lead on a dark slide, where yellow
+sits at more than 15:1 against a black panel, and the darker ones lead on a
+light slide. So the first two or three series, the ones a figure most often
+needs, separate hardest from the surface behind them.
+
+Read that as a tendency, not a guarantee. The orderings are not strictly sorted
+by contrast. Black is the clearest case: it appears only in the light ordering,
+where it has the strongest contrast of the six against white by a wide margin,
+and it is nonetheless held back to sixth. Keeping it out of the leading
+positions is worth it, because a black series on a light panel reads as axis ink
+rather than as data, which is the same reason annotation takes black there. They
+are not CORR brand colours either, and nothing stops a project from handing its
+own set to `scale_colour_manual()` instead.
 
 Six colours are the entire supply, which covers a grouping variable up to six
 levels. Ask for a seventh and you get an error rather than a quietly recycled
