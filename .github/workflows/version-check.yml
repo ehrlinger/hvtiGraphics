@@ -1,0 +1,135 @@
+name: Sibling version check
+
+# Job A of the freeze-drift defence. Cheap, scheduled, and deliberately unable
+# to fail.
+#
+# The book renders from a committed `_freeze/` cache, so its figures are output
+# from whatever versions of the family packages were installed when someone last
+# forced a re-render. When a sibling releases, nothing in this repo changes --
+# no gate fires, and the published figures quietly become output from a version
+# that no longer exists.
+#
+# This job detects that the versions have MOVED. It cannot detect breakage; only
+# the deep re-render (deep-render.yml, manual) does that. It needs no R and no
+# render: it reads six DESCRIPTION files over HTTPS and compares strings.
+#
+# It reports by opening or updating a tracking issue, and always exits 0. A red
+# scheduled workflow on main would say "the book is broken", which is not what
+# was learned -- what was learned is "a re-render is due". Failing here would
+# train people to scroll past it, which is how the stale-freeze advisory it
+# replaces stopped working.
+
+on:
+  schedule:
+    # Weekly, Mondays 13:00 UTC (09:00 ET). The siblings do not release daily,
+    # and an issue keeps until someone reads it, so a tighter cadence buys
+    # nothing.
+    - cron: '0 13 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Compare the recorded versions against each sibling's main
+        id: compare
+        run: |
+          set -euo pipefail
+
+          if [ ! -f sibling-versions.json ]; then
+            echo "::warning::sibling-versions.json is missing - there is no record of what _freeze/ was built against. Force a full local re-render (see AGENTS.md) and commit it."
+            echo "status=norecord" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # package -> repo. Two names differ from their repository.
+          repos="hvtiPlotR:hvtiPlotR
+          hvtiRutilities:hvtiRutilities
+          hvtiRtables:hvtiRtables
+          TemporalHazard:temporal_hazard
+          ggRandomForests:ggRandomForests
+          ggsankey:ggsankey"
+
+          : > rows.md
+          drift=0
+
+          while IFS= read -r line; do
+            pkg="${line%%:*}"; pkg="$(echo "$pkg" | tr -d '[:space:]')"
+            repo="${line##*:}"; repo="$(echo "$repo" | tr -d '[:space:]')"
+            [ -z "$pkg" ] && continue
+
+            built=$(jq -r --arg p "$pkg" '.packages[$p] // "not recorded"' sibling-versions.json)
+            latest=$(curl -fsSL "https://raw.githubusercontent.com/ehrlinger/$repo/main/DESCRIPTION" 2>/dev/null \
+                     | awk '/^Version:/ {print $2; exit}') || latest=""
+            [ -z "$latest" ] && latest="unreachable"
+
+            if [ "$built" = "$latest" ]; then
+              printf '| `%s` | %s | %s |\n' "$pkg" "$built" "$latest" >> rows.md
+            else
+              printf '| `%s` | %s | **%s** |\n' "$pkg" "$built" "$latest" >> rows.md
+              [ "$latest" != "unreachable" ] && drift=1
+            fi
+          done <<< "$repos"
+
+          {
+            printf '| package | the book was built against | on `main` now |\n'
+            printf '|---|---|---|\n'
+            sort rows.md
+          } > table.md
+
+          rendered=$(jq -r '.rendered // "an unrecorded date"' sibling-versions.json)
+          {
+            printf 'The committed `_freeze/` cache was built on **%s**. Since then, at least one family package has moved:\n\n' "$rendered"
+            cat table.md
+            printf '\n**What this does and does not mean.** The versions have moved; that is all this check can see. It does not mean a figure is wrong. It means the published figures are output from package code that is no longer current, and nothing else in CI will notice.\n'
+            printf '\nA divergence can also mean the last re-render ran against unreleased local code — a sibling checkout sitting on a feature branch — rather than against `main`. Worth ruling out before re-rendering.\n'
+            printf '\n**To resolve:** run the `Deep re-render` workflow from the Actions tab. It installs the siblings from GitHub and renders with the freeze bypassed, which is the only thing that catches actual breakage. If it renders clean and the figures still look right, force a local re-render and commit the refreshed `_freeze/` and `sibling-versions.json`.\n'
+            printf '\n<sub>Updated automatically by `version-check.yml`. This issue is reused rather than reopened, and closes itself when the recorded versions match `main` again.</sub>\n'
+          } > body.md
+
+          echo "status=$([ "$drift" -eq 1 ] && echo drift || echo clean)" >> "$GITHUB_OUTPUT"
+          cat table.md
+
+      - name: Open or update the tracking issue
+        if: steps.compare.outputs.status == 'drift'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          gh label create freeze-drift \
+            --description "The book's _freeze/ cache is older than a family package release" \
+            --color D93F0B 2>/dev/null || true
+
+          existing=$(gh issue list --label freeze-drift --state open \
+                     --json number --jq '.[0].number // empty')
+
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body-file body.md
+            echo "Updated issue #$existing."
+          else
+            gh issue create \
+              --title "Book _freeze/ is older than a family package release" \
+              --label freeze-drift --body-file body.md
+          fi
+
+      - name: Close the tracking issue once the versions match again
+        if: steps.compare.outputs.status == 'clean'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          existing=$(gh issue list --label freeze-drift --state open \
+                     --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue close "$existing" \
+              --comment "The recorded versions match each sibling's \`main\` again — the freeze has been refreshed. Closing automatically."
+          else
+            echo "No drift and no open issue. Nothing to do."
+          fi
