@@ -1,0 +1,21 @@
+{
+  "hash": "d8e8c3a9b59c2c6960b68f120b77c197",
+  "result": {
+    "engine": "knitr",
+    "markdown": "# Slides and presentations\n\n\n\nA slide is read from across a room and sits on a coloured background, not white\npaper. Two things change from a manuscript figure. The type scales up the way a\nposter's does, so it carries to the back of the room; and the theme has to match\nthe deck — dark for a projected slide, light or transparent for a printed\nhandout or a light template. hvtiPlotR ships a pair of PowerPoint themes for\nexactly this, plus `save_ppt()`, which drops the finished plot onto a slide as an\n*editable* vector graphic rather than a flat image.\n\n## A slide-styled plot\n\n`theme_hv_ppt_dark()` styles a plot for a projected deck: white ink, no\ngridlines, and a large base size so the figure reads from the back of the room.\nIt deliberately leaves the figure background *transparent* so the slide's own\nbackground shows through — which is what you want on a real deck, but it makes the\nwhite axis text vanish on this white page. For the preview below we add a dark\n`plot.background` to stand in for the slide; on the actual deck, drop that line\nand let `save_ppt()` place the transparent figure on the slide.\n\n\n::: {.cell}\n\n```{.r .cell-code}\np <- plot(hv_survival(sample_survival_data(n = 500, seed = 42)))\np + theme_hv_ppt_dark(base_size = 18) +\n  theme(plot.background = element_rect(fill = \"grey15\", colour = NA))\n```\n\n::: {.cell-output-display}\n![](presentations_files/figure-pdf/build-ppt-dark-1.pdf){fig-pos='H'}\n:::\n:::\n\n\n`theme_hv_ppt_light()` is the same typography on a light or transparent\nbackground, for a printed handout or a light template.\n\n\n::: {.cell}\n\n```{.r .cell-code}\np + theme_hv_ppt_light(base_size = 18)\n```\n\n::: {.cell-output-display}\n![](presentations_files/figure-pdf/build-ppt-light-1.pdf){fig-pos='H'}\n:::\n:::\n\n\nBoth themes default to a 32 pt Arial base — sized for a slide projected across a\nroom. We drop `base_size` to 18 here so the figure previews legibly on the page;\nleave it at the default for the real deck, and raise it further for a large hall.\n\n## Editable PowerPoint\n\nA figure exported as a PNG is frozen: a reviewer who wants the title reworded or\na colour swapped has to come back to you. `save_ppt()` instead writes the plot\nonto a slide as a native vector graphic, so its text, lines, and colours stay\neditable in PowerPoint itself. It anchors the plot in the panel rectangle of a\nhouse slide template, so every figure lands in the same place across a deck.\n\n\n::: {.cell}\n\n```{.r .cell-code}\nsave_ppt(\n  p + theme_hv_ppt_dark(),\n  template   = \"RD-dark.pptx\",\n  powerpoint = \"survival_slide.pptx\"\n)\n```\n:::\n\n\nThe chunk is `eval: false` because it writes a binary `.pptx`. The code is shown,\nnot executed during the book build. Pair the dark theme with a dark `template`\nand the light theme with a light one, and keep `theme_hv_ppt_dark()` at its 32 pt\ndefault here — the template is laid out for that size. Pass `panel_box` to move or\nresize the plot rectangle, and `slide_titles` to set the slide heading.\n```\n",
+    "supporting": [
+      "presentations_files/figure-pdf"
+    ],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {
+      "knitr": [
+        "{\"type\":\"list\",\"attributes\":{},\"value\":[]}"
+      ]
+    },
+    "preserve": null,
+    "postProcess": false
+  }
+}

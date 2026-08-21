@@ -134,7 +134,7 @@ against `main`; rule that out before re-rendering.
   for reproducibility. A recipe book is the realistic place for someone to
   paste a real extract to make an example look better — do not, and say so if
   asked to.
-- **`_freeze/` is committed on purpose.** 474 files, 46 chapter caches, ~54 MB.
+- **`_freeze/` is committed on purpose.** 481 files, 38 chapter caches, ~36 MB.
   `.gitignore` records the reason. It is the build input for CI, not clutter.
 - **`_book/` is not committed** and is gitignored. Never add it.
 - **HTML is built in CI; the PDF is built locally.** The `pdf` format needs a
