@@ -9,7 +9,7 @@
 **/*.quarto_ipynb
 # NOTE: _freeze/ is intentionally committed so CI (gh-pages) can render the book
 # without R and without the non-CRAN packages. That set is larger than any list
-# kept here would stay accurate; hvtiverse::hvtiverse_members() is the current
+# kept here would stay accurate; hvtiR::members() is the current
 # one, plus ggsankey. Re-render locally to refresh the cache.
 
 # Stray render artifacts from single-file (standalone) renders
