@@ -80,6 +80,53 @@ p_base +
   theme_hv_manuscript()
 ```
 
+## The house slide palette
+
+`hv_ppt_palette()` hands back the six colours `hv_ppt_series()` assigns across a
+deck, as a plain character vector. Reach for it when a figure needs those
+colours outside the decorator, so the script uses the one definition instead of
+hex codes pasted out of an older script, which go stale the first time the
+palette changes.
+
+```{r}
+#| label: ppt-palette
+hv_ppt_palette("dark")
+hv_ppt_palette("light", n = 4)
+```
+
+These are the Okabe-Ito colourblind-safe hues, reordered for the background the
+figure will sit on. High-luminance colours come first on a dark slide and the
+darker ones first on a light slide, so the leading series always has the
+strongest contrast against the surface behind it. Black appears only in the
+light ordering, since on a dark panel there is nothing there to see. They are
+not CORR brand colours, and nothing stops a project from handing its own set to
+`scale_colour_manual()` instead.
+
+Six colours are the entire supply, which covers a grouping variable up to six
+levels. Ask for a seventh and you get an error rather than a quietly recycled
+palette, on the reasoning that two series sharing a colour is worse than a
+stopped script.
+
+Pair the `"light"` ordering with `theme_hv_manuscript()` and a journal figure
+takes the same hues the deck does, so one analysis looks like itself in both
+places.
+
+```{r}
+#| label: fig-colors-ppt-palette
+#| fig-cap: "Grouped trends plot taking the light-background ordering of the house palette, with the matching point shapes"
+p_base +
+  scale_colour_manual(values = hv_ppt_palette("light")) +
+  scale_shape_manual(values = c(16, 17, 15, 18)) +
+  labs(x = "Surgery Year", y = "Outcome") +
+  theme_hv_manuscript()
+```
+
+The shape scale is not decoration here. Okabe-Ito is built to survive colour
+blindness, which is not the same thing as surviving a greyscale printer, so the
+second channel still has work to do. And the colours are only half the recipe.
+The deck-wide decorator that assigns them, and the theme that rides along with
+them, are in [slides and presentations](presentations.qmd).
+
 ## Suppressing legends
 
 Pass `guide = "none"` to any scale and that aesthetic drops out of the legend.

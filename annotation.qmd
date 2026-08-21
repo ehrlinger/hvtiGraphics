@@ -86,6 +86,83 @@ plot(km) +
   theme_hv_manuscript()
 ```
 
+## Naming series without a legend {#sec-annotation-series}
+
+A CORR figure carries no legend. Not in a manuscript, not on a slide.
+`theme_hv_manuscript()`, `theme_hv_ppt_light()` and `theme_hv_ppt_dark()` all
+set `legend.position = "none"`, so the groups get named on the panel instead,
+with `annotate()`, where the reader's eye already is. A key sends that eye out
+to the margin and back once per curve. On a slide that is most of the fifteen
+seconds you had.
+
+Two things make a direct label read as part of the figure rather than as one
+more object sitting on it.
+
+The first is placement. Put the label beside the series it names, at a point
+where that series is clearly on its own. The four groups below fan out at the
+left edge and converge later, so the left edge is where the labels go.
+
+The second is colour, and it is the one people get wrong. The label takes **the
+theme's ink**, the same colour the theme already gives the axis text and the
+axis line. White on a dark slide. Black on a light slide and in a manuscript.
+Not the colour of the series it names.
+
+```{r}
+#| label: fig-annotation-series
+#| fig-cap: "Four series named on the panel in the theme's white ink, no legend, previewed against a dark slide background"
+dta_trends <- sample_trends_data(n = 600, seed = 42)
+p_trends   <- plot(hv_trends(dta_trends))
+
+p_trends +
+  hv_ppt_series(mode = "dark", base_size = 18) +
+  labs(x = "Surgery Year", y = "Outcome") +
+  annotate("text",
+           x     = 1990,
+           y     = c(64, 51.5, 41.5, 30.5),
+           label = c("Group I", "Group II", "Group III", "Group IV"),
+           colour = "white", size = 4.5, hjust = 0) +
+  theme(plot.background = element_rect(fill = "grey15", colour = NA))
+```
+
+`annotate()` takes vectors, so the four labels are one call rather than four.
+The single `colour = "white"` recycles across all of them, which is the whole
+point: one ink for every label on the panel.
+
+Now the same figure for a journal page. The labels do not move and their text
+does not change. Only the ink does, following the theme from white to black.
+
+```{r}
+#| label: fig-annotation-series-manuscript
+#| fig-cap: "The same four labels for a journal page, where the theme's ink is black and the annotation follows it"
+p_trends +
+  scale_colour_manual(values = hv_ppt_palette("light")) +
+  scale_shape_manual(values = c(16, 17, 15, 18)) +
+  labs(x = "Surgery Year", y = "Outcome") +
+  annotate("text",
+           x     = 1990,
+           y     = c(64, 51.5, 41.5, 30.5),
+           label = c("Group I", "Group II", "Group III", "Group IV"),
+           colour = "black", size = 3.5, hjust = 0) +
+  theme_hv_manuscript()
+```
+
+Neither scale needs `guide = "none"` here. The theme has already switched the
+legend off, and that is the house default rather than something you opt into per
+figure.
+
+Colouring each label to match its curve looks like the helpful thing to do, so
+it is worth saying plainly why it is not. A coloured label reads as data. It
+becomes one more series in the panel, and it inherits every weakness the colour
+already has: it flattens on a projector, and it collapses to a mid-grey in a
+black-and-white printout, which is exactly the case where the label was doing
+the most work. Annotation is frame, not data, so it takes the frame's colour.
+
+Which also means `hv_ppt_palette()` is not where you get an annotation colour,
+even though it is close at hand and holds the series colours. The
+[colour chapter](colors.qmd) covers what it is for, and
+[slides and presentations](presentations.qmd) has the deck-wide decorator that
+assigns those colours in the first place.
+
 ## Cropping with `coord_cartesian()`
 
 `coord_cartesian()` crops the viewport without dropping data, so any fit
@@ -177,6 +254,12 @@ omit the `make_footnote()` call. The saved file carries no stamp.
   region of a fit to everything. Use `coord_cartesian()` when you want the same
   fit, viewed closer. Use a scale limit only when you genuinely mean to exclude
   data, and say so.
+- **An annotation coloured to match the series it names.** The label then
+  reads as one more piece of data rather than as part of the figure's frame, and
+  it fails in every place the series colour fails: flattened by a projector,
+  collapsed to grey by a black-and-white printer. Take the theme's ink instead,
+  white on a dark slide and black everywhere else, so every label on the panel
+  matches the axis and each other.
 - **A draft footnote left on a final figure.** `make_footnote()` stamps the
   device, not the ggplot object, which is the safe design: the stamp cannot
   survive into a `ggsave()` file unless you deliberately keep printing and
