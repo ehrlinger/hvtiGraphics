@@ -6,13 +6,15 @@ name: PR check
 # cannot install — so we render from the committed `_freeze/` cache, exactly the
 # way publish.yml does. Two protections:
 #
-#   1. Render check. `quarto render --to html` must succeed. If `_freeze/` is
-#      current it renders from the cache with no R. If a code chunk changed but
+#   1. Freeze gate. If a chapter's executable chunks changed but its
+#      `_freeze/<chapter>/` did not, the published site would keep serving the
+#      OLD output for the NEW code, silently and indefinitely. Because CI never
+#      re-executes R, nothing downstream can catch that — so it is blocking
+#      here. Prose-only edits are compared out and pass untouched.
+#   2. Render check. `quarto render --to html` must succeed. If `_freeze/` is
+#      current it renders from the cache with no R. If a chunk changed but
 #      `_freeze/` was NOT re-rendered, Quarto tries to execute it, finds no R,
-#      and fails here — blocking the broken render before it reaches `main`.
-#   2. Stale-freeze advisory. A non-blocking heads-up: if a chapter `.qmd`
-#      changed but its `_freeze/<chapter>/` did not, remind the author to
-#      re-render locally if they touched code (prose-only edits are fine).
+#      and fails here too — the gate above just names the cause precisely.
 
 on:
   pull_request:
@@ -34,30 +36,58 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
-      - name: Stale-freeze advisory (non-blocking)
+      - name: Freeze gate
         env:
           BASE_SHA: ${{ github.event.pull_request.base.sha }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
+          set -euo pipefail
+
+          # Print only the executable-chunk bodies of a .qmd at a given rev.
+          # Comparing these rather than the whole file is what separates a code
+          # edit from a prose edit. A missing file (added, or deleted) yields
+          # empty output, which is the correct basis in both directions.
+          #
+          # Do NOT reinstate the old "does _freeze/<chapter>/ exist" test. Every
+          # chapter has a freeze directory, including the part-intro pages that
+          # contain no chunks at all, so that predicate flagged prose edits and
+          # trained readers to ignore the warning.
+          chunks_at() {
+            git show "$1:$2" 2>/dev/null | awk '
+              /^```\{/         { inside = 1; print; next }
+              inside && /^```/ { inside = 0; print "--CHUNK-END--"; next }
+              inside           { print }
+            '
+          }
+
           # Three-dot: diff from the merge-base, so only PR-introduced changes
           # count (not files changed on main while this branch was behind).
           changed=$(git diff --name-only "$BASE_SHA...$HEAD_SHA")
-          flagged=0
+          stale=0
+
           while IFS= read -r f; do
-            case "$f" in
-              *.qmd)
-                ch="${f%.qmd}"
-                # Only chapters with executable chunks have a _freeze cache.
-                if [ -d "_freeze/$ch" ] && ! printf '%s\n' "$changed" | grep -q "^_freeze/$ch/"; then
-                  echo "::warning file=$f::$f changed but _freeze/$ch/ was not updated. If you edited code chunks, re-render locally ('quarto render $f') and commit _freeze/$ch/, or the published site keeps the old output. (Prose-only edits can ignore this.)"
-                  flagged=1
-                fi
-                ;;
-            esac
+            case "$f" in *.qmd) ;; *) continue ;; esac
+            # Skip a chapter deleted by this PR; there is nothing to re-render.
+            git cat-file -e "$HEAD_SHA:$f" 2>/dev/null || continue
+            ch="${f%.qmd}"
+
+            if diff -q <(chunks_at "$BASE_SHA" "$f") <(chunks_at "$HEAD_SHA" "$f") >/dev/null 2>&1; then
+              continue   # prose-only edit
+            fi
+
+            if printf '%s\n' "$changed" | grep -q "^_freeze/$ch/"; then
+              echo "ok: $f — chunks changed, _freeze/$ch/ updated with them."
+            else
+              echo "::error file=$f::$f has changed code chunks but _freeze/$ch/ was not updated. Re-render locally ('quarto render $f') and commit _freeze/$ch/, or the published site will keep serving the old output for the new code."
+              stale=1
+            fi
           done <<< "$changed"
-          if [ "$flagged" -eq 0 ]; then
-            echo "Stale-freeze advisory: no chapter changed without its _freeze/ being updated."
+
+          if [ "$stale" -ne 0 ]; then
+            echo "Freeze gate failed. See the annotated files above."
+            exit 1
           fi
+          echo "Freeze gate: no chapter has code changes without a matching _freeze/ update."
 
       - name: Render book (HTML, from frozen results)
         run: quarto render --to html
