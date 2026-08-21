@@ -2,7 +2,7 @@
   "rendered": "2026-08-21",
   "r": "4.6.1",
   "packages": {
-    "hvtiPlotR": "2.7.6",
+    "hvtiPlotR": "2.7.7",
     "hvtiRutilities": "1.0.11",
     "hvtiRtables": "1.0.0",
     "TemporalHazard": "1.2.0",
