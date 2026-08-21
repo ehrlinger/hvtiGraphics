@@ -43,7 +43,7 @@ surface, and the gate below is the only thing standing in for one.
 
 | workflow | fails on |
 |---|---|
-| `pr-check.yml` | changed chunks whose `_freeze/` was not updated, then `quarto render --to html` |
+| `pr-check.yml` | a changed chapter that runs code whose `_freeze/` was not updated, then `quarto render --to html` |
 | `publish.yml` | the render on `main`, then deploys `_book/` to `gh-pages` |
 | `house-style.yaml` | `.claude/house-style.md` drifting from the vault sources it was composed from |
 
@@ -72,11 +72,12 @@ the freeze cache is the published result.
 
 `pr-check.yml` blocks the version of this it can see: chunk content changed in
 a PR without a matching `_freeze/` update. It compares chunk bodies, not whole
-files, so prose edits pass the gate — but see the note above: they do not pass
-the render step that follows, because `freeze: auto` invalidates the cache on
-any source change. The gate is narrower than the failure it guards, so a
-prose-only PR to a code-bearing chapter fails at the render with a vaguer
-message than the gate would have given.
+files — but that comparison only words the error now, it no longer decides it.
+The gate fires on **any** source change to a chapter that contains a chunk,
+prose included, because `freeze: auto` invalidates the cache on any change to
+the `.qmd`. It was narrower than that until 2026-08-21, which meant a
+prose-only PR passed the gate and then failed the render with a much vaguer
+message. Chapters with no chunks at all are exempt and pass untouched.
 
 **The version it cannot see is the dangerous one.** This book is a reverse
 dependency of `hvtiPlotR`, `ggRandomForests`, `TemporalHazard`,
@@ -134,10 +135,15 @@ Nothing will remind you to run it.
   2026-08-21. That file's own closing paragraph recorded why: this repo carried
   hand-synced copies until 2026-08-06 and one had been stale for three weeks
   without anyone noticing. Read the generated artifact; do not mirror it.
-- **Every chapter has a `_freeze/` directory, including part-intro pages with
-  no chunks at all.** A predicate of the form "does `_freeze/<ch>/` exist" does
-  not tell you whether a chapter carries code. `pr-check.yml` used to work that
-  way and flagged prose edits; do not reinstate it.
+- **A `_freeze/` directory does not tell you whether a chapter carries code.**
+  Measured 2026-08-21: 51 chapters, 13 of them chunk-free, but 46 freeze
+  directories — six chunk-free chapters (`formatting`, `publications`,
+  `randomforests`, `specialty`, `summary`, `usingR`) keep leftover directories
+  from when they had chunks. So a predicate of the form "does `_freeze/<ch>/`
+  exist" over-fires on exactly the prose-only pages it should ignore.
+  `pr-check.yml` worked that way once; it now reads the chapter's content for a
+  chunk instead. Do not reinstate the directory test. The leftover directories
+  are inert — a chunk-free chapter renders clean with a stale one or none.
 
 ## Git and versioning
 
