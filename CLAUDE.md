@@ -26,3 +26,9 @@ packages, and this repo is a Quarto book with no `DESCRIPTION`, `NAMESPACE` or t
 
 Apply the `ehrlinger-writing` skill for chapter prose and captions. It carries the same voice,
 reader persona and project context that `.claude/house-style.md` is composed from.
+
+**The active reader persona is declared in `.claude/house-style.md`**, in its frontmatter and
+again in the body — not in this file. There was a hand-written `.claude/CLAUDE.md` restating
+it until 2026-08-21; it was deleted because the composed artifact is authoritative and CI
+checks it for drift. If a skill or agent looks for the persona default in a `CLAUDE.md`, that
+guidance is stale — send it to the generated artifact.

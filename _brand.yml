@@ -1,0 +1,22 @@
+# Brand definition for the HVTI Recipes book.
+#
+# `_quarto.yml` has declared `theme: [cosmo, brand]` since before this file
+# existed; Quarto tolerated the dangling reference and rendered plain cosmo.
+# This file makes that declaration real.
+#
+# Colour only, deliberately. The one value here is sourced, not chosen:
+# #3366FF is the `accent` default on every theme in hvtiPlotR/R/themes.R
+# (`hv_theme_*`), so the site's links and accents now match the figures it
+# displays instead of using Bootstrap's stock blue.
+#
+# Typography is left alone on purpose. hvtiPlotR sets `base_family = ""` and
+# lets the graphics device choose, so there is no house font to mirror --
+# imposing one here would style the prose against the figures rather than with
+# them. Add typography only if the packages grow a real font contract.
+
+color:
+  palette:
+    hvti-blue: "#3366FF"
+  primary: hvti-blue
+  foreground: "#000000"
+  background: "#FFFFFF"

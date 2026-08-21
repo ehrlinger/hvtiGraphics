@@ -104,10 +104,13 @@ will remind you.
   (`TemporalHazard`, `hvtiRutilities`, `ggsankey`); the real set is larger** —
   `hvtiPlotR` and `hvtiRtables` are also local-source and load in far more
   chapters. The list understates what a fresh machine needs to render.
-- **Two `CLAUDE.md` files exist and disagree** — `./CLAUDE.md` and
-  `.claude/CLAUDE.md`, both tracked, overlapping but not identical. Neither is
-  generated; only `.claude/house-style.md` is. Treat this file as the contract
-  and raise the duplication rather than editing both.
+- **Prose configuration is generated; never hand-maintain a second copy.**
+  `.claude/house-style.md` carries the reader-persona default and the voice
+  rules, is composed from the vault sources, and is drift-checked by CI. A
+  `.claude/CLAUDE.md` used to restate the persona by hand and was deleted on
+  2026-08-21. That file's own closing paragraph recorded why: this repo carried
+  hand-synced copies until 2026-08-06 and one had been stale for three weeks
+  without anyone noticing. Read the generated artifact; do not mirror it.
 - **Every chapter has a `_freeze/` directory, including part-intro pages with
   no chunks at all.** A predicate of the form "does `_freeze/<ch>/` exist" does
   not tell you whether a chapter carries code. `pr-check.yml` used to work that
@@ -141,7 +144,30 @@ will remind you.
 ## Prose
 
 Recipe chapters, captions and README text follow the house voice, composed into
-`.claude/house-style.md` from the vault sources. In Claude Code apply the
-`ehrlinger-writing` skill. The house-style registry classifies this repo as
-`profile: book` — chapters teach a reader to do something, so they carry more
-narrative scaffolding than package documentation does.
+`.claude/house-style.md` from the vault sources. Read that file — it is
+self-contained and states the active reader persona for this repo. In Claude
+Code, apply the `ehrlinger-writing` skill.
+
+The registry classifies this repo as `profile: book`: chapters teach a reader
+to do something, so they carry more narrative scaffolding than package
+documentation, and they compose without the package structure rules that govern
+README order, the roxygen contract and vignette roles.
+
+`.claude/house-style.md` is **generated — do not edit it.** Edit the vault
+sources and recompose:
+
+```
+git clone --branch house-style-v1 https://github.com/ehrlinger/house-style ../house-style
+Rscript ../house-style/compose-house-style.R --repo hvti_graphics
+```
+
+Clone the `house-style-v1` **tag**, not the default branch — that is the ref CI
+pins. Composing against a newer composer than CI validates with produces a clean
+local result and a red build, which is the confusion the pin exists to prevent.
+Add `--check` to report drift without rewriting the artifact; that is what CI
+runs. Exit codes: 0 clean, 1 usage error or missing source, 2 drift.
+
+The composer reads the canonical sources from `~/Documents/ObsidianVault/memory/`
+when that exists and otherwise falls back to the mirror inside the composer repo,
+which is what CI uses since a runner has no vault. Every run prints which
+directory it read, so you can tell the two apart.
