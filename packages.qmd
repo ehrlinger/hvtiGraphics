@@ -75,6 +75,11 @@ pak::pak("ehrlinger/hvtiR")
 hvtiR::install()
 ```
 
+Run that in a fresh session, before anything attaches a family package.
+`install()` stops rather than replacing a package that is already loaded, so
+calling it after the `library()` chunk above fails with `already loaded in this
+session`. Restart R and it goes through.
+
 That call installs the eleven family packages, and their dependencies bring in
 most of the rest of the stack with them: `ggplot2`, `patchwork`, `survival` and
 `ggalluvial` arrive with `hvtiPlotR`, `gtsummary` and `flextable` with
@@ -89,7 +94,7 @@ Expect that second list to get shorter. It holds only what no family package
 depends on yet, so a package the family absorbs drops out of it — `gt` is the
 likely next one to go, as table work consolidates into `hvtiRtables`.
 
-Later, to find out whether an installed package has fallen behind its release:
+Later, to find out whether an installed package has fallen behind GitHub `main`:
 
 ```r
 hvtiR::status()

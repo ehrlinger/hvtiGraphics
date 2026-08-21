@@ -5,7 +5,7 @@
     "hvtiPlotR": "2.7.6",
     "hvtiRutilities": "1.0.11",
     "hvtiRtables": "1.0.0",
-    "TemporalHazard": "1.2.1",
+    "TemporalHazard": "1.2.0",
     "ggRandomForests": "3.5.2",
     "ggsankey": "0.0.99999"
   }

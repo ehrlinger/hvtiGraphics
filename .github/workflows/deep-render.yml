@@ -64,9 +64,11 @@ jobs:
         run: |
           install.packages("pak")
 
-          # The family, from GitHub. Every one of these repositories is public;
-          # "not on CRAN" is not the same as "not installable", and this job is
-          # the proof.
+          # The family, from GitHub. Two of these, ggRandomForests and
+          # TemporalHazard, are on CRAN as well, but the GitHub release lands
+          # first and CRAN follows, so GitHub is the source that keeps the whole
+          # family in step. Every repository here is public, and this job is the
+          # proof that the family installs from a bare runner.
           pak::pak(c(
             "ehrlinger/hvtiR",
             "ehrlinger/hvtiPlotR",
