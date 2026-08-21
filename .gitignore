@@ -16,6 +16,11 @@
 /*_files/
 /site_libs/
 
+# R's default graphics device writes here when a plot is drawn with no device
+# explicitly open. A full `quarto render` leaves one in the repo root, where it
+# shows up untracked and is easy to commit by accident. Nothing needs it.
+/Rplots.pdf
+
 # Generated book deliverables (produced by `quarto render`)
 /HVTI-Recipes.tex
 /HVTI-Recipes.pdf
