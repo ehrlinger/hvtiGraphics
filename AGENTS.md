@@ -95,7 +95,8 @@ changed, so `quarto render` reuses every cache and reports success without
 running a single line of R — verified 2026-08-21 by completing a full render
 with R removed from `PATH`. It produces a green log and byte-identical output,
 which reads as "checked, no drift" when nothing was checked. **Delete the cache
-first** — `rm -rf _freeze && quarto render --to html` — or nothing executes.
+first** — or nothing executes. Deleting `_freeze` alone is not enough locally;
+see "A forced rebuild has to delete more than `_freeze`" under Gotchas.
 
 What now covers it, in two pieces that do different jobs:
 
@@ -122,7 +123,8 @@ A caveat that will keep biting until it is closed: `sibling-versions.json`
 records the versions installed at the moment the chapter carrying it last
 executed. Chapter caches written at other times may have been built against
 other versions. The record becomes exact for the whole book after one forced
-full re-render (`rm -rf _freeze`), and approximate again as chapters are
+full re-render (see Gotchas for what that has to delete), and approximate
+again as chapters are
 re-rendered piecemeal. Divergence can also mean the last render ran against
 unreleased local code — a sibling checkout on a feature branch — rather than
 against `main`; rule that out before re-rendering.
@@ -224,6 +226,26 @@ against `main`; rule that out before re-rendering.
   `.json` results, and anchor the match on the preceding `/`. A bare substring
   test invents live references, because `poster-1.png` is a substring of
   `fig-themes-poster-1.png`.
+- **A forced rebuild has to delete more than `_freeze`.** Quarto keeps a
+  `.quarto/_freeze/` shadow copy of the cache and a per-chapter `<chapter>_files/`
+  directory of intermediates, both gitignored. Delete `_freeze` on its own and it
+  is repopulated partly by *copying* from those, so figures whose chunk no longer
+  exists come back as though the render had drawn them. On a runner this cannot
+  happen, because a fresh checkout has no intermediates to copy from; it is a
+  local-render trap only, which is why it went unnoticed.
+
+  Measured 2026-08-24. `rm -rf _freeze && quarto render` returned a cache holding
+  **98 orphan PDFs**, six of them the exact files a merged PR had just deleted as
+  dead. They were byte-identical to the stale intermediates, which is the tell: a
+  graphics-device change had just re-drawn every live figure, so anything
+  unchanged had not been drawn at all. The clean command is:
+
+  ```
+  rm -rf _freeze .quarto _book *_files && quarto render
+  ```
+
+  Nothing in that list is tracked. After it the cache holds only what a live
+  chunk emits, which is the only version of it worth committing.
 - **The PDF's figures are drawn by `quartz_pdf`, and that is macOS only.**
   `_quarto.yml` sets `dev: quartz_pdf` under `format: pdf:` because the default
   `pdf()` device is single-byte: it substitutes `.` for `τ`, `α` and `•`, `>=`
