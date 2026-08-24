@@ -77,8 +77,14 @@ The book is a [Quarto](https://quarto.org) book.
 ```bash
 quarto render                          # full book (HTML + PDF)
 quarto render --to html                # HTML only
-quarto render survival.qmd --to html   # a single chapter
+quarto render survival.qmd --to html   # also the full book, see below
 ```
+
+There is no single-chapter render. Naming a chapter rebuilds the whole book,
+because a chapter `.qmd` is an input to the book project rather than a document
+of its own. That third line is still the one to run while iterating, though:
+`freeze: auto` re-executes only the chapters whose source changed, so the render
+walks all of them and rewrites the cache for yours alone.
 
 Rendering reuses Quarto's committed `_freeze/` cache, so a normal render does not
 re-run R. When you change a chapter's code, re-render it locally and commit the
