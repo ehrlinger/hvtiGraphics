@@ -8,8 +8,6 @@ library(hvtiPlotR)
 library(ggplot2)
 ```
 
-To show non-distinct groups and understand overlapping groupings, we turn to VENN diagrams, and UpSet plots. The general rule to show no more than four groups in VENN diagrams. If there are more than four groups, we look at UpSet Plots.
-
 ## When to use it
 
 Reach for a set-membership figure whenever a patient can belong to more than one
@@ -32,7 +30,7 @@ bar for how many patients fall in it, with a matrix of filled and empty dots
 below showing which sets that column represents. It reads like a bar chart with
 a key, and it scales cleanly to seven sets or more.
 
-## VENN diagrams
+## Venn diagrams
 
 For two or three overlapping groups, a Venn diagram is still the clearest
 display: the reader sees the intersections without a legend. Keep it to four
@@ -64,7 +62,7 @@ patients rarely have both valves replaced in one operation — while CABG overla
 both. Past three or four sets the circles stop separating cleanly, which is the
 cue to switch to the UpSet plot.
 
-## Upset plots
+## UpSet plots
 
 `hv_upset()`, from hvtiPlotR [@R-hvtiPlotR], builds an UpSet diagram via `ggupset::scale_x_upset()` to
 visualise surgical procedure co-occurrences or any set-membership data. Where a
