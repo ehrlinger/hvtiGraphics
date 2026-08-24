@@ -189,10 +189,11 @@ against `main`; rule that out before re-rendering.
   sibling release. `cairo_pdf` also works but wants XQuartz, which the build
   machine does not have; quartz is part of macOS, so this adds no dependency
   the local PDF build did not already have. Two consequences. Rendering the PDF
-  off a Mac will now fail at the device. And because the freeze hash covers
-  format metadata, this invalidated all 51 `tex.json` at a stroke — the next
-  `--to pdf` re-executes the whole book, while `--to html` reads its cache
-  untouched, verified with R off `PATH`.
+  on anything other than macOS — Linux, Windows, a runner — will now fail at
+  the device. And because the freeze hash covers format metadata, this
+  invalidated all 51 `tex.json` at a stroke: the next `--to pdf` re-executes
+  the whole book, while `--to html` reads its cache untouched, verified with R
+  off `PATH`.
 
 ## Git and versioning
 
