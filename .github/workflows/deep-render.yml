@@ -21,11 +21,6 @@ name: Deep re-render
 
 on:
   workflow_dispatch:
-    inputs:
-      chapter:
-        description: "Single chapter to render (e.g. survival.qmd). Leave blank to render the whole book — the honest default."
-        required: false
-        default: ""
 
 permissions:
   contents: read
@@ -103,12 +98,14 @@ jobs:
 
       - name: Render against current package code
         run: |
-          if [ -n "${{ inputs.chapter }}" ]; then
-            echo "Rendering single chapter: ${{ inputs.chapter }}"
-            quarto render "${{ inputs.chapter }}" --to html
-          else
-            quarto render --to html
-          fi
+          # There is deliberately no chapter argument. Naming one renders the
+          # whole book anyway, because a chapter is an input to the book project
+          # rather than a document of its own -- and with the freeze deleted
+          # above, that means executing every chunk in all 51 chapters while
+          # reporting a single one. This workflow exposed a `chapter` input
+          # until 2026-08-24 that narrowed nothing and understated the cost by
+          # the whole book. Measured, not assumed.
+          quarto render --to html
 
       - name: Upload the freshly rendered book
         if: always()

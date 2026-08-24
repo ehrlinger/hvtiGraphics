@@ -148,9 +148,17 @@ against `main`; rule that out before re-rendering.
   prescribed that command as the single-chapter render until then, and it has
   never done that.
 
-  It is still the command to run while iterating. What it needs is a prune
-  afterwards, so the commit carries the chapter you meant to rebuild instead of
-  every cache the render touched:
+  It is still the command to run while iterating, and in the ordinary case it
+  needs nothing after it. `freeze: auto` re-executes only the chapters whose
+  source changed, so the render walks all 51 and rewrites the cache for yours
+  alone. Measured 2026-08-24: one edited chapter, 51 processed, 51 HTML files
+  and the book PDF written, and exactly one `_freeze/` directory touched. This
+  rule prescribed a prune as a routine step until then; it is not one.
+
+  Read the freeze diff before you stage, and narrow it only when it is genuinely
+  wider than your chapter. It can be: after `rm -rf _freeze`, when more than one
+  source changed, or when the figures re-drew because a sibling package moved
+  under you. To narrow it, stage what you meant to keep and discard the rest:
 
   ```
   git add _freeze/<chapter>/   # keep the one you meant to rebuild
@@ -158,9 +166,14 @@ against `main`; rule that out before re-rendering.
   git clean -fdq _freeze/      # and the new files among them
   ```
 
-  Staging first is what makes the discard safe. `checkout` restores the working
-  tree from the index, and `clean` leaves alone anything the index now tracks,
-  so the staged chapter survives both while everything else goes back to HEAD.
+  Staging first is what protects the staged chapter. `checkout` restores the
+  working tree from the index, and `clean` leaves alone anything the index now
+  tracks, so it survives both while everything else goes back to HEAD.
+
+  **Everything else under `_freeze/` is destroyed, and `clean` deletes untracked
+  files permanently.** Start from a clean tree, or commit or stash your other
+  cache work first. This is a way out of a diff that got too wide, not a step to
+  run by reflex.
 
 ## Gotchas
 
@@ -231,8 +244,10 @@ against `main`; rule that out before re-rendering.
    this book that means the plain, readable recipe a reader can copy, not the
    clever one.
 3. **Surgical changes.** Touch only the chapters the task requires. Do not
-   restyle or reorganise adjacent chapters, and do not re-render the whole book
-   to fix one figure. Raise nearby problems separately.
+   restyle or reorganise adjacent chapters. Every render rebuilds the whole book
+   (see "Rules for this repo"), so the discipline is not to avoid that, which is
+   impossible, but to keep the *commit* to the chapters you edited. Raise nearby
+   problems separately.
 4. **Goal-driven execution.** State what done looks like before starting. Here
    the criterion is a rendered chapter you have actually looked at, with its
    `_freeze/` committed — not a clean render log.
