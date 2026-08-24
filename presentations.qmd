@@ -155,4 +155,3 @@ not executed during the book build. Pair the dark theme with a dark `template`
 and the light theme with a light one, and keep `theme_hv_ppt_dark()` at its 32 pt
 default here — the template is laid out for that size. Pass `panel_box` to move or
 resize the plot rectangle, and `slide_titles` to set the slide heading.
-```

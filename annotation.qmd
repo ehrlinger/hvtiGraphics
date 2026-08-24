@@ -89,11 +89,11 @@ plot(km) +
 ## Naming series without a legend {#sec-annotation-series}
 
 A CORR figure carries no legend. Not in a manuscript, not on a slide.
-`theme_hv_manuscript()`, `theme_hv_ppt_light()` and `theme_hv_ppt_dark()` all
-set `legend.position = "none"`, so the groups get named on the panel instead,
-with `annotate()`, where the reader's eye already is. A key sends that eye out
-to the margin and back once per curve. On a slide that is most of the fifteen
-seconds you had.
+`theme_hv_manuscript()`, `theme_hv_poster()`, `theme_hv_ppt_light()` and
+`theme_hv_ppt_dark()` all set `legend.position = "none"`, so the groups get
+named on the panel instead, with `annotate()`, where the reader's eye already
+is. A key sends that eye out to the margin and back once per curve. On a slide
+that is most of the fifteen seconds you had.
 
 Two things make a direct label read as part of the figure rather than as one
 more object sitting on it.
