@@ -140,9 +140,27 @@ against `main`; rule that out before re-rendering.
 - **HTML is built in CI; the PDF is built locally.** The `pdf` format needs a
   TeX stack the runner does not have, so `publish.yml` renders `--to html`
   only. `HVTI-Recipes.pdf` and `.tex` are gitignored deliverables.
-- **Re-render a single chapter, not the book, while iterating** —
-  `quarto render <chapter>.qmd` — then commit that chapter's `_freeze/`. A full
-  render touches every cache and buries the real change in the diff.
+- **There is no command that renders one chapter.** `quarto render
+  <chapter>.qmd` rebuilds the whole book, in both formats, because a chapter
+  `.qmd` is an input to a book project rather than a document of its own, so
+  Quarto resolves the project and honours every entry under `_quarto.yml`'s
+  `format:`. Verified repeatedly, most recently on 2026-08-24. This rule
+  prescribed that command as the single-chapter render until then, and it has
+  never done that.
+
+  It is still the command to run while iterating. What it needs is a prune
+  afterwards, so the commit carries the chapter you meant to rebuild instead of
+  every cache the render touched:
+
+  ```
+  git add _freeze/<chapter>/   # keep the one you meant to rebuild
+  git checkout -- _freeze/     # discard the rest
+  git clean -fdq _freeze/      # and the new files among them
+  ```
+
+  Staging first is what makes the discard safe. `checkout` restores the working
+  tree from the index, and `clean` leaves alone anything the index now tracks,
+  so the staged chapter survives both while everything else goes back to HEAD.
 
 ## Gotchas
 
@@ -178,6 +196,21 @@ against `main`; rule that out before re-rendering.
   `pr-check.yml` worked that way once; it now reads the chapter's content for a
   chunk instead. Do not reinstate the directory test. The leftover directories
   are inert — a chunk-free chapter renders clean with a stale one or none.
+- **`_freeze/` accumulates orphans, so a clean rebuild deletes far more than
+  you will expect.** `freeze: auto` only ever adds to the cache. Rename a chunk
+  label and the old figure stays behind forever, sitting beside the new one
+  with nothing pointing at it. Measured 2026-08-24 against `main` @ 0e44d84:
+  121 orphan files, roughly 19 MB. `_freeze/bar/figure-html/` carried both
+  `eda_binary_count-1.png`, dead since its chunk was relabelled, and
+  `fig-bar-binary-count-1.png`, the live one.
+
+  So `rm -rf _freeze && quarto render` produces a diff with a large and
+  alarming block of deletions in it, and that block is the accumulated dead
+  weight rather than lost output. Do not take that on faith either way. Check
+  each deleted basename against the rendered `_book/` and against the freeze
+  `.json` results, and anchor the match on the preceding `/`. A bare substring
+  test invents live references, because `poster-1.png` is a substring of
+  `fig-themes-poster-1.png`.
 
 ## Git and versioning
 
