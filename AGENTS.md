@@ -224,6 +224,22 @@ against `main`; rule that out before re-rendering.
   `.json` results, and anchor the match on the preceding `/`. A bare substring
   test invents live references, because `poster-1.png` is a substring of
   `fig-themes-poster-1.png`.
+- **The PDF's figures are drawn by `quartz_pdf`, and that is macOS only.**
+  `_quarto.yml` sets `dev: quartz_pdf` under `format: pdf:` because the default
+  `pdf()` device is single-byte: it substitutes `.` for `τ`, `α` and `•`, `>=`
+  for `≥`, `-` for `—`, and says so only in an `mbcsToSbcs` warning nobody
+  reads. Every locally built PDF up to 2026-08-24 printed `RMST (. = 1788)`.
+  Most of those glyphs are not the book's to fix — `ggRandomForests` supplies
+  the `τ` label and `hvtiPlotR`'s sample data the `≥` — so editing chapter
+  literals would have covered a fraction of it and re-broken on the next
+  sibling release. `cairo_pdf` also works but wants XQuartz, which the build
+  machine does not have; quartz is part of macOS, so this adds no dependency
+  the local PDF build did not already have. Two consequences. Rendering the PDF
+  on anything other than macOS — Linux, Windows, a runner — will now fail at
+  the device. And because the freeze hash covers format metadata, this
+  invalidated all 51 `tex.json` at a stroke: the next `--to pdf` re-executes
+  the whole book, while `--to html` reads its cache untouched, verified with R
+  off `PATH`.
 
 ## Git and versioning
 
