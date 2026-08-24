@@ -90,6 +90,14 @@ format:
   pdf:
     documentclass: scrreprt
     keep-tex: true
+    # Figures go through quartz, not the default pdf() device, which is
+    # single-byte and silently swaps "." in for the Greek and punctuation
+    # the family puts in axis labels. cairo_pdf would do as well but wants
+    # XQuartz; quartz ships with macOS, so the local PDF build gains no new
+    # dependency. macOS only, which is where the PDF is built.
+    knitr:
+      opts_chunk:
+        dev: quartz_pdf
 
 execute:
   freeze: auto
