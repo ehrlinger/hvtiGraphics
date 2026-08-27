@@ -1,4 +1,4 @@
-# hvti_graphics
+# hvtiGraphics
 
 The **HVTI Recipes** book — 51 Quarto chapters, ~8,000 lines, published to
 `gh-pages`. It is the CORR group's reference for figures, tables and R recipes
