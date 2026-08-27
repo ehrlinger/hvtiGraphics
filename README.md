@@ -1,8 +1,8 @@
 # HVTI Recipes
 
-[![Publish](https://github.com/ehrlinger/hvti_graphics/actions/workflows/publish.yml/badge.svg)](https://github.com/ehrlinger/hvti_graphics/actions/workflows/publish.yml)
-[![Site](https://img.shields.io/badge/read-ehrlinger.github.io%2Fhvti__graphics-1f6feb)](https://ehrlinger.github.io/hvti_graphics/)
-[![Version](https://img.shields.io/badge/edition-3.0.0-blue)](https://github.com/ehrlinger/hvti_graphics/releases)
+[![Publish](https://github.com/ehrlinger/hvtiGraphics/actions/workflows/publish.yml/badge.svg)](https://github.com/ehrlinger/hvtiGraphics/actions/workflows/publish.yml)
+[![Site](https://img.shields.io/badge/read-ehrlinger.github.io%2FhvtiGraphics-1f6feb)](https://ehrlinger.github.io/hvtiGraphics/)
+[![Version](https://img.shields.io/badge/edition-3.0.0-blue)](https://github.com/ehrlinger/hvtiGraphics/releases)
 [![License: CC BY 4.0](https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey)](https://creativecommons.org/licenses/by/4.0/)
 
 A working catalog of the figures and tables we build for CORR manuscripts and
@@ -12,7 +12,7 @@ paper. Each is paired with the code that produces it. The aim is the one we
 hold for all of this team's tooling: start from a working recipe, not a blank
 script.
 
-**Read it here:** <https://ehrlinger.github.io/hvti_graphics/>
+**Read it here:** <https://ehrlinger.github.io/hvtiGraphics/>
 
 This is the **3.0.0** edition, and the first under the new name. The old title
 promised ggplot recipes. But the book already carried CONSORT diagrams,

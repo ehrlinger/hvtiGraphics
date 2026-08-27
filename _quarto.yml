@@ -12,7 +12,7 @@ book:
     left: "Copyright 2025, John Ehrlinger"
     right:
       - icon: github
-        href: https://github.com/ehrlinger/hvti_graphics
+        href: https://github.com/ehrlinger/hvtiGraphics
   chapters:
     - index.qmd
     - intro.qmd

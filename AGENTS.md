@@ -307,7 +307,7 @@ sources and recompose:
 
 ```
 git clone --branch house-style-v1 https://github.com/ehrlinger/house-style ../house-style
-Rscript ../house-style/compose-house-style.R --repo hvti_graphics
+Rscript ../house-style/compose-house-style.R --repo hvtiGraphics
 ```
 
 Clone the `house-style-v1` **tag**, not the default branch — that is the ref CI
