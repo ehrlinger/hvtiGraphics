@@ -10,9 +10,9 @@
   profile:         book
   default persona: (a)
   sources:
-    writing-voice.md               sha256:3018e1e0bf8e
-    writing-reader-profile.md      sha256:179212de138c
-    writing-context.md             sha256:87d5555936e1
+    writing-voice.md               sha256:15e75ca9cb97
+    writing-reader-profile.md      sha256:5131ade189c9
+    writing-context.md             sha256:51f197dc0c97
 -->
 
 # House Style — hvtiGraphics
@@ -124,7 +124,7 @@ register matches the task.
   opener, one rhetorical-question hook, one carried picture, understatement,
   "we"/"you", no marketing tricolons.
 - **Recipe book ("When to use it" sections)**: the Survival Plots chapter
-  opener in `hvti_graphics/survival.qmd`. Narrative register aimed at a
+  opener in `hvtiGraphics/survival.qmd`. Narrative register aimed at a
   biostatistician reader: names the clinical question first ("how long until an
   event"), defines the one idea that makes the method its own (right-censoring),
   ties the function to the SAS macro the reader already trusts (`%kaplan`), and
@@ -169,7 +169,7 @@ throughout. No forced tricolon, no padded feature list, no overselling.
 
 A menu of selectable audiences for the `ehrlinger-writing` harness. Write for
 ONE persona at a time, not a blend. The active persona is chosen per task
-(explicit choice → repo `CLAUDE.md` default → ask). The `hvti_graphics` recipes
+(explicit choice → repo `CLAUDE.md` default → ask). The `hvtiGraphics` recipes
 book defaults to persona (a); the public CRAN packages (`ggRandomForests`,
 `temporal_hazard`) default to persona (d).
 
@@ -221,7 +221,7 @@ assumptions about purpose and constraints.
   (varPro), built on randomForestSRC.
 - **temporal_hazard** — additive (Blackstone, Naftel, and Turner, 1986) hazard
   models in pure R.
-- **hvti_graphics** — this recipes book, which ties the three together into a
+- **hvtiGraphics** — this recipes book, which ties the three together into a
   house style for clinical figures.
 
 ## Purpose
