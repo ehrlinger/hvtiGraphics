@@ -6,7 +6,7 @@
   recompose. Editing this file directly will be reverted by the next
   compose and flagged by --check.
 
-  repo:            hvti_graphics
+  repo:            hvtiGraphics
   profile:         book
   default persona: (a)
   sources:
@@ -15,7 +15,7 @@
     writing-context.md             sha256:87d5555936e1
 -->
 
-# House Style — hvti_graphics
+# House Style — hvtiGraphics
 
 Default reader persona for this repository: **(a)**. Write for one persona at a time.
 
