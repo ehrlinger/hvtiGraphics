@@ -15,7 +15,7 @@ it renders with its freeze cache cleared.
 `ggRandomForests` 3.5.0, `varPro`, `kernelshap`, `gt`, `gtsummary`,
 `hvtiRtables`, `hvtiRutilities`.
 
-**Spec:** `docs/superpowers/specs/2026-08-05-book-shap-and-tables-design.md`
+**Spec:** `dev/specs/2026-08-05-book-shap-and-tables-design.md`
 
 ## Global Constraints
 
@@ -78,7 +78,7 @@ it renders with its freeze cache cleared.
 - [ ] **Step 1: Confirm the starting state**
 
 ```bash
-grep -rn "ggplot graphics recipes" . --include="*.qmd" --include="*.yml" --include="*.md" --exclude-dir=_book --exclude-dir=_freeze --exclude-dir=.quarto --exclude-dir=docs
+grep -rn "ggplot graphics recipes" . --include="*.qmd" --include="*.yml" --include="*.md" --exclude-dir=_book --exclude-dir=_freeze --exclude-dir=.quarto --exclude-dir=dev
 ```
 
 Expected: exactly two hits — `_quarto.yml:6` and `README.md:1`.
@@ -152,11 +152,12 @@ tracked deletion. It regenerates under the new name on the next PDF render.
 - [ ] **Step 7: Verify no old title survives**
 
 ```bash
-grep -rn "ggplot graphics recipes\|Version 2.1\|edition-2.0.0" . --include="*.qmd" --include="*.yml" --include="*.md" --exclude-dir=_book --exclude-dir=_freeze --exclude-dir=.quarto --exclude-dir=docs
+grep -rn "ggplot graphics recipes\|Version 2.1\|edition-2.0.0" . --include="*.qmd" --include="*.yml" --include="*.md" --exclude-dir=_book --exclude-dir=_freeze --exclude-dir=.quarto --exclude-dir=dev
 ```
 
-Expected: no output. (`docs/` is excluded because `docs/superpowers/plans/`
-holds historical plan files that legitimately quote the old title.)
+Expected: no output. (`dev/` is excluded because `dev/specs/` holds historical
+plan files that legitimately quote the old title. It was `docs/` when this plan
+was written, before the portfolio settled on `dev/specs/`.)
 
 - [ ] **Step 8: Render the front matter**
 
@@ -1109,12 +1110,13 @@ its own task.
 - [ ] **Step 2: Run every definition-of-done check**
 
 ```bash
-grep -rn "ggplot graphics recipes\|not yet written\|will migrate to\|is planned\|directly for now" . --include="*.qmd" --include="*.yml" --include="*.md" --exclude-dir=_book --exclude-dir=_freeze --exclude-dir=.quarto --exclude-dir=docs
+grep -rn "ggplot graphics recipes\|not yet written\|will migrate to\|is planned\|directly for now" . --include="*.qmd" --include="*.yml" --include="*.md" --exclude-dir=_book --exclude-dir=_freeze --exclude-dir=.quarto --exclude-dir=dev
 ```
 
-Expected: no output. `docs/` is excluded because `docs/superpowers/plans/` holds
-historical plan files that legitimately quote the old title and the old claims;
-they are record, not source, and are deliberately left alone.
+Expected: no output. `dev/` is excluded because `dev/specs/` holds historical
+plan files that legitimately quote the old title and the old claims; they are
+record, not source, and are deliberately left alone. It was `docs/` when this
+plan was written, before the portfolio settled on `dev/specs/`.
 
 ```bash
 grep -rn "edition-" README.md
@@ -1178,7 +1180,7 @@ path for no reader benefit.
 `hv_tables.qmd` (the hvtiRtables manuscript pipeline) is deliberately not in
 this PR — it waits on the pending hvtiRtables release.
 
-Spec: `docs/superpowers/specs/2026-08-05-book-shap-and-tables-design.md`
+Spec: `dev/specs/2026-08-05-book-shap-and-tables-design.md`
 
 🤖 Generated with [Claude Code](https://claude.com/claude-code)
 EOF

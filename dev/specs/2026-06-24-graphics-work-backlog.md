@@ -6,7 +6,7 @@ coding session. Two repos: **hvtiPlotR** (package) and **hvti_graphics** (book).
 > **Note on referenced artifacts.** Some companion docs live **outside this
 > repo** and CI/other contributors cannot resolve their paths — they are listed
 > for the author's local workflow only:
-> - hvtiPlotR Sankey spec — `docs/superpowers/specs/2026-06-24-hv-sankey-canonical-design.md`
+> - hvtiPlotR Sankey spec — `hvtiPlotR/dev/specs/2026-06-24-hv-sankey-canonical-design.md`
 >   *within the hvtiPlotR repo*, but **untracked** (`docs/` is gitignored there).
 > - Figure-conventions house rules — in the author's Obsidian vault
 >   (out-of-repo); machine paths like `~/Documents/...` are illustrative, not
@@ -21,7 +21,7 @@ Per house rule: open PRs, **John merges**.
 
 ## 1. hvtiPlotR — `hv_sankey` canonical cluster-stability fix
 
-**Spec:** `hvtiPlotR/docs/superpowers/specs/2026-06-24-hv-sankey-canonical-design.md`
+**Spec:** `hvtiPlotR/dev/specs/2026-06-24-hv-sankey-canonical-design.md`
 **Gist:** same `ggsankey` engine; auto-derive a lineage-preserving node order
 (plurality-parent per k→k+1, sibling-adjacent leaf order) — fixes ribbon
 crossing **and** the `NA` nodes (root cause: `node_levels` defaults to the first
