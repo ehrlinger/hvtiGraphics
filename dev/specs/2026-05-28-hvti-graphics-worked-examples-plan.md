@@ -8,7 +8,7 @@
 
 **Tech Stack:** Quarto 1.10, R, knitr; `hvtiPlotR` 2.3.1, `ggRandomForests` 2.7.3.9014 (→ v3.0.0), `randomForestSRC` 3.6.2, `varPro` 3.1.0, `TemporalHazard` 1.0.3, `hvtiRutilities` 1.0.0.9004, `gt`, `patchwork`, LaTeX (`pdflatex`).
 
-**Spec:** `docs/superpowers/specs/2026-05-28-hvti-graphics-worked-examples-design.md`
+**Spec:** `dev/specs/2026-05-28-hvti-graphics-worked-examples-design.md`
 **Branch:** `feat/plot-recipes` (already created)
 
 ---
