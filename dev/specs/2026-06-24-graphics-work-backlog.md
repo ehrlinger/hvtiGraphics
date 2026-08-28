@@ -6,15 +6,19 @@ coding session. Two repos: **hvtiPlotR** (package) and **hvti_graphics** (book).
 > **Note on referenced artifacts.** Some companion docs live **outside this
 > repo** and CI/other contributors cannot resolve their paths — they are listed
 > for the author's local workflow only:
-> - hvtiPlotR Sankey spec — `hvtiPlotR/dev/specs/2026-06-24-hv-sankey-canonical-design.md`
->   *within the hvtiPlotR repo*, but **untracked** (`docs/` is gitignored there).
+> - hvtiPlotR Sankey spec — `hvtiPlotR/dev/specs/2026-06-24-hv-sankey-canonical-design.md`,
+>   *within the hvtiPlotR repo*. Tracked there since ehrlinger/hvtiPlotR#122; it
+>   had been untracked until then — a bare `docs` gitignore, meant for the
+>   pkgdown site, matched `docs/superpowers/` at depth and swallowed nine
+>   development records. Still cross-repo, so still not resolvable from CI here.
 > - Figure-conventions house rules — in the author's Obsidian vault
 >   (out-of-repo); machine paths like `~/Documents/...` are illustrative, not
 >   resolvable in CI.
 >
 > Everything in **this** repo is referenced by repo-relative path.
 
-Branch in flight: `hvtiPlotR@feat/sankey-canonical` (spec only so far, no code).
+Branch in flight when this was written: `hvtiPlotR@feat/sankey-canonical`
+(spec only, no code). That work has since shipped — see the Status section.
 Per house rule: open PRs, **John merges**.
 
 ---
@@ -119,9 +123,18 @@ combination so it stops being a numbered chapter. (Renumbers later chapters.)
   Ch. 16 postage 3×3 (`91d8e06`); #7 Ch. 15 spaghetti+LOESS legend (`60f4b8d`);
   #9 Ch. 17 specialty → part divider (`8210e5c`).
 - **Next book pass (this branch):** random-forest+ chapters review.
-- **Deferred book examples — consume hvtiPlotR work:** #2 Impella alluvial
-  (`show_yaxis`), #4 Ch. 14 Venn (`hv_venn()`), #6 numbers-at-risk composites
-  (risk-table panel).
-- **hvtiPlotR session:** #1 `hv_sankey`; #2 `hv_alluvial show_yaxis`; #4 new
-  `hv_venn()` (wraps `ggvenn`); #6 risk-table panel; #3 theme defaults
-  (`legend.position` inside) + book-wide "legends inside" sweep.
+- **Deferred book examples — consume hvtiPlotR work, now available:** #2 Impella
+  alluvial (`show_yaxis`), #4 Ch. 14 Venn (`hv_venn()`), #6 numbers-at-risk
+  composites (risk-table panel). No longer blocked on the package.
+- **hvtiPlotR session — SHIPPED (verified 2026-08-28 against hvtiPlotR
+  2.7.10):** #1 `hv_sankey` canonical order, via the internal
+  `.derive_node_order()` in `R/cluster-sankey-plot.R` plus the
+  `flow_alpha = 0.5` / `label_alpha = 0.3` defaults on `plot.hv_sankey()`;
+  #2 `show_yaxis` in `R/alluvial-plot.R`; #4 `hv_venn()`; #6 `hv_atrisk()` and
+  `hv_atrisk_compose()`. The package side of these four is done — the design
+  records read "Draft for review" because the status lines were never revisited,
+  not because work is owed.
+- **hvtiPlotR session — still open:** #3 theme defaults + book-wide sweep. Left
+  as written and *not* verified here: house style has since moved toward direct
+  annotation over legends, which cuts against this item's "legends inside the
+  panel" framing. Needs a decision before it is actioned or closed.
