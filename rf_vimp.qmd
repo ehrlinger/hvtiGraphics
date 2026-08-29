@@ -1,9 +1,10 @@
-# Variable importance
+# Which variables contribute to prediction?
 
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 7, fig.height = 5, dpi = 150)
 library(randomForestSRC)
 library(ggRandomForests)
 library(ggplot2)
@@ -12,123 +13,119 @@ library(hvtiPlotR)
 
 ## When to use it
 
-You have fit a random forest and it predicts well, and now a co-author asks the
-obvious next question: which variables are actually carrying the prediction?
-That is what a variable importance plot answers. Reach for it whenever you want
-to rank predictors by how much the forest leans on them, whether you are
-trimming a wide cohort down to a workable model, sanity-checking that the
-clinically expected markers rise to the top, or building the figure that opens
-the results section of a CORR paper.
+Once a forest predicts adequately, a co-author usually asks which variables
+carry that prediction. Permutation variable importance (VIMP) answers by
+breaking one predictor's information in the OOB data and measuring how much
+prediction error changes.
 
-The standard random forest answer is **permutation variable importance** (VIMP).
-The idea is simple to picture. For one predictor, take the out-of-bag patients
-(the cases each tree never saw during fitting), shuffle that predictor's values
-among them so it no longer lines up with the outcome, and re-run those patients
-down the forest. If prediction error jumps, the forest was relying on that
-variable; if error barely moves, the variable was doing little work. The size of
-that jump is the variable's importance.
+That is a model question. VIMP is not an effect size, does not give the
+direction of association, and does not show that a variable causes the
+outcome. Correlated predictors can share predictive information, so permuting
+one may redistribute or understate the importance we would see if it stood
+alone.
 
-`gg_vimp()`, from ggRandomForests [@R-ggRandomForests], pulls the VIMP for every
-predictor out of a fitted forest, sorts it, and hands back a tidy object whose
-`plot()` method draws the ranking. As with the rest of the recipes here, what
-comes back is a bare ggplot you finish with a house theme and the usual `+`.
+## Fit a classification forest
 
-## The data it needs
-
-VIMP is computed from a fitted forest, so the real input is an `rfsrc` object,
-not a data frame. The one thing to get right at fit time is importance itself:
-pass `importance = TRUE` so the forest stores permutation VIMP as it builds.
-Skip it and `gg_vimp()` still works, but it has to auto-calculate the scores on
-the fly and warns you that it did so.
-
-We use the primary biliary cirrhosis (`pbc`) survival data that ships with
-randomForestSRC: one row per patient with a follow-up time, an event indicator,
-and a panel of liver-function lab values. The outcome is time to death, so this
-is a survival forest, but VIMP reads the same way for regression and
-classification forests too.
+We again use iris so the returned object exposes both global and class-specific
+VIMP. `importance = TRUE` asks `rfsrc()` to retain permutation importance. The
+bounded 300-tree fit is for teaching; a study analysis should verify both the
+error trajectory and the ranking's stability across an adequate forest.
 
 ```{r}
 #| label: rf-fit
-data(pbc, package = "randomForestSRC")
-rf <- rfsrc(Surv(days, status) ~ ., data = pbc, ntree = 100,
-            importance = TRUE)
+set.seed(20260828)
+rf <- rfsrc(
+  Species ~ .,
+  data = iris,
+  ntree = 300,
+  importance = TRUE
+)
 rf
 ```
 
-The summary confirms the family (survival) and the predictors the forest had to
-work with. A small `ntree` keeps this example fast; for a real analysis you
-would let it grow to the default and confirm the error curve has flattened
-before trusting any ranking built on top of it.
+## Build and inspect it
 
-## Build it
+```{r}
+#| label: rf-vimp-object
+vimp_dta <- gg_vimp(rf)
+vimp_dta
+head(as.data.frame(vimp_dta), 8)
 
-`gg_vimp()` extracts the VIMP for every variable and orders them from most to
-least important. The `plot()` method draws a horizontal bar per predictor, so
-the ranking reads top to bottom.
+with(as.data.frame(vimp_dta),
+     aggregate(vimp, list(outcome = set), max))
+```
+
+The `vars` column holds raw predictor identities. `set = "all"` is the global
+permutation score; the named class sets show the one-vs-rest contribution for
+each outcome. Positive VIMP means permutation worsened prediction. Negative
+VIMP means permutation improved it in this fit, often a sign of noise or an
+unstable small contribution. The sign is not the direction of a clinical
+association.
+
+## Use display labels at plot time
+
+Human-readable labels belong in the display, not in the model object. The
+current plot method uses `labels`. We confirm that applying those labels leaves
+the returned variables and their order unchanged.
+
+```{r}
+#| label: rf-vimp-label-check
+feature_labels <- c(
+  Sepal.Length = "Sepal length",
+  Sepal.Width = "Sepal width",
+  Petal.Length = "Petal length",
+  Petal.Width = "Petal width"
+)
+
+raw_ids <- as.character(vimp_dta$vars)
+vimp_plot <- plot(vimp_dta, labels = feature_labels)
+
+data.frame(
+  raw_names_unchanged = identical(raw_ids, as.character(vimp_dta$vars)),
+  rows = nrow(vimp_dta),
+  outcome_sets = length(unique(vimp_dta$set))
+)
+```
 
 ```{r}
 #| label: fig-rf_vimp
-#| fig-cap: "Permutation variable importance for every predictor in the pbc survival forest, ranked from most to least important"
-plot(gg_vimp(rf)) + theme_hv_manuscript()
+#| fig-cap: "Permutation VIMP overall and by iris class; display labels do not alter the stored predictor names"
+vimp_plot +
+  theme_hv_manuscript() +
+  scale_y_continuous(breaks = c(0, 0.4, 0.8), limits = c(0, 0.8)) +
+  labs(x = "Predictor", y = "Permutation VIMP", fill = "VIMP > 0") +
+  theme(axis.text.x = element_text(size = 7))
 ```
-
-Bars are coloured by the sign of the importance. A handful of clinical markers,
-bilirubin, albumin, prothrombin time, separate clearly from the pack, which is
-exactly what we would expect for liver disease. Swap `theme_hv_manuscript()` for
-`theme_hv_poster()` when you want the larger-text version.
 
 ## Read it
 
-A VIMP plot is a ranking, and that framing is the whole skill of reading one.
-Look for:
+Start with the `all` facet for the global ranking, then inspect whether the
+class-specific facets tell the same story. Petal width and petal length carry
+most of the prediction in this fit. A predictor can rank differently by class
+because the forest may need it to distinguish one outcome more than another.
 
-- **The break in the ranking.** Scan top to bottom for the gap where a few
-  high-importance predictors give way to a long flat tail of near-zero
-  variables. The handful above that gap are the ones the forest actually uses;
-  the tail is mostly noise.
-- **The sign of each bar.** Importance is colour-coded by sign. A negative VIMP
-  means permuting the variable *improved* out-of-bag error, a fairly strong
-  signal that the variable is noise the forest was better off ignoring.
-- **Ranking, not effect size.** VIMP tells you *whether* a variable matters to
-  the forest, never the *direction* or *shape* of its effect. Bilirubin sitting
-  at the top says the forest leans on it heavily, not that higher bilirubin
-  means worse survival (it does, but the plot does not show that). For the shape
-  of an effect, see the [variable and partial dependence](rf_dependence.qmd)
-  chapter.
-- **One number per variable, not per patient.** VIMP is a statement about the
-  model as a whole; for a statement about the individual, one number per
-  variable per observation, see the [SHAP attribution](rf_shap.qmd) chapter.
+The object contains point estimates, not confidence intervals. Small gaps near
+the bottom should not be treated as settled ranks. If the order matters to a
+manuscript conclusion, refit across seeds or use a resampling analysis and
+report that uncertainty separately.
 
-## Variations
+## Adapt it
 
-### Show only the top predictors
-
-For a manuscript figure you rarely want every variable cluttering the panel. The
-`nvar` argument keeps just the top-N, giving a clean, focused figure that puts
-the eye straight on the predictors that matter.
-
-```{r}
-#| label: fig-rf_vimp-top
-#| fig-cap: "The same variable importance ranking restricted to the top ten predictors for a cleaner manuscript figure"
-plot(gg_vimp(rf, nvar = 10)) + theme_hv_manuscript()
-```
-
-Ten is a sensible default for a results figure; the full ranking is better kept
-as a supplement so a reader can confirm nothing surprising hides in the tail.
+For a survival or regression forest there is usually one outcome set. For a
+classification forest, inspect `unique(vimp_dta$set)` before deciding whether
+to report the global ranking or a class-specific one. `gg_vimp(rf, nvar = 10)`
+can reduce a long display, but keep the full ranking in a supplement when the
+cutoff affects interpretation.
 
 ## Pitfalls
 
-- **Fit with `importance = TRUE`.** If you do not, `gg_vimp()` auto-calculates
-  VIMP on the spot and warns you. The result is the same numbers, but the warning
-  is easy to miss and the extra pass is wasted work. Set it at fit time and the
-  scores are already there.
-- **VIMP is relative ranking, not a causal claim.** A high bar means the forest
-  found the variable useful for prediction given everything else in the model. It
-  is not an effect size and it is not evidence that the variable *causes* the
-  outcome. Two correlated predictors can split their importance between them, and
-  dropping one can lift the other; read VIMP as a ranking within this forest, not
-  a verdict on any single variable.
-- **Stability.** VIMP inherits the forest's randomness, so adjacent
-  low-importance variables can trade places between fits. Confirm the forest has
-  converged (`gg_error()`) before you trust the ranking, and resist reading fine
-  distinctions near the bottom of the list.
+- **Reading sign as clinical direction.** Positive VIMP means worse prediction
+  after permutation, not that larger predictor values increase risk.
+- **Calling VIMP an effect size.** Scores depend on this forest, this outcome,
+  this predictor set, and the prediction-error scale.
+- **Ignoring correlated predictors.** Shared information can be split or
+  redistributed across variables.
+- **Treating labels as data changes.** Use `labels` in `plot()`. Keep the raw
+  predictor names intact for downstream code and audit trails.
+- **Claiming causality.** VIMP describes predictive contribution. It does not
+  identify an intervention effect.

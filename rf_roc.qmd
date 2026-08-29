@@ -1,9 +1,10 @@
-# ROC and Brier performance
+# How well does the forest predict?
 
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 7, fig.height = 4.5, dpi = 150)
 library(randomForestSRC)
 library(ggRandomForests)
 library(ggplot2)
@@ -13,141 +14,149 @@ library(mlbench)
 
 ## When to use it
 
-A *classification* forest does not just label each patient, it returns a
-probability for each class, and a probability is only useful if you can say how
-trustworthy it is. Reach for these plots whenever you need to report how well a
-classification forest performs: whether it can tell recurrence from
-non-recurrence, how it compares against another model, or whether the predicted
-probabilities are calibrated well enough to act on. They are the performance
-half of any classification result, the figures a reviewer looks for right after
-the model description.
+Model performance is not one question. For a binary outcome, an ROC curve asks
+whether predicted scores rank events above non-events across thresholds. For a
+right-censored survival outcome, a Brier curve asks how far predicted survival
+probabilities sit from observed survival status over follow-up, with censoring
+handled in the score.
 
-We judge a probabilistic classifier the same way we judge any other:
+Neither display validates transportability. And neither estimates a causal
+treatment effect. They assess predictions from a fitted model.
 
-- The **ROC curve** traces the trade-off between the true-positive rate
-  (sensitivity, the share of true events you catch) and the false-positive rate
-  (1 minus specificity, the share of non-events you wrongly flag) as the decision
-  threshold sweeps from 0 to 1. The **area under the curve (AUC)** boils that
-  whole curve down to one number: 0.5 is a coin flip, 1.0 is perfect separation.
-- The **Brier score** measures calibration, the mean squared difference between
-  predicted probabilities and observed outcomes. Lower is better.
+## Discrimination for a binary outcome
 
-Both come from ggRandomForests [@R-ggRandomForests], and a useful detail comes
-for free: these are computed out-of-bag (from patients each tree never saw
-during fitting), so they are honest estimates that need no separate test set.
-
-## The data it needs
-
-ROC reads from a fitted classification forest, one whose outcome is a factor so
-the forest predicts class probabilities. We use the Pima Indians diabetes data
-from `mlbench` [@R-mlbench] — 768 patients with eight clinical measurements and a
-two-level `diabetes` outcome — a forest that discriminates well enough to draw a
-ROC curve worth reading.
+We fit a classification forest to the public Pima diabetes data. The factor
+levels are printed before we choose the positive class, because
+`which_outcome = 2` means the second level, `pos`, in this fit.
 
 ```{r}
-#| label: rf-fit
+#| label: rf-classification-fit
 data(PimaIndiansDiabetes, package = "mlbench")
 levels(PimaIndiansDiabetes$diabetes)
-rf <- rfsrc(diabetes ~ ., data = PimaIndiansDiabetes, ntree = 100)
-rf$family
+
+set.seed(20260828)
+rf_class <- rfsrc(
+  diabetes ~ .,
+  data = PimaIndiansDiabetes,
+  ntree = 300
+)
+rf_class
 ```
 
-The `family` field confirms a classification forest, and the levels are `neg`
-(no diabetes) and `pos` (diabetes). The clinically interesting event is a
-positive diagnosis, so that is the class we will treat as positive.
+The teaching value keeps execution bounded. Before reporting a study AUC, we
+would verify the error trajectory with enough trees and evaluate the model on
+the intended validation population.
 
-## Build it
+## Build and inspect the ROC object
 
-`gg_roc()` builds the out-of-bag ROC curve for one outcome. The `which_outcome`
-argument names the class to treat as positive, and the important thing is that
-it takes a *numeric index*, not the level name: `2` selects the second level,
-`pos`. Pass the string `"pos"` and the call errors with "subscript out of bounds".
+`gg_roc()` defaults to OOB class probabilities for an `rfsrc` training fit. Its
+returned columns are sensitivity, specificity, and the threshold used at each
+point.
+
+```{r}
+#| label: rf-roc-object
+roc_dta <- gg_roc(rf_class, which_outcome = 2, oob = TRUE)
+roc_dta
+head(as.data.frame(roc_dta), 4)
+
+roc_check <- data.frame(
+  positive_class = levels(PimaIndiansDiabetes$diabetes)[2],
+  auc = calc_auc(roc_dta),
+  min_fpr = min(1 - roc_dta$spec),
+  max_fpr = max(1 - roc_dta$spec),
+  min_tpr = min(roc_dta$sens),
+  max_tpr = max(roc_dta$sens)
+)
+roc_check[-1] <- lapply(roc_check[-1], round, digits = 3)
+roc_check
+```
 
 ```{r}
 #| label: fig-rf_roc
-#| fig-cap: "Out-of-bag ROC curve for the Pima diabetes classification forest, treating a positive diagnosis as the event, with the AUC printed on the panel"
-plot(gg_roc(rf, which_outcome = 2)) + theme_hv_manuscript()
-```
-
-The curve bows toward the top-left corner. The further it pulls away from the
-diagonal (the line a random classifier would trace), the better the forest
-separates diabetic from non-diabetic patients, and the AUC printed on the panel
-quantifies that gap.
-
-## Read it
-
-- **Distance from the diagonal is discrimination.** A curve hugging the top-left
-  corner means the forest ranks events above non-events almost every time; a
-  curve sagging toward the 45-degree line means it is barely better than
-  guessing. The AUC is that distance as a single number, easy to compare across
-  models.
-- **AUC ranks, Brier calibrates.** AUC tells you whether the *ranking* is right,
-  whether events get higher predicted probabilities than non-events. It says
-  nothing about whether a predicted 0.8 actually happens 80% of the time. That is
-  calibration, and it is what the Brier score checks. A forest can rank well (high
-  AUC) yet be poorly calibrated, so read both.
-- **Read per-class curves against each other.** In the multi-class plot
-  (@fig-rf_roc-multiclass),
-  the class whose curve sags closest to the diagonal is the one the forest finds
-  hardest to separate from the rest. That is usually the more informative finding
-  than the overall headline number.
-
-## Variations
-
-### Multi-class ROC
-
-With more than two classes you draw one curve per class, each class treated as
-positive in turn against all the others (one-vs-rest). The `per_class = TRUE`
-flag does this in a single call. We illustrate on `iris`, where the three
-species give three curves.
-
-```{r}
-#| label: fig-rf_roc-multiclass
-#| fig-cap: "One-vs-rest ROC curves for the three iris species, one curve per class treated as positive in turn"
-rf_iris <- rfsrc(Species ~ ., data = iris, ntree = 100)
-plot(gg_roc(rf_iris, which_outcome = 1, per_class = TRUE)) +
+#| fig-cap: "OOB ROC curve for positive diabetes, with false-positive rate on the x-axis and sensitivity on the y-axis"
+plot(roc_dta) +
   theme_hv_manuscript()
 ```
 
-Each coloured curve is one species-versus-rest classifier. The well-separated
-species hug the top-left corner; any class whose curve sags toward the diagonal
-is the one the forest struggles to tell apart from the others.
+The curve runs from the lower-left to the upper-right. The red 45-degree line
+is chance ranking; a useful curve bows toward the upper-left. AUC is on the 0
+to 1 scale, with 0.5 representing chance and 1 perfect ranking. It says nothing
+by itself about whether a predicted probability of 0.8 occurs 80% of the time.
 
-### Brier score (on a survival forest)
+For a multi-class forest, request one class index at a time and name the
+one-vs-rest comparison in the caption. Current `rfsrc` behavior does not build a
+multi-class object from `per_class = TRUE`, so explicit class-specific calls are
+the maintained, auditable route here.
 
-The Brier score is a calibration measure, but in ggRandomForests `gg_brier()`
-only supports right-censored *survival* forests. It errors on a classification
-forest, so we cannot run it on the Pima diabetes model above; instead we refit `pbc`
-as a survival forest and plot the integrated Brier score over follow-up time,
-the survival analogue of the calibration check we want for classification.
+## Time-resolved survival prediction error
+
+Now we change both the outcome and the metric. The `veteran` data provide a
+right-censored survival outcome. `gg_brier()` wraps the censoring-aware Brier
+calculation from randomForestSRC and returns one score per event time.
+
+```{r}
+#| label: rf-survival-fit
+data(veteran, package = "randomForestSRC")
+
+set.seed(20260828)
+rf_surv <- rfsrc(
+  Surv(time, status) ~ .,
+  data = veteran,
+  ntree = 300
+)
+rf_surv
+```
+
+```{r}
+#| label: rf-brier-object
+brier_dta <- gg_brier(rf_surv, cens.model = "km")
+brier_dta
+head(as.data.frame(brier_dta)[c("time", "brier", "crps")], 5)
+
+brier_check <- data.frame(
+  time_min = min(brier_dta$time),
+  time_max = max(brier_dta$time),
+  brier_min = min(brier_dta$brier),
+  brier_max = max(brier_dta$brier),
+  censoring_model = attr(brier_dta, "cens.model"),
+  integrated_crps = attr(brier_dta, "crps_integrated")
+)
+brier_check
+```
 
 ```{r}
 #| label: fig-rf_roc-brier
-#| fig-cap: "Integrated Brier score over follow-up time for a pbc survival forest, where lower curves mean better-calibrated predictions"
-data(pbc, package = "randomForestSRC")
-rf_surv <- rfsrc(Surv(days, status) ~ ., data = pbc, ntree = 100)
-plot(gg_brier(rf_surv)) + theme_hv_manuscript()
+#| fig-cap: "OOB time-resolved Brier prediction error for the veteran survival forest; lower is better"
+plot(brier_dta) +
+  theme_hv_manuscript() +
+  labs(x = "Follow-up time (days)", y = "Brier score")
 ```
 
-Lower curves mean better-calibrated survival predictions across time. Read it
-alongside the error curve and AUC: discrimination (ROC and AUC) tells you
-whether the ranking is right, while the Brier score tells you whether the
-predicted probabilities themselves can be trusted.
+The Brier score compares predicted survival probability with whether each
+patient is event-free at that time. Because some outcomes are unknown after
+censoring, the calculation uses inverse-probability-of-censoring weighting;
+`cens.model = "km"` estimates that censoring distribution with Kaplan-Meier.
+Whenever randomForestSRC can do so, it uses OOB values.
+
+Lower is better, but the curve is not a calibration curve and not a
+discrimination curve. It combines both properties of probabilistic prediction.
+The far-right tail rests on very few patients with long follow-up, so we do not
+read its drop toward zero as evidence of improving performance.
+To study calibration, compare predicted and observed risks by horizon; to study
+survival discrimination, use a censoring-aware concordance or time-dependent
+ROC analysis.
 
 ## Pitfalls
 
-- **`which_outcome` is a number, not a name.** It is the *index* of the class to
-  treat as positive. Use `2` to select the second level; passing the level name
-  like `"pos"` throws "subscript out of bounds". Check `levels()` to confirm which
-  index is the class you mean.
-- **`gg_brier()` is survival-only.** It works on right-censored survival forests
-  and errors on a classification forest, which is why the Brier figure here is
-  built on a `pbc` survival fit rather than the Pima diabetes classification fit
-  used for ROC. Do not expect a Brier curve straight off your classifier.
-- **Match the metric to the family.** ROC and AUC need a classification or
-  probability forest; `gg_brier()` here targets survival. Picking the right tool
-  for the forest family saves you a confusing error message.
-- **OOB is the honest estimate, but it is not magic.** These curves come from
-  out-of-bag patients, so they approximate test-set performance without holding
-  data back. They still inherit the forest's variance, so confirm the forest has
-  converged before quoting a headline AUC.
+- **Choosing the wrong positive class.** Print the factor levels, then map the
+  numeric `which_outcome` index to the clinical event in the caption.
+- **Reversing the ROC axes.** The plot uses false-positive rate (`1 -
+  specificity`) on x and sensitivity on y. The chance line rises from `(0, 0)`
+  to `(1, 1)`.
+- **Calling AUC calibration.** AUC measures ranking discrimination.
+- **Calling Brier score calibration alone.** Brier score is overall
+  probabilistic prediction error, affected by calibration and discrimination.
+- **Ignoring censoring and time units.** Report the IPCW censoring model and put
+  the cohort's follow-up units on the x-axis.
+- **Calling OOB external validation.** OOB metrics are internal estimates. They
+  do not show that performance will carry to another registry or era.
