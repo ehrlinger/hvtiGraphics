@@ -1,5 +1,9 @@
 # Postage stamp plots
 
+Does the relationship between two measurements look the same across clinical
+groups or eras? A postage stamp plot gives each subgroup the same small panel so
+the layout carries the comparison.
+
 ```{r}
 #| label: setup
 #| include: false
@@ -20,7 +24,8 @@ the way it compares photographs in a contact sheet: the layout does the
 alignment for you. Reach for it when one figure has to carry a per-subgroup
 comparison and an overlay would be too busy.
 
-`hvtiPlotR` has no helper for this layout, so we build it with base ggplot2's
+hvtiPlotR 2.7.10 has no postage-stamp or faceting constructor, so we build this
+layout directly with ggplot2's
 [@R-ggplot2] `facet_wrap()` and apply the house theme `theme_hv_manuscript()` for
 visual consistency. The faceting is the whole trick: you write one `ggplot()`
 call describing a single panel, add `facet_wrap()`, and ggplot2 repeats the panel
@@ -53,12 +58,26 @@ years turns one busy overlay into a contact sheet you read year by year;
 substitute your own grouping (centre, severity class, era) and the mechanics are
 identical.
 
+## Inspect it
+
+There is no S3 constructor object in this direct faceting recipe. Check the
+factor order and panel counts before smoothing, because a sparse or misordered
+panel looks just as finished as a well-supported one.
+
+```{r}
+#| label: postagestamp_inspect
+levels(dat[[grp]])
+table(dat[[grp]], useNA = "ifany")
+summary(dat[c(xvar, yvar)])
+```
+
 ## Build it
 
 Each panel shows the relationship between the two numeric variables for one level
-of the faceting variable, with a loess trend (a flexible local-regression curve)
-to summarise the pattern within each subgroup. `facet_wrap()` lays the panels out
-left to right and wraps to a new row when it runs out of width.
+of the faceting variable, with a straight fitted line to summarize the direction
+within each subgroup. A linear fit is stable in these small, narrow panels;
+`facet_wrap()` lays them out left to right and wraps to a new row when it runs
+out of width.
 
 ```{r}
 #| label: fig-postagestamp
@@ -66,12 +85,13 @@ left to right and wraps to a new row when it runs out of width.
 #| fig-height: 5
 ggplot(dat, aes(x = .data[[xvar]], y = .data[[yvar]])) +
   geom_point(alpha = 0.4, size = 0.8) +
-  geom_smooth(method = "loess", se = FALSE) +
+  geom_smooth(method = "lm", se = FALSE) +
   facet_wrap(vars(.data[[grp]]), ncol = 3) +
+  scale_x_continuous(breaks = c(8, 12, 16)) +
   labs(
     title = "Small-multiple panels by operative year",
-    x = xvar,
-    y = yvar
+    x = "Years from first surgery",
+    y = "Ejection fraction (%)"
   ) +
   theme_hv_manuscript()
 ```
@@ -84,7 +104,11 @@ trick of a rescaled axis.
 ## Read it
 
 Read a postage stamp plot by comparing panels, not by studying any one in
-isolation.
+isolation. Years from first surgery are on the x-axis, ejection fraction is on
+the y-axis, and operative year defines the panels. Each fitted line uses only
+the observations in its panel. Differences among lines are descriptive
+era comparisons; they do not show that operative year caused EF to differ or
+that a cross-sectional pattern is a within-patient change.
 
 - **Compare on the shared scale.** The point of the layout is that the axes are
   fixed across panels, so a difference in height or slope between two panels is a
@@ -98,7 +122,7 @@ isolation.
   operations) gives a smooth you should not over-read; the curve is drawn with the
   same confidence as a panel backed by ten times the data.
 
-## Variations
+## Adapt it
 
 ### Fixing the panel layout
 
@@ -109,15 +133,17 @@ stack them, set `nrow` or `ncol` directly.
 ```{r}
 #| label: fig-postagestamp-row
 #| fig-cap: "The same panels forced into a single row to emphasise a left-to-right comparison"
+#| fig-width: 12
 #| fig-height: 3.2
 ggplot(dat, aes(x = .data[[xvar]], y = .data[[yvar]])) +
   geom_point(alpha = 0.4, size = 0.8) +
-  geom_smooth(method = "loess", se = FALSE) +
+  geom_smooth(method = "lm", se = FALSE) +
   facet_wrap(vars(.data[[grp]]), nrow = 1) +
+  scale_x_continuous(breaks = c(8, 12, 16)) +
   labs(
     title = "Panels in a single row",
-    x = xvar,
-    y = yvar
+    x = "Years from first surgery",
+    y = "Ejection fraction (%)"
   ) +
   theme_hv_manuscript()
 ```
@@ -137,15 +163,23 @@ up.
 #| fig-height: 5
 ggplot(dat, aes(x = .data[[xvar]], y = .data[[yvar]])) +
   geom_point(alpha = 0.4, size = 0.8) +
-  geom_smooth(method = "loess", se = FALSE) +
+  geom_smooth(method = "lm", se = FALSE) +
   facet_wrap(vars(.data[[grp]]), scales = "free_y") +
+  scale_x_continuous(breaks = c(8, 12, 16)) +
   labs(
     title = "Free y-axis per panel (compare shape, not height)",
-    x = xvar,
-    y = yvar
+    x = "Years from first surgery",
+    y = "Ejection fraction (%)"
   ) +
   theme_hv_manuscript()
 ```
+
+## Deliver it
+
+Once the facet order and shared scales are fixed, use
+[Finish and deliver the result](publications.qmd) for the manuscript, poster, or
+slide export path. Keep the panel variable, per-panel smoother, and any free
+scale choice in the caption so the exported sheet remains interpretable.
 
 ## Pitfalls
 

@@ -1,5 +1,9 @@
 # Histogram plots
 
+How well do treatment groups overlap after adjustment, and how does the mix of
+a cohort change over time? Histograms answer both questions when the bin counts
+and their denominator are made explicit.
+
 ```{r}
 #| label: setup
 #| include: false
@@ -37,7 +41,7 @@ mode** (inverse probability of treatment weighting, the alternative to 1:1
 matching) you pass `weight_col`: the overlay height is the sum of weights in each
 bin rather than a matched count.
 
-`sample_mirror_histogram_data()` simulates 2,000 patients with a continuous
+`sample_mirror_histogram_data()` simulates 4,000 patients (2,000 per group) with a continuous
 propensity score (`prob_t`), a binary group indicator (`tavr`), and a match flag
 (`match`). `score_multiplier = 100` puts the score on a 0 to 100 percent scale
 and `binwidth = 5` sets 5-point bins.
@@ -57,6 +61,20 @@ mh <- hv_mirror_hist(
   score_multiplier = 100,
   binwidth         = 5
 )
+```
+
+## Inspect it
+
+Before plotting, check what the constructor kept. The class selects the plot
+method, `meta` records the columns and five-point bin width, and `tables` carries
+the balance diagnostics we will report with the figure.
+
+```{r}
+#| label: mirror_histogram_inspect
+class(mh)
+mh$meta[c("score_col", "group_col", "binwidth", "n_obs", "n_dropped")]
+mh$tables$diagnostics[c("group_counts_before", "group_counts_matched",
+                        "smd_before", "smd_matched")]
 ```
 
 ## Build it
@@ -142,7 +160,13 @@ An SMD under about 0.1 after matching is the usual rule of thumb for adequate
 balance. Quote the matched SMD next to the figure so the reader does not have to
 take the symmetry on trust.
 
-## Variations
+The x-axis is propensity score in percent and the y-axis is the number of
+patients in each five-point bin, with SAVR above zero and TF-TAVR below. Compare
+the dark matched overlay with the light full-cohort bars, then confirm the visual
+comparison with the SMD. This is a balance diagnostic. It does not estimate a
+treatment effect or establish that treatment caused an outcome difference.
+
+## Adapt it
 
 ### Weighted IPTW mode (Limited vs. Extended)
 
@@ -167,6 +191,10 @@ mh_wt <- hv_mirror_hist(
   score_multiplier = 100,
   binwidth         = 5
 )
+
+mh_wt$meta[c("score_col", "group_col", "binwidth", "n_obs", "n_dropped")]
+mh_wt$tables$diagnostics[c("effective_n_by_group", "smd_before",
+                           "smd_weighted")]
 ```
 
 The bare weighted panel looks like the binary-match bare plot, but the overlay
@@ -218,6 +246,12 @@ mh_wt$tables$diagnostics$smd_weighted
 mh_wt$tables$diagnostics$effective_n_by_group
 ```
 
+Here the x-axis remains propensity score, but the overlay height is the sum of
+IPTW weights within a bin, not a patient count. Compare the weighted upper and
+lower shapes and report effective N with the weighted SMD. A well-aligned overlay
+supports covariate balance on the score; it does not by itself identify a causal
+treatment effect.
+
 ### Stacked histogram: counts over time
 
 The stacked histogram answers the compositional question: how the mix of a
@@ -242,14 +276,27 @@ differently composed.
 #| label: fig-histograms-stacked-count
 #| fig-cap: "Stacked histogram of annual counts, with each bar split into category contributions"
 sh <- hv_stacked(hist_dta, x_col = "year", group_col = "category")
+class(sh)
+sh$meta[c("x_col", "group_col", "binwidth", "position", "n_obs", "n_groups")]
 p_count <- plot(sh)
 
 p_count +
-  scale_fill_brewer(palette = "Set1", name = "Category") +
-  scale_color_brewer(palette = "Set1", name = "Category") +
+  scale_fill_brewer(
+    palette = "Set1",
+    labels = c("1" = "Group A", "2" = "Group B", "3" = "Group C"),
+    name = "Category"
+  ) +
+  scale_color_brewer(palette = "Set1", guide = "none") +
   labs(x = "Year", y = "Count") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "right")
 ```
+
+Year is on the x-axis and the y-axis is the number of observations in that
+year; each coloured segment contributes to the annual total. Compare both whole
+bar heights and the category segments, using all records in a year as the count
+denominator. The display describes cohort volume and composition. It cannot say
+why either changed.
 
 ### Stacked histogram: proportions over time
 
@@ -264,6 +311,7 @@ a distraction.
 #| fig-cap: "Stacked histogram rescaled to proportions, showing category composition over time independent of cohort volume"
 sh2 <- hv_stacked(hist_dta, x_col = "year", group_col = "category",
                   position = "fill")
+sh2$meta[c("x_col", "group_col", "binwidth", "position", "n_obs", "n_groups")]
 p_fill <- plot(sh2)
 
 p_fill +
@@ -277,8 +325,21 @@ p_fill +
     guide  = "none"
   ) +
   labs(x = "Year", y = "Proportion") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "right")
 ```
+
+The proportion version keeps year on the x-axis and divides every segment by
+that year's total, so each bar sums to one. Compare category shares across years,
+but do not use this panel to compare annual volume or to attribute a change in
+case mix to an intervention.
+
+## Deliver it
+
+Once the denominator and balance statistics are in the caption, take the panel
+to [Finish and deliver the result](publications.qmd) for the manuscript, poster,
+or slide export path. Keep the matched or weighted SMD with the mirrored figure;
+the picture is not a substitute for that number.
 
 ## Pitfalls
 

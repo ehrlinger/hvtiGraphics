@@ -1,5 +1,9 @@
 # Spaghetti plots
 
+How does each patient change across repeated measurements, and does the
+cohort-level trend tell the same story? Spaghetti and trend plots answer those
+two levels of the longitudinal question without pretending they are the same.
+
 ```{r}
 #| label: setup
 #| include: false
@@ -57,6 +61,19 @@ sp_col <- hv_spaghetti(dta_sp, colour_col = "group")
 the annual summary internally, so you do not pre-aggregate. The `year_range` and
 `groups` arguments set the study window and group structure.
 
+## Inspect it
+
+Both spaghetti objects use the `hv_spaghetti` plot method. Inspecting their
+metadata confirms the patient identifier, observation count, and whether a
+grouping colour was retained before either object is plotted.
+
+```{r}
+#| label: spaghetti_inspect
+class(sp)
+sp$meta
+sp_col$meta
+```
+
 ## Build it
 
 Start from the bare spaghetti panel so you can see what the constructor produced
@@ -70,22 +87,28 @@ p_sp
 ```
 
 Now set sensible axis limits and breaks with the usual scale layers, then add a
-theme. The y-axis here covers the full range of AV mean gradient.
+theme. The y-axis here covers the observed range of AV mean gradient without
+compressing the trajectories into the lower half of the panel.
 
 ```{r}
 #| label: fig-spaghetti
 #| fig-cap: "One trajectory per patient for AV mean gradient over five years of follow-up"
 plot(sp) +
   scale_x_continuous(breaks = seq(0, 5, 1)) +
-  scale_y_continuous(breaks = seq(0, 80, 20)) +
-  coord_cartesian(xlim = c(0, 5), ylim = c(0, 80)) +
+  scale_y_continuous(breaks = seq(0, 40, 10)) +
+  coord_cartesian(xlim = c(0, 5), ylim = c(0, 40)) +
   labs(x = "Years", y = "AV Mean Gradient (mmHg)") +
   theme_hv_manuscript()
 ```
 
 ## Read it
 
-A spaghetti plot is read as a cloud first and individual lines second. Look for:
+A spaghetti plot is read as a cloud first and individual lines second. Follow-up
+years are on the x-axis and AV mean gradient is on the y-axis; each line is one
+patient, so the number of observed trajectories at a time point is the effective
+denominator. Compare the bundle across time, but do not treat the descriptive
+paths as a treatment effect or assume that dropout is unrelated to the outcome.
+Look for:
 
 - **The shape of the bundle.** Where the lines are dense is where most patients
   sit; where they fan out is where patients diverge. A bundle that drifts upward
@@ -100,35 +123,14 @@ A spaghetti plot is read as a cloud first and individual lines second. Look for:
   your later time points are a biased sample of the early cohort, and the apparent
   trend there may be attrition rather than change.
 
-## Variations
-
-### Spaghetti, stratified by group
-
-Build the object with `colour_col = "group"` so each patient's line is coloured by
-its stratum, then assign colours with `scale_colour_manual()`. Now you can read
-two bundles at once and compare their shapes.
-
-```{r}
-#| label: fig-spaghetti-strat
-#| fig-cap: "Trajectories coloured by sex stratum, so the two bundles can be compared side by side"
-plot(sp_col) +
-  scale_colour_manual(
-    values = c(Female = "firebrick", Male = "steelblue"),
-    name   = NULL
-  ) +
-  scale_x_continuous(breaks = seq(0, 5, 1)) +
-  scale_y_continuous(breaks = seq(0, 80, 20)) +
-  coord_cartesian(xlim = c(0, 5), ylim = c(0, 80)) +
-  labs(x = "Years", y = "AV Mean Gradient (mmHg)") +
-  theme_hv_manuscript()
-```
+## Adapt it
 
 ### Spaghetti, with a LOESS overlay
 
 When the bundle is too dense to read by eye, pass `add_smooth = TRUE` to overlay
 a LOESS trend line per group (locally weighted regression, a flexible curve that
 follows the data without assuming a straight line). The individual trajectories
-stay as faint context while the smooth carries the trend.
+stay as neutral context while the coloured smooths carry the group comparison.
 
 ```{r}
 #| label: fig-spaghetti-smooth
@@ -138,48 +140,48 @@ plot(sp_col, add_smooth = TRUE) +
     values = c(Female = "firebrick", Male = "steelblue"),
     name   = NULL
   ) +
+  guides(fill = "none") +
   scale_x_continuous(breaks = seq(0, 5, 1)) +
-  scale_y_continuous(breaks = seq(0, 80, 20)) +
-  coord_cartesian(xlim = c(0, 5), ylim = c(0, 80)) +
+  scale_y_continuous(breaks = seq(0, 40, 10)) +
+  coord_cartesian(xlim = c(0, 5), ylim = c(0, 40)) +
   labs(x = "Years", y = "AV Mean Gradient (mmHg)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "right")
 ```
 
-### Labelling the comparison: trajectories vs trend
+The smoother is fitted separately within each sex stratum. It summarizes the
+observed trajectories, not within-patient causal change, and it can move when
+the mix of patients still under observation changes.
 
-A plain spaghetti plot needs no legend — every line is the same kind of thing, a
-patient trajectory, so there is nothing to tell apart. Adding a LOESS overlay
-changes that: the panel now shows two different things, the raw trajectories and
-the smoothed trend, and the reader needs to know which is which. That is a
-comparison, so it earns a legend. Map a constant label to each layer and place
-the key inside the panel.
+### Making the trajectories recede behind the trend
+
+A plain spaghetti plot needs no legend because every line represents the same
+thing. When you add a LOESS overlay, use the constructor arguments to make the
+patient trajectories light and thin while the smooth carries the comparison.
+The caption names both layers, while line weight keeps the trend visually
+separate without adding a legend to a one-group panel.
 
 ```{r}
-#| label: fig-spaghetti-legend
-#| fig-cap: "Patient trajectories and a LOESS trend on one panel, with a legend naming the two series"
-p_sp <- ggplot(dta_sp, aes(x = time, y = value)) +
-  geom_line(aes(group = id, colour = "Patient trajectories"),
-            linewidth = 0.3, alpha = 0.4) +
-  geom_smooth(aes(colour = "LOESS trend"),
-              method = "loess", se = FALSE, linewidth = 1.3) +
-  scale_colour_manual(
-    name   = NULL,
-    values = c("Patient trajectories" = "grey70", "LOESS trend" = "firebrick")
-  ) +
+#| label: fig-spaghetti-emphasis
+#| fig-cap: "Patient trajectories in light grey with a wider LOESS trend carrying the cohort-level pattern"
+plot(
+  sp,
+  add_smooth  = TRUE,
+  line_colour = "grey70",
+  line_width  = 0.3,
+  alpha       = 0.4,
+  smooth_width = 1.3
+) +
   scale_x_continuous(breaks = seq(0, 5, 1)) +
-  coord_cartesian(xlim = c(0, 5), ylim = c(0, 80)) +
+  scale_y_continuous(breaks = seq(0, 40, 10)) +
+  coord_cartesian(xlim = c(0, 5), ylim = c(0, 40)) +
   labs(x = "Years", y = "AV Mean Gradient (mmHg)") +
   theme_hv_manuscript()
-
-# hv_legend_inside() picks the emptiest corner automatically (here, top-right);
-# the background box keeps the key legible over the trajectories.
-hv_legend_inside(p_sp) +
-  theme(legend.background = element_rect(fill = "white", colour = "grey80",
-                                         linewidth = 0.3))
 ```
 
-Without the key a reader cannot be sure the bold curve is a fitted trend and not
-just one more patient. With two series on a panel, name them.
+This layer comparison is carried by line weight and the caption, not colour
+alone. The LOESS curve is still a descriptive smoother and cannot distinguish
+true change from selective follow-up.
 
 ### Temporal trend: a single annual series
 
@@ -207,6 +209,9 @@ head(dta_tr)
 #| fig-cap: "A single annual mean series from hv_trends() for one group across the study window"
 one_grp <- dta_tr[dta_tr$group == "Group I", ]
 tr1 <- hv_trends(one_grp, group_col = NULL)
+class(tr1)
+tr1$meta
+head(tr1$tables$summary)
 
 plot(tr1) +
   scale_x_continuous(limits = c(1968, 2000), breaks = seq(1968, 2000, 4)) +
@@ -214,6 +219,11 @@ plot(tr1) +
   labs(x = "Year", y = "Annual mean outcome") +
   theme_hv_manuscript()
 ```
+
+Year is on the x-axis and the annual mean is on the y-axis. Each point uses the
+observations available in that year, and the LOESS curve smooths those annual
+means. It describes the observed series; it does not show that calendar time
+caused the outcome to change.
 
 ### Temporal trend: multiple groups
 
@@ -227,6 +237,8 @@ greyscale.
 #| label: fig-spaghetti-trend-groups
 #| fig-cap: "Annual mean series for four groups, each given a distinct colour and marker so the figure survives greyscale printing"
 tr <- hv_trends(dta_tr)
+tr$meta
+head(tr$tables$summary)
 plot(tr) +
   scale_colour_brewer(palette = "Set1", name = "Group") +
   scale_shape_manual(
@@ -236,7 +248,8 @@ plot(tr) +
   ) +
   scale_x_continuous(limits = c(1968, 2000), breaks = seq(1968, 2000, 4)) +
   labs(x = "Year", y = "Annual mean outcome") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "right")
 ```
 
 ### Temporal trend: with a confidence ribbon
@@ -254,6 +267,14 @@ plot(tr1, se = TRUE, alpha = 0.2) +
   labs(x = "Year", y = "Annual mean outcome") +
   theme_hv_manuscript()
 ```
+
+## Deliver it
+
+Take the chosen longitudinal view to
+[Finish and deliver the result](publications.qmd) for manuscript, poster, or
+slide output. State the follow-up denominator, summary function, smoother, and
+handling of dropout in the caption; those details determine what the trend can
+support.
 
 ## Pitfalls
 

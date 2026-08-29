@@ -1,5 +1,9 @@
 # Density plots
 
+Is a continuous measurement symmetric, skewed, or hiding more than one cluster?
+A density curve answers that shape question without tying the answer to one set
+of histogram bins.
+
 ```{r}
 #| label: setup
 #| include: false
@@ -29,23 +33,34 @@ yourself, then finish with `+ theme_hv_manuscript()`.
 ## The data it needs
 
 A density plot needs one continuous column. To compare groups you add a
-categorical column to map to colour. We use `hvtiPlotR::sample_eda_data()` and
-detect a numeric column and a categorical grouping column programmatically, so
-the recipe keeps working if the sample schema changes. The first numeric column
-here is `year` (the surgery year) and the first categorical is `valve_morph`
-(valve morphology: Bicuspid, Tricuspid, or Unicuspid).
+categorical column to map to colour. We use `hvtiPlotR::sample_eda_data()` with
+`ef` (ejection fraction) as the measurement and `valve_morph` (valve
+morphology: Bicuspid, Tricuspid, or Unicuspid) as the comparison group. Naming
+the columns directly makes the clinical question clear when you copy the recipe.
 
 ```{r}
 #| label: data
 dat <- sample_eda_data()
-num <- names(dat)[vapply(dat, is.numeric, logical(1))][1]
-grp <- names(dat)[vapply(dat, function(x) is.factor(x) || is.character(x), logical(1))][1]
+num <- "ef"
+grp <- "valve_morph"
 c(numeric = num, group = grp)
 ```
 
 The `.data[[num]]` idiom you will see below is how ggplot2 reads a column whose
 name lives in a variable rather than typed out as a bare symbol. It lets the
-same recipe run against whatever column the detection step picked.
+same recipe run after you replace `num` with another continuous column name.
+
+## Inspect it
+
+There is no constructor object to inspect in this direct ggplot2 recipe, so
+inspect the measurement and the group sizes before smoothing. The nonmissing
+count is the information a normalized curve will otherwise hide.
+
+```{r}
+#| label: density_inspect
+summary(dat[[num]])
+table(dat[[grp]], useNA = "ifany")
+```
 
 ## Build it
 
@@ -60,7 +75,7 @@ ggplot(dat, aes(x = .data[[num]])) +
   geom_density(fill = "grey70", alpha = 0.7) +
   labs(
     title = "Distribution of a single numeric variable",
-    x = num,
+    x = "Ejection fraction (%)",
     y = "Density"
   ) +
   theme_hv_manuscript()
@@ -73,12 +88,16 @@ when the groups have different sizes.
 
 ## Read it
 
-A density curve gives you the shape of the distribution at a glance. Look for:
+A density curve gives you the shape of the distribution at a glance. The x-axis
+is ejection fraction and the y-axis is normalized density, so the area under the
+curve is one. Compare concentration across the x-axis, not curve height as a
+patient count. The smoother describes this sample; it does not establish a
+clinical effect or explain what caused the shape. Look for:
 
 - **Peaks (modes).** One hump means the data cluster around a single typical
-  value. Two humps (bimodal) usually mean you have mixed two populations that
-  belong in separate groups, an early-era and a late-era cohort, say, and the
-  average between the peaks describes nobody.
+  value. Two humps (bimodal) can mean you have mixed two populations that
+  belong in separate groups, an early-era and a late-era cohort, say. Check the
+  source groups before deciding what the second peak means.
 - **Skew.** A long tail to the right (a few large values pulling the curve out)
   is right skew; a long left tail is left skew. Skew tells you whether the mean
   and the median will agree, and whether a log transform might help downstream.
@@ -90,7 +109,7 @@ One thing to keep in the back of your mind: the curve depends on a smoothing
 choice called the bandwidth, and the same data can look smoother or bumpier
 depending on it. We come back to that in the pitfalls.
 
-## Variations
+## Adapt it
 
 ### Grouped density
 
@@ -106,16 +125,19 @@ ggplot(dat, aes(x = .data[[num]], fill = .data[[grp]])) +
   geom_density(alpha = 0.5) +
   labs(
     title = "Density by group",
-    x = num,
+    x = "Ejection fraction (%)",
     y = "Density",
-    fill = grp
+    fill = "Valve morphology"
   ) +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "right")
 ```
 
 Because each curve integrates to one, a small group and a large group are drawn
 on the same footing. That is the right default for comparing shape, but it also
 hides how many patients sit under each curve, which is the trap we flag below.
+The comparison is descriptive and unadjusted; separation between curves does
+not show that morphology caused a difference in ejection fraction.
 
 ### Tuning the bandwidth
 
@@ -136,14 +158,21 @@ ggplot(dat, aes(x = .data[[num]])) +
                       name = "Bandwidth") +
   labs(
     title = "Same data, two bandwidths",
-    x = num,
+    x = "Ejection fraction (%)",
     y = "Density"
   ) +
   theme_hv_manuscript()
 ```
 
-If a feature survives both settings it is probably real; if it appears only at
-the small bandwidth it is probably noise the smoother stopped hiding.
+If a feature survives both settings it is less sensitive to the smoothing
+choice. A feature that appears only at the small bandwidth needs more checking;
+the two curves are a sensitivity display, not a test of whether a peak is real.
+
+## Deliver it
+
+Carry the finished panel to [Finish and deliver the result](publications.qmd)
+for manuscript, poster, or slide output. Put the group sizes and the bandwidth
+choice in the caption whenever the grouped shape is the result.
 
 ## Pitfalls
 
