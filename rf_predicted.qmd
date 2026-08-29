@@ -111,19 +111,28 @@ separate validation cohort when the question is transportability.
 ## Predicted and empirical survival by treatment arm
 
 A grouped model display summarizes the patient-level predictions within each
-arm. It is descriptive of this fitted forest, not an adjusted treatment effect
-and not a hypothesis test.
+arm. With `by = "trt"`, `gg_rfsrc()` resamples patients within each arm,
+computes the mean predicted survival at every time in each bootstrap sample,
+and returns the median of those bootstrap means with a pointwise 95% band. By
+default, the number of resamples for an arm equals the number of patients in
+that arm.
+
+Thus the center line is not the survival curve for a median patient. The band
+describes resampling variation in the group mean conditional on this fitted
+forest; it does not display patient-to-patient heterogeneity and does not carry
+the full uncertainty from refitting the forest. The result remains descriptive
+of this fitted model, not an adjusted treatment effect or a hypothesis test.
 
 ```{r}
 #| label: rf-predicted-group-object
-pred_group <- gg_rfsrc(rf, by = "trt")
+pred_group <- gg_rfsrc(rf, by = "trt", conf.int = 0.95)
 pred_group
 head(as.data.frame(pred_group), 4)
 ```
 
 ```{r}
 #| label: fig-rf_predicted-grouped
-#| fig-cap: "Median OOB predicted survival within each veteran treatment arm"
+#| fig-cap: "Median bootstrap estimate of group-mean OOB predicted survival, with pointwise 95% bands within each veteran treatment arm"
 plot(pred_group) +
   theme_hv_manuscript() +
   labs(x = "Follow-up time (days)", y = "Predicted survival probability",

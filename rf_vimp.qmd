@@ -91,8 +91,12 @@ data.frame(
 #| label: fig-rf_vimp
 #| fig-cap: "Permutation VIMP overall and by iris class; display labels do not alter the stored predictor names"
 vimp_plot +
+  geom_hline(yintercept = 0, color = "grey45", linewidth = 0.35) +
   theme_hv_manuscript() +
-  scale_y_continuous(breaks = c(0, 0.4, 0.8), limits = c(0, 0.8)) +
+  scale_y_continuous(
+    breaks = function(x) pretty(x, n = 3),
+    expand = expansion(mult = c(0.05, 0.05))
+  ) +
   labs(x = "Predictor", y = "Permutation VIMP", fill = "VIMP > 0") +
   theme(axis.text.x = element_text(size = 7))
 ```
@@ -103,6 +107,9 @@ Start with the `all` facet for the global ranking, then inspect whether the
 class-specific facets tell the same story. Petal width and petal length carry
 most of the prediction in this fit. A predictor can rank differently by class
 because the forest may need it to distinguish one outcome more than another.
+The grey zero line separates positive from negative VIMP, and the axis range is
+set from the returned scores so neither negative values nor larger positive
+values are clipped.
 
 The object contains point estimates, not confidence intervals. Small gaps near
 the bottom should not be treated as settled ranks. If the order matters to a
