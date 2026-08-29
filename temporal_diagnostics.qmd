@@ -1,0 +1,8 @@
+# Check a hazard model
+
+A smooth curve is not evidence of a faithful model. We compare the parametric
+fit with the observed data, check calibration, assess selection uncertainty,
+and examine competing outcomes before reporting it.
+
+These checks keep the figure tied to the data it is meant to describe, and make
+the uncertainty visible before the model enters a manuscript.

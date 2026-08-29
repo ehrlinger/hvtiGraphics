@@ -1,8 +1,19 @@
 # Introduction
 
-This book is intended to be a single source of recipes for the exhibits that go into HVTI CORR publications and presentations: the figures, drawn with ggplot2 @Wickham2009, and the tables that travel with them. The compendium is collected from the figures and tables we have included over the course of publications.
+This book is a single source of recipes for the exhibits that go into HVTI CORR
+publications and presentations: the figures, drawn with ggplot2 @Wickham2009,
+and the tables that travel with them. Start with the question in front of you,
+not a package name. The routes below put a working recipe within reach before
+you need to remember which package supplies it.
 
-The book is divided into multiple parts collecting different bits of information. The *Getting Started* part gives a brief introduction to how we use R and which packages we use. The catalog parts that follow are one chapter per exhibit, and the *Tables* part is where the manuscript's other exhibit lives -- the inventory you run on a new extract, the Table 1 that summarises it, the Word table a journal asks for, and the small tables that ride alongside a figure.
+| If you need to... | Start with... |
+|---|---|
+| install or update the HVTI R family | [Packages](packages.qmd) |
+| describe who is in the cohort | [Describing a dataset](data_tables.qmd) |
+| choose a distribution or relationship figure | [Describe the cohort](describe.qmd) |
+| show time until an event | [Time-to-event figures](timetoevent.qmd) |
+| explain a forest prediction | [Predictive-model graphics](randomforests.qmd) |
+| prepare a manuscript figure or table | [Finish and deliver](publications.qmd) |
 
 If you take one thing from this book, take the shape of the workflow: construct,
 plot, decorate, save. An `hv_*()` constructor does the analysis and hands you a

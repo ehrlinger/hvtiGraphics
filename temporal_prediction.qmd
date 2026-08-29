@@ -1,0 +1,8 @@
+# Predict from a hazard model
+
+A fitted hazard model becomes useful when it answers a patient-profile question.
+This recipe turns the fit into survival, cumulative-hazard, instantaneous-hazard,
+and phase-specific curves on a time grid we choose.
+
+Keeping the profile and time grid explicit lets us compare the curves a clinician
+will ask about, without treating a single model summary as the whole result.

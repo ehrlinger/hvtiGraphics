@@ -1,0 +1,8 @@
+# Move a legacy HAZARD analysis into R
+
+The destination is a maintained R analysis. TemporalHazard can translate the
+structure of a legacy `PROC HAZARD` job, after which the R code, model object,
+diagnostics, and predictions become the source we keep.
+
+The goal is to carry forward the clinical question and model structure that SAS
+users already trust, while leaving a reproducible R analysis for the next run.

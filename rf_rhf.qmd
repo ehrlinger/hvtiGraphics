@@ -1,0 +1,8 @@
+# Random Hazard Forests
+
+When predictors and risk both change with time, one row per patient is no longer
+enough. This recipe uses ggRandomForests to inspect a Random Hazard Forest grown
+from start-stop data with time-varying covariates.
+
+The start-stop structure lets the forest see what changed and when, so its
+predictions can be read in the same clinical time frame as the longitudinal data.

@@ -1,14 +1,19 @@
-# Publication themes {.unnumbered}
+# Finish and deliver the result {.unnumbered}
 
-A figure is not done when it looks right on your screen. It has to land in a
-journal at the right size, on a poster legible from across a hall, or on a slide
-that reads from the back of the room. Each medium has its own demands -- panel
-dimensions, text size, file format -- and the same plot needs a different finish
-for each.
+The analysis may be settled, yet the figure still has to work in a manuscript,
+on a poster, or on a slide. These recipes choose the visual finish first, then
+combine, annotate, size, and export the result for the reader who receives it.
 
-This part covers getting a figure out the door. The manuscript chapter handles
-fixed-panel sizing and PDF export for submission, plus editable PowerPoint output
-when a figure needs to keep changing. The research-day chapter handles poster
-sizing, where the base text has to be large enough to read at a distance. The
-house themes do most of the work; these chapters show how to pair them with the
-right save settings so the figure arrives the way you drew it.
+## Choose the next recipe
+
+| Your question | Recipe | Why this one |
+|---|---|---|
+| Which house style should the finished figure use? | [Themes for consistency](themes.qmd) | Applies the manuscript, poster, or presentation theme. |
+| How do I use the house palette consistently? | [Color templates for consistency](colors.qmd) | Keeps categorical and continuous colors aligned across figures. |
+| How do I label the clinical details a reader needs? | [Annotating figures and formatting axes](annotation.qmd) | Adds annotations and readable axis formatting. |
+| When does the figure need a legend and how should it read? | [Using legends](legends.qmd) | Builds legends that explain the visual encoding without taking over the plot. |
+| How do I arrange several panels into one figure? | [Combination figures](combination.qmd) | Combines plots into a manuscript-ready layout. |
+| Which table belongs beside this figure? | [Tables that accompany figures](figure_tables.qmd) | Builds the small supporting tables a figure needs. |
+| How do I export at the right size for submission? | [Preparing figures for manuscripts](manuscripts.qmd) | Handles panel dimensions and submission formats. |
+| How do I make the figure readable on a poster? | [Posters and research day](researchday.qmd) | Uses the scale and text size needed at a distance. |
+| How do I prepare the figure for a talk? | [Slides and presentations](presentations.qmd) | Finishes the plot for a presentation audience. |

@@ -21,35 +21,31 @@ book:
         - packages.qmd
         - usingR.qmd
         - data_governance.qmd
-    - part: formatting.qmd
+    - part: describe.qmd
       chapters:
-        - annotation.qmd
-        - themes.qmd
-        - colors.qmd
-        - legends.qmd
-    - part: timetoevent.qmd
-      chapters:
-        - survival.qmd
-        - hazard.qmd
-        - temporal_hazard.qmd
-        - nnt.qmd
-    - part: distributions.qmd
-      chapters:
+        - data_tables.qmd
+        - qt_tables.qmd
+        - hv_tables.qmd
         - histograms.qmd
         - density.qmd
         - boxplots.qmd
         - bar.qmd
-    - part: relationships.qmd
-      chapters:
         - scatter.qmd
         - spaghetti.qmd
         - postagestamp.qmd
-        - upset.qmd
-    - part: specialty.qmd
-      chapters:
         - consort.qmd
+        - upset.qmd
         - sankey.qmd
         - balance.qmd
+    - part: timetoevent.qmd
+      chapters:
+        - survival.qmd
+        - hazard.qmd
+        - nnt.qmd
+        - temporal_fit.qmd
+        - temporal_prediction.qmd
+        - temporal_diagnostics.qmd
+        - temporal_migration.qmd
     - part: randomforests.qmd
       chapters:
         - rf_error.qmd
@@ -60,18 +56,19 @@ book:
         - rf_roc.qmd
         - varpro.qmd
         - varpro_partial.qmd
-    - part: tables.qmd
-      chapters:
-        - data_tables.qmd
-        - qt_tables.qmd
-        - hv_tables.qmd
-        - figure_tables.qmd
+        - rf_rhf.qmd
     - part: publications.qmd
       chapters:
+        - themes.qmd
+        - colors.qmd
+        - annotation.qmd
+        - legends.qmd
         - combination.qmd
+        - figure_tables.qmd
         - manuscripts.qmd
         - researchday.qmd
         - presentations.qmd
+    - function_map.qmd
     - summary.qmd
     - references.qmd
 

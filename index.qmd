@@ -24,15 +24,11 @@ It generates its own sample data, so you can copy a chunk, run it, and see the
 figure before you point it at your own analysis. The aim is the one we hold for
 all of this team's tooling: make the right path the easy path.
 
-The chapters are grouped into parts. *Getting Started* covers the packages and
-conventions, and *Formatting* the styling layers -- themes, colours, legends --
-you add on top of any figure. The catalog itself is three parts: *time-to-event*
-figures, *distribution and count* figures, and *relationship and trajectory*
-figures, one chapter per plot. *Specialty plots* handles the design diagrams
-(CONSORT, Sankey, covariate balance), and a part on *random forests* covers
-model visualization. *Tables* takes the manuscript's other exhibit: taking
-inventory of the data you have, building the Table 1 that summarises it,
-sending that table to Word in the shape a journal will accept, and the
-small tables that ride alongside a figure. *Publication themes* closes the
-book on getting finished work out the door, at journal size, poster size, and
-slide size.
+The chapters are grouped around the question in front of you. *Start a
+reproducible analysis* covers the packages and conventions. *Describe the
+cohort* moves from an inventory of the data to the distribution, relationship,
+and study-design figures that make that inventory clear. *Analyze time-to-event
+outcomes* handles survival, hazards, and additive hazard models. *Explain
+predictive models* reads the pieces of a forest fit. *Finish and deliver the
+result* carries a figure or table through its final styling and into a
+manuscript, poster, or slide.

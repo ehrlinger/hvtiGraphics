@@ -1,0 +1,8 @@
+# Function-to-recipe map
+
+Use this map when you know the function name but not the recipe. Workflow-level
+functions link to a worked chapter; lower-level and compatibility helpers link
+to the package reference that owns their contract.
+
+The map is a shortcut back to a reproducible example. It keeps a function lookup
+from becoming an invitation to reconstruct the workflow from its arguments.

@@ -1,0 +1,9 @@
+# Fit additive hazard models
+
+Postoperative risk rarely stays constant. We begin with the empirical curve,
+then use TemporalHazard to decide whether an early, constant, or late phase is
+needed to describe how risk changes with time.
+
+The fitted model keeps those phases in one object, with the choices and
+assumptions visible in the R script. That is the point where an observed hazard
+curve becomes a model we can inspect, diagnose, and use for predictions.
