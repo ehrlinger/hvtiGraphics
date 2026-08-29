@@ -14,11 +14,15 @@ library(hvtiPlotR)
 ## When to use it
 
 An additive hazard fit becomes clinically useful when it tells us how risk
-changes after the operation. Survival answers how many patients remain alive.
-Cumulative hazard answers how much event intensity has accumulated.
-Instantaneous hazard answers when events are occurring fastest. In a
-multiphase model, the last curve can also show which early or constant process
-is contributing that risk.
+changes after the operation. Survival probability is the fraction of comparable
+patients expected to remain alive beyond a named time. Cumulative hazard is the
+event intensity accumulated through that time. Instantaneous hazard is the
+conditional event rate among patients still at risk, with units of deaths per
+patient-month here. It is not the observed number of deaths. The interval with
+the most deaths also depends on how many patients remain at risk and how wide
+the interval is, so it need not coincide with the peak hazard. In a multiphase
+model, the hazard curve can also show which early or constant process is
+contributing that rate.
 
 This chapter refits every model it uses. You can copy it into a clean R session
 without first running the [fitting chapter](temporal_fit.qmd). The working

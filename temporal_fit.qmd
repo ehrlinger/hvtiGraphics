@@ -155,7 +155,6 @@ fit_multiphase <- hazard(
 )
 
 summary(fit_multiphase)
-fit_multiphase$fit$phase_share
 ```
 
 Inspect convergence separately from the coefficient table. A populated summary
@@ -171,18 +170,36 @@ data.frame(
   log_likelihood = fit_multiphase$fit$objective
 )
 
-phase_scales <- exp(coef(fit_multiphase)[
-  c("early.log_mu", "constant.log_mu")
-])
-phase_scales
+theta <- coef(fit_multiphase)
+check_times <- c(0.5, 12, max(avc$int_dead))
+early_scale <- exp(theta["early.log_mu"])
+constant_scale <- exp(theta["constant.log_mu"])
+
+phase_contributions <- data.frame(
+  month = check_times,
+  early_hazard_per_month = early_scale * hzr_phase_hazard(
+    check_times, t_half = 0.5, nu = 1, m = 1, type = "cdf"
+  ),
+  constant_hazard_per_month = constant_scale * hzr_phase_hazard(
+    check_times, type = "constant"
+  ),
+  early_cumulative_hazard = early_scale * hzr_phase_cumhaz(
+    check_times, t_half = 0.5, nu = 1, m = 1, type = "cdf"
+  ),
+  constant_cumulative_hazard = constant_scale * hzr_phase_cumhaz(
+    check_times, type = "constant"
+  )
+)
+phase_contributions
 ```
 
-The early scale is much larger than the constant scale, which is the clinical
-story we expected for death after AVC repair: risk is concentrated near the
-operation, then a low rate remains. The two phases overlap and add; the model
-does not switch from one to the other at 0.5 months. Here `t_half = 0.5` shapes
-the early contribution, while the fitted phase scales say how much each shape
-contributes.
+At 0.5 months, the evaluated early hazard contribution is much higher than the
+constant contribution on the same per-month scale. It then declines, while the
+constant contribution remains flat and continues to accumulate through late
+follow-up. The two phases overlap and add; the model does not switch from one to
+the other at 0.5 months. For this bounded early CDF phase, `t_half = 0.5` means
+that half of the early phase's eventual cumulative-hazard contribution has
+accumulated by 0.5 months.
 
 ## Read convergence warnings before reading the curves
 
