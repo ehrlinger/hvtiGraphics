@@ -1,8 +1,373 @@
-# Random Hazard Forests
+# What if a predictor changes during follow-up?
 
-When predictors and risk both change with time, one row per patient is no longer
-enough. This recipe uses ggRandomForests to inspect a Random Hazard Forest grown
-from start-stop data with time-varying covariates.
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 7, fig.height = 4.5, dpi = 150)
+library(ggRandomForests)
+library(ggplot2)
+library(hvtiPlotR)
+```
 
-The start-stop structure lets the forest see what changed and when, so its
-predictions can be read in the same clinical time frame as the longitudinal data.
+## When to use it
+
+Every survival recipe so far has assumed one row per patient. Baseline creatinine,
+baseline ejection fraction, the covariate values as they stood on day zero, and a
+single follow-up time. That assumption is usually a simplification we accept, and
+sometimes it is the thing that ruins the analysis. A patient on temporary
+mechanical support has a risk profile that changes week by week. Freezing them at
+their admission values throws away the part of the record that was doing the work.
+
+A Random Hazard Forest takes the counting-process form instead: several rows per
+patient, each covering an interval of follow-up, with covariates allowed to change
+between intervals. The forest sees what changed and when, so its predictions can be
+read on the same clinical timeline as the measurements.
+
+Reach for this when the exposure is time-varying and the timing matters, not just
+its presence. Support escalation, a therapy that starts partway through admission, a
+lab that drifts. If your predictors are genuinely fixed at baseline, the
+[survival](survival.qmd) and [forest prediction](rf_predicted.qmd) recipes are the
+simpler and better fit, and nothing here improves on them for that case.
+
+This chapter reads a fitted forest. Growing one is `randomForestRHF`'s job, and the
+boundary between the two packages is worth keeping straight, so it has its own
+section near the end.
+
+## The data it needs
+
+The counting-process layout gives each patient one row per interval `(start, stop]`,
+and `event` records whether the event happened at that interval's right endpoint. We
+work from the reviewed bundle that ships with the `ggRandomForests` article, so the
+chapter renders without refitting.
+
+```{r}
+#| label: bundle
+bundle <- readRDS("data/rhf_precomputed.rds")
+
+stopifnot(
+  identical(unname(bundle$versions[["ggRandomForests"]]), "4.0.0"),
+  identical(unname(bundle$versions[["randomForestRHF"]]), "2.0.0")
+)
+
+rhf_data <- bundle$data
+one_subject <- rhf_data[rhf_data$id == rhf_data$id[1L],
+                        c("id", "start", "stop", "event", "xtd")]
+knitr::kable(one_subject, digits = 3,
+             caption = "One simulated subject's counting-process records")
+```
+
+Read down the `xtd` column, then consider `x.1`, which is not shown because it never
+moves. That is the whole distinction: `xtd` is the time-varying covariate and the
+`x.1` through `x.10` columns are fixed at baseline. A counting-process frame carries
+both, and the forest treats them differently only because the data says they behave
+differently.
+
+The rule that makes this legitimate is **predictability**: the value used at time
+`t` must be known just before the event decision at `t`. A lab drawn after an
+interval ends cannot be copied backward into it. In this simulation `xtd` is a
+continuous function of `stop` and the subject's own fixed covariates, so its value at
+`stop` is also its left-hand limit there, and it is available for the interval ending
+at that time.
+
+That is not a technicality. Copying a later measurement backward is how a model
+learns to predict an event from evidence produced by the event, and it is the most
+common way a time-varying analysis flatters itself. The no-lookahead routing is
+enforced by `randomForestRHF::rhf()` when the forest is grown, not by anything in
+this chapter.
+
+```{r}
+#| label: data-shape
+records_per_subject <- as.integer(table(rhf_data$id))
+events_by_subject   <- tapply(rhf_data$event, rhf_data$id, max)
+
+data.frame(
+  measure = c("Subjects", "Counting-process records", "Records per subject",
+              "Subjects with an event"),
+  value = c(length(unique(rhf_data$id)),
+            nrow(rhf_data),
+            sprintf("%d to %d (median %g)", min(records_per_subject),
+                    max(records_per_subject), stats::median(records_per_subject)),
+            sum(events_by_subject))
+) |>
+  knitr::kable(col.names = c("Measure", "Value"))
+```
+
+## Where these fitted objects came from
+
+The bundle holds the fit and three upstream results that are far too slow to
+recompute on every render. The calls that produced it are shown but not run.
+
+```{r}
+#| label: provenance
+#| eval: false
+set.seed(bundle$seed)
+
+fit <- randomForestRHF::rhf(Surv(start, stop, event) ~ ., data = rhf_data)
+
+auct_incident <- randomForestRHF::auct.rhf(fit, marker = "hazard")
+importance    <- randomForestRHF::importance.rhf(
+  randomForestRHF::varpro.cache.rhf(fit)
+)
+tune_risk     <- randomForestRHF::tune.treesize.rhf(rhf_data, metric = "risk")
+tune_iauc     <- randomForestRHF::tune.treesize.rhf(rhf_data, metric = "iauc")
+```
+
+Supplying the saved results to the extractors is the pattern to copy for any analysis
+you expect to revisit. Each `gg_*` function below will compute its own input when you
+do not hand it one, which is convenient once and expensive every time after that.
+
+## Read the hazard over time
+
+`gg_rhf()` pulls both the pointwise hazard and the cumulative hazard into one tidy
+frame, one row per subject per point on the forest's working time grid.
+
+```{r}
+#| label: fig-rhf-hazard
+#| fig-cap: "Out-of-bag pointwise hazard for five of six requested subjects, each curve ending where that subject's follow-up ends; subject 22 has no grid point inside its records and so draws nothing"
+case_ids   <- c(1, 2, 3, 11, 14, 22)
+rhf_curves <- gg_rhf(bundle$fit)
+
+p_hazard <- plot(rhf_curves, idx = case_ids) + theme_hv_manuscript()
+hv_legend_inside(p_hazard)
+```
+
+`theme_hv_manuscript()` sets `legend.position = "none"`, which is right for the
+single-series figures elsewhere in this part and wrong here, where colour is
+carrying subject identity. `hv_legend_inside()` puts the key back and drops it in
+the emptiest corner, the same pattern the [legends](legends.qmd) chapter uses. Six
+unlabelled coloured lines are not a figure anyone can read.
+
+Hazard here is a local event rate: a high point says events are occurring at a high
+instantaneous rate among the subjects still at risk around that time. It is not the
+probability that this subject has the event then, and neither its height nor its
+scale should be reported as a percentage. We plot six subjects because the extracted
+object holds all of them and the panel becomes unreadable well before that.
+
+The curves stop at different places, and that is deliberate rather than missing data.
+From version 2.0.0, `randomForestRHF::rhf()` returns a hazard only where a grid point
+falls inside one of that subject's supplied `(start, stop]` records, and `NA` in the
+gaps and after the final stop. Each line therefore covers the range the forest was
+actually asked about.
+
+Count the legend and you get five, though we asked for six. Subject 22 has **no**
+grid point inside any of its records, so every one of its hazard values is `NA` and
+it draws nothing at all. That is the masking rule taken to its limit rather than a
+plotting failure, and it is worth knowing that a requested subject can disappear from
+this panel entirely. It comes back in the next one.
+
+### Cumulative hazard accumulates the local rates
+
+The same object carries the cumulative hazard. Set `hazard.only = FALSE` to draw it.
+
+```{r}
+#| label: fig-rhf-cumhaz
+#| fig-cap: "Cumulative hazard for the same six subjects, all present this time, drawn across the whole grid because it accumulates interval overlap rather than being masked outside the records"
+p_cumhaz <- plot(rhf_curves, idx = case_ids, hazard.only = FALSE) +
+  theme_hv_manuscript()
+hv_legend_inside(p_cumhaz)
+```
+
+Cumulative hazard is not masked the way the pointwise hazard is. It accumulates the
+exact overlap between the working grid and the supplied records, so it stays flat
+through a gap instead of going missing, and every grid point is drawn. Subject 22 is
+back, as a flat line just above zero: it accumulated almost no hazard, which is a
+different statement from having none to report.
+
+The practical consequence is small and easy to trip over: if you summarise the
+`hazard` column yourself, pass `na.rm = TRUE`. Counting subjects off a hazard panel
+will also undercount them.
+
+## Does discrimination hold up over time?
+
+A single concordance number for the whole of follow-up hides the thing you usually
+want to know, which is whether the model still separates patients late as well as it
+did early. Time-varying AUC answers that, and which AUC you want depends on the
+question.
+
+`gg_auct()` with `marker = "haz"` gives the **incident/dynamic** definition: does a
+subject who has the event near time `t` rank above a subject in the risk set at `t`?
+That is a question about local failures, so it uses the local hazard marker.
+
+```{r}
+#| label: fig-rhf-auct
+#| fig-cap: "Incident/dynamic time-varying AUC from the saved calculation, with the 0.5 chance line for reference"
+auct_incident <- gg_auct(bundle$fit, marker = "haz", method = "incident",
+                         auct_fit = bundle$auct_incident)
+
+plot(auct_incident) + theme_hv_manuscript()
+```
+
+The saved curve has a Uno integrated AUC of
+`r sprintf("%.3f", attr(auct_incident, "iauc")$uno)`, and its finite values run from
+`r sprintf("%.3f", min(auct_incident$auc, na.rm = TRUE))` to
+`r sprintf("%.3f", max(auct_incident$auc, na.rm = TRUE))`. AUC is a ranking
+probability on a 0 to 1 scale, so 0.5 is the chance reference drawn on the panel.
+This calculation was not bootstrapped, so there is no confidence ribbon; supply a
+bootstrapped `auct_fit` and one appears.
+
+The companion definition, **cumulative/dynamic**, asks whether a subject who has had
+the event by a horizon ranks above one still event-free at that horizon, and its
+matching marker is cumulative hazard. It targets a different quantity rather than a
+better version of the same one. On in-sample data of this shape it is currently
+awkward to read, because holding the cumulative hazard flat after follow-up ends
+makes it track observation length as well as risk. Reach for it on genuinely
+out-of-sample predictions, and read the incident/dynamic curve here.
+
+## Which variables matter, and when?
+
+Ordinary variable importance gives one number per predictor for the whole study. With
+time-varying data that is the wrong shape: a covariate can dominate early and stop
+mattering entirely once patients are past the risky window.
+
+```{r}
+#| label: fig-rhf-importance
+#| fig-cap: "Time-localized variable priority across five time windows, with point size and colour showing the same priority value"
+#| fig-width: 8
+#| fig-height: 5.25
+rhf_priority <- gg_rhf_importance(bundle$fit, importance_fit = bundle$importance)
+
+windows <- unique(as.data.frame(rhf_priority)[, c("time_window", "start", "stop")])
+windows <- windows[order(windows$start), ]
+window_labels <- setNames(sprintf("%.2f to %.2f", windows$start, windows$stop),
+                          windows$time_window)
+
+plot(rhf_priority) +
+  scale_x_discrete(labels = window_labels) +
+  theme_hv_manuscript() +
+  theme(legend.position = "right", plot.margin = margin(l = 80))
+```
+
+Two adjustments earn their place here. The window labels arrive as full-precision
+interval strings such as `(0.00000000, 0.01055113]`, and five of those overlap into
+an unreadable band along the axis, so we rebuild them from the `start` and `stop`
+columns at two decimals. And the legend goes back on the outside rather than inside:
+point size and colour both encode priority, so the key is a continuous scale rather
+than a short list of series, and dropping it into the panel would sit on top of the
+matrix it explains.
+
+RHF priority is a time-local rule-release contrast. Within a window it compares the
+fitted working response for a rule against its near-miss set, and asks how much that
+response moves when rules involving a variable are released. Larger nonnegative values
+mean a larger contrast.
+
+Read that sentence again before reporting anything from this figure, because of what
+it does **not** say. Priority does not tell you the direction of an effect, so it
+never licenses "higher `xtd` raises hazard". It is not a z-score, not a p-value, and
+carries no selection threshold. It ranks, and that is all.
+
+In this simulation `xtd` carries the largest early-window value while `x.1` leads
+several later windows, which is exactly the pattern a single whole-study importance
+number would have averaged away. Note also that the number at risk falls from
+`r max(rhf_priority$n_risk)` to `r min(rhf_priority$n_risk)` across the five windows,
+so the late-window comparisons rest on much less information than the early ones. Any
+window-to-window story should be told with that in view.
+
+## Which tree size did the search pick?
+
+`gg_tune_rhf()` reads a completed tuning path. It never reruns the search, and it
+preserves the upstream evaluation order, so the connecting line follows the order
+candidates were actually tried rather than a tidied-up sort.
+
+```{r}
+#| label: fig-rhf-tune-risk
+#| fig-cap: "Out-of-bag risk tuning path, with the emphasized point marking the size the upstream search selected"
+risk_tuning <- gg_tune_rhf(bundle$tune_risk)
+
+plot(risk_tuning) + theme_hv_manuscript()
+```
+
+The risk search evaluated sizes `r paste(risk_tuning$treesize, collapse = ", ")` and
+selected `r risk_tuning$treesize[risk_tuning$selected]`, where mean out-of-bag risk
+was smallest. The saved risk path carries no standard-error field, and
+`gg_tune_rhf()` sets `se` to missing rather than inventing uncertainty, so this plot
+has no ribbon.
+
+### Tuning by integrated AUC instead
+
+```{r}
+#| label: fig-rhf-tune-iauc
+#| fig-cap: "The same tuning display for the integrated-AUC search, which selected a different tree size than the risk search did"
+iauc_tuning <- gg_tune_rhf(bundle$tune_iauc)
+
+plot(iauc_tuning) + theme_hv_manuscript()
+```
+
+This search evaluated `r paste(iauc_tuning$treesize, collapse = ", ")` and selected
+`r iauc_tuning$treesize[iauc_tuning$selected]`, where out-of-bag iAUC was largest. The
+two searches choose differently, which is the useful part: risk and discrimination are
+not the same objective, and a tree size that minimises one need not maximise the
+other. Say which criterion you tuned on when you report a size. This path has
+`r sum(is.finite(iauc_tuning$se))` finite standard errors, so again no ribbon.
+
+## What each extractor returns
+
+Each `gg_*` function returns a data frame you can work with directly, which matters
+when a figure is not the deliverable.
+
+| Function | One row per | Key columns |
+|---|---|---|
+| `gg_rhf()` | subject and grid time | `id`, `time`, `hazard`, `chf`, `source` |
+| `gg_auct()` | grid time | `time`, `auc`, `se`, `lower`, `upper`, `marker`, plus an `iauc` attribute |
+| `gg_rhf_importance()` | variable and time window | `variable`, `time_window`, `time`, `n_risk`, `n_rules`, `priority` |
+| `gg_tune_rhf()` | candidate tree size | `treesize`, `metric`, `value`, `se`, `selected` |
+
+The `iauc` attribute on `gg_auct()` is the one people miss. It carries the Uno and
+standardized integrated AUC, and `attr(x, "iauc")` is how you reach it for a table.
+
+## Where ggRandomForests ends and randomForestRHF begins
+
+This chapter draws pictures of decisions made elsewhere, and it is worth being precise
+about which package owns what, so that an upstream modelling choice is not read as a
+plotting defect.
+
+`randomForestRHF` owns the model. It sets the working time grid, applies the
+no-lookahead routing, decides that the pointwise hazard exists only inside supplied
+records, computes the AUC under its chosen definition, evaluates variable priority,
+and runs the tuning search. From 2.0.0 it also defaults to adaptive hazard
+aggregation, which shifts fitted values relative to earlier versions.
+
+`ggRandomForests` reads those results and tidies them. It passes the `NA` mask through
+unchanged, drops those points at draw time so a curve ends with its subject's
+follow-up, preserves the upstream tuning order, and declines to fabricate standard
+errors the upstream object does not carry.
+
+So a hazard curve that stops early, a missing late-window priority point, and a tuning
+plot with no ribbon are all faithful reports of the fitted object. If you want
+different behaviour there, the change belongs upstream.
+
+## Pitfalls
+
+- **A counting-process frame is not a wide longitudinal frame.** One row per interval,
+  with `(start, stop]` half-open so consecutive intervals do not double-count the
+  boundary. Reshaping one repeated-measures column per visit into `start`/`stop` rows
+  is the step most likely to go wrong, and it goes wrong silently.
+- **Predictability is the assumption that carries the analysis.** A value used at time
+  `t` must be knowable just before `t`. Carrying a later lab backward into an earlier
+  interval produces a model that predicts events from their own consequences, and
+  reports excellent discrimination while doing it.
+- **A subject can vanish from a hazard panel.** If no grid point falls inside any of
+  its records, every hazard value is `NA` and the line is not drawn. The subject is
+  still in the extracted frame and still appears in the cumulative-hazard panel. Never
+  read the number of lines on a hazard figure as the number of subjects you asked for.
+- **Hazard is a rate, not a probability.** Do not report a hazard height as a
+  percentage, and do not compare hazard heights across figures drawn on different
+  grids.
+- **Priority ranks; it does not direct.** `gg_rhf_importance()` says a variable
+  mattered in a window, never which way it pushed. Pair it with a dependence view
+  before writing a direction into a manuscript.
+- **Say which criterion you tuned on.** The risk and iAUC searches selected different
+  tree sizes on the same data. A reported tree size is uninterpretable without its
+  objective.
+- **Supply the saved upstream objects.** `gg_auct()`, `gg_rhf_importance()` and
+  `gg_tune_rhf()` will each compute their input when you omit it. That is fine once
+  and painful in a document you re-render, which is why this chapter passes
+  `auct_fit`, `importance_fit`, and a completed tuning path.
+- **The house manuscript theme turns legends off.** `theme_hv_manuscript()` sets
+  `legend.position = "none"`, which suits the single-series figures it was built
+  for. Add it to a plot where colour carries meaning and the key disappears
+  without warning. Restore it deliberately: `hv_legend_inside()` for a handful of
+  named series, an explicit `legend.position` for a continuous scale.
+- **Late windows rest on fewer patients.** The number at risk falls sharply across the
+  importance windows here. Read late-window contrasts with that in mind rather than as
+  equals of the early ones.
