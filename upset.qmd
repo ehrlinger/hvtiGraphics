@@ -19,10 +19,9 @@ had each procedure" (a bar chart answers that) but "which combinations actually
 occur, and how often."
 
 The Venn diagram is the familiar answer, and for two or three sets it is the
-right one: overlapping circles, the eye reads the intersections directly. The
-trouble is that it does not scale. At four sets the diagram needs ellipses and
-already strains; past four it stops being readable, because the number of
-distinct regions grows faster than a flat drawing can lay them out cleanly.
+right one: overlapping circles, the eye reads the intersections directly. At
+four sets, switch to an UpSet plot. The number of possible regions has already
+outgrown what the eye can compare reliably in overlapping shapes.
 
 That is where the UpSet plot takes over. Instead of drawing every region as a
 patch of a circle, it lists each observed combination as a column and draws a
@@ -33,9 +32,9 @@ a key, and it scales cleanly to seven sets or more.
 ## Venn diagrams
 
 For two or three overlapping groups, a Venn diagram is still the clearest
-display: the reader sees the intersections without a legend. Keep it to four
-sets at the most. The moment you find yourself reaching for a fourth or fifth
-circle, switch to the UpSet plot below, which is built to carry that load.
+display: the reader sees the intersections without a legend. A fourth set is
+the decision point: switch to the UpSet plot below, which is built to carry
+larger intersections.
 
 `hv_venn()`, from hvtiPlotR [@R-hvtiPlotR], builds one from the same kind of
 set-membership data the UpSet plot uses: pass the data frame and the columns to
@@ -45,29 +44,37 @@ the diagram itself, and `theme_hv_manuscript()` would only paste spurious x/y
 axes back onto it.
 
 ```{r}
+#| label: venn_inspect
+venn_dta <- sample_upset_data(n = 400, seed = 42)
+venn <- hv_venn(
+  venn_dta,
+  sets = c("AV_Replacement", "MV_Replacement", "CABG")
+)
+venn
+venn$tables$regions
+```
+
+### Build it
+
+```{r}
 #| label: venn
 #| fig-width: 7
 #| fig-height: 5
 #| fig-cap: "Three-set Venn of co-occurring procedures, each region labelled with its patient count and percent"
-venn_dta <- sample_upset_data(n = 400, seed = 42)
-plot(
-  hv_venn(venn_dta, sets = c("AV_Replacement", "MV_Replacement", "CABG")),
-  set_name_size = 5
-)
+plot(venn, set_name_size = 5)
 ```
 
 Each region carries its patient count and percentage. The empty
-replacement-on-replacement overlap (`0`) is the clinically expected finding —
-patients rarely have both valves replaced in one operation — while CABG overlaps
-both. Past three or four sets the circles stop separating cleanly, which is the
-cue to switch to the UpSet plot.
+replacement-on-replacement overlap (`0`) is the clinically expected finding.
+Patients rarely have both valves replaced in one operation, while CABG overlaps
+both. With four or more sets, use the UpSet plot.
 
 ## UpSet plots
 
-`hv_upset()`, from hvtiPlotR [@R-hvtiPlotR], builds an UpSet diagram via `ggupset::scale_x_upset()` to
-visualise surgical procedure co-occurrences or any set-membership data. Where a
-Venn diagram breaks down past three or four sets, UpSet scales cleanly to seven
-or more.
+`hv_upset()`, from hvtiPlotR [@R-hvtiPlotR], builds an UpSet diagram via
+`ggupset::scale_x_upset()` to visualise surgical procedure co-occurrences or
+any set-membership data. Use it for four or more sets, when the question is
+which exact combinations occur and how large they are.
 
 `plot.hv_upset()` returns a **ggplot** when `set_size = FALSE`, or a
 **patchwork composite** of an intersection-bar plot plus a set-size sidebar
@@ -94,6 +101,27 @@ head(upset_dta)
 colSums(upset_dta)
 
 hu <- hv_upset(upset_dta, intersect = sets)
+```
+
+### Inspect it
+
+Inspect the returned object before plotting. Its printed summary and
+`set_counts` are the marginal totals; the table built from `.Procedures` is the
+exact-intersection audit. These are different denominators. A patient with both
+an aortic valve replacement and CABG contributes once to each marginal total,
+but once to the single `AV_Replacement + CABG` intersection.
+
+```{r}
+#| label: upset_inspect
+hu
+hu$tables$set_counts
+
+intersection_counts <- sort(
+  table(vapply(hu$data$.Procedures, paste, collapse = " + ",
+               FUN.VALUE = character(1))),
+  decreasing = TRUE
+)
+head(intersection_counts, 10)
 ```
 
 ### Build it
@@ -187,9 +215,8 @@ plot(hu_era, fill_col = "era", set_size = FALSE) +
   most frequent combinations. The long tail of rarer combinations is real and
   may carry the unusual cases you care about; if so, raise the cutoff rather than
   assuming the figure is exhaustive.
-- **Over-stuffing the Venn.** A four-set Venn is already at the edge of legible
-  and a five-set one is not worth drawing. If you are tempted, that is the signal
-  to switch to UpSet, not to add another ellipse.
+- **Over-stuffing the Venn.** Two or three sets belong in a Venn. Four or more
+  belong in an UpSet plot, not another ellipse.
 - **Confusing a margin with a combination.** The sidebar totals count every
   patient who had a procedure, regardless of what else they had; the intersection
   bars count exact combinations. A set can have a large margin and still appear in

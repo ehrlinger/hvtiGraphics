@@ -18,6 +18,12 @@ of clusters. They share a visual grammar (bands whose width is a count, flowing
 left to right) but the data they want and the story they tell are different
 enough that we treat them as two recipes under one roof.
 
+The decision is in the unit of analysis. Use the alluvial recipe when each row
+is an observed pathway with a count and you need to compare movement across
+clinical states. Use the cluster-stability Sankey when each row is one patient,
+each column is a value of K, and you need to see how cluster membership splits
+as K increases.
+
 ## Alluvial plots
 
 ### When to use it
@@ -53,6 +59,22 @@ axes    <- c("pre_ar", "procedure", "post_ar")
 head(dta_al)
 ```
 
+### Inspect it
+
+Build and inspect the returned `hv_alluvial` object before plotting. Its
+metadata fixes the left-to-right axis order, while its prepared data holds one
+row per pathway and the count that sets band width. The count audit should sum
+to the cohort size, 300 here.
+
+```{r}
+#| label: alluvial_inspect
+al <- hv_alluvial(dta_al, axes = axes, y_col = "freq")
+al
+al$meta[c("axes", "y_col", "n_obs")]
+head(al$data)
+sum(al$data$freq)
+```
+
 ### Build it
 
 Start from the bare panel so you can see what the constructor produced before
@@ -60,7 +82,6 @@ any styling. Build the object once, then call `plot()` on it.
 
 ```{r}
 #| label: alluvial_bare
-al <- hv_alluvial(dta_al, axes = axes, y_col = "freq")
 plot(al)
 ```
 
@@ -70,7 +91,10 @@ nothing else. Now layer on the house style. Passing `fill_col` to the
 constructor colours each band by a categorical column; here we colour by
 pre-operative grade so you can follow a single starting grade across the whole
 diagram. The matching `scale_colour_manual()` (with `guide = "none"`) keeps the
-thin band outlines the same colour as their fill.
+thin band outlines the same colour as their fill. We redraw the stratum labels
+at a smaller size and leave strata under 10 patients unlabelled so the rare
+post-operative grades do not print on top of one another. Their bands remain in
+the count display.
 
 ```{r}
 #| label: fig-sankey-alluvial
@@ -78,7 +102,16 @@ thin band outlines the same colour as their fill.
 al_filled <- hv_alluvial(dta_al, axes = axes, y_col = "freq",
                          fill_col = "pre_ar")
 
-plot(al_filled) +
+plot(al_filled, show_labels = FALSE) +
+  geom_text(
+    stat = ggalluvial::StatStratum,
+    aes(label = ifelse(
+      after_stat(count) >= 10,
+      as.character(after_stat(stratum)),
+      ""
+    )),
+    size = 3
+  ) +
   scale_fill_manual(
     values = c(None     = "steelblue",
                Mild     = "goldenrod",
@@ -98,6 +131,7 @@ plot(al_filled) +
     labels = c("Pre-op AR", "Procedure", "Post-op AR"),
     expand = c(0.05, 0.05)
   ) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.02))) +
   labs(y = "Patients (n)",
        title = "AV Regurgitation: Pre- to Post-operative") +
   theme_hv_manuscript()
@@ -142,11 +176,21 @@ al2 <- hv_alluvial(
   axis_labels = c("Pre-operative", "Post-operative")
 )
 
-plot(al2) +
+plot(al2, show_labels = FALSE) +
+  geom_text(
+    stat = ggalluvial::StatStratum,
+    aes(label = ifelse(
+      after_stat(count) >= 10,
+      as.character(after_stat(stratum)),
+      ""
+    )),
+    size = 3
+  ) +
   scale_fill_brewer(palette = "RdYlGn", direction = -1,
                     name = "AR Grade") +
   scale_colour_brewer(palette = "RdYlGn", direction = -1,
                       guide = "none") +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.02))) +
   annotate("text", x = 1.5, y = 250,
            label = "Improvement after surgery",
            size = 3.5, fontface = "italic") +
@@ -190,7 +234,12 @@ al_ms <- hv_alluvial(
   fill_col = "Discharge"
 )
 
-plot(al_ms, show_yaxis = FALSE) +
+plot(al_ms, show_labels = FALSE, show_yaxis = FALSE) +
+  geom_text(
+    stat = ggalluvial::StatStratum,
+    aes(label = after_stat(stratum)),
+    size = 3
+  ) +
   scale_fill_brewer(palette = "Set1", name = NULL) +
   scale_colour_brewer(palette = "Set1", guide = "none") +
   labs(title = "Mechanical circulatory support across the device course") +
@@ -238,6 +287,22 @@ head(dta_san)
 table(dta_san$C9)
 ```
 
+### Inspect it
+
+Build the Sankey object and inspect its prepared flow data before plotting.
+`node_levels` gives the vertical order used throughout the figure, and the
+cross-tabulation checks every node count at every K. Each column must sum to
+300, because the same synthetic patients are followed across all eight
+partitions.
+
+```{r}
+#| label: sankey_inspect
+sk <- hv_sankey(dta_san)
+sk
+sk$meta[c("cluster_cols", "node_levels", "n_patients", "n_k")]
+xtabs(~ x + node, sk$data)
+```
+
 ### Build it
 
 The constructor finds the `C2` through `C9` columns on its own, so the default
@@ -251,7 +316,6 @@ the manuscript theme; the Set1 palette gives each cluster letter its own colour.
 #| fig-cap: "Cluster-stability Sankey tracing how patient assignments split across K = 2 through K = 9"
 #| fig-width: 8
 #| fig-height: 5
-sk <- hv_sankey(dta_san)
 plot(sk) +
   labs(title = "Cluster Stability: K = 2 to 9") +
   theme_hv_manuscript()
