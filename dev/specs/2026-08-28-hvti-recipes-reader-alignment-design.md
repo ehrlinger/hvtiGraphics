@@ -52,7 +52,7 @@ The book targets the current clean `main` branch of each sibling repository:
 |---|---:|---|---|
 | `hvtiR` | 1.0.13 | `main` at `5227077` | install, update, diagnose, and inspect the family |
 | `hvtiPlotR` | 2.7.10 | `main` at `ee4ed26` | house figures, themes, composition, and export |
-| `ggRandomForests` | 4.0.0 | `main` at `c74d6960` | forest, varPro, and Random Hazard Forest interpretation |
+| `ggRandomForests` | 4.0.0 | `main` at `782f1617` | forest, varPro, and Random Hazard Forest interpretation |
 | `TemporalHazard` | 1.2.6 | `main` at `aeb663a` | time-to-event modeling, prediction, and diagnostics |
 | `hvtiRtables` | 1.0.0 | `main` at `64dd174` | CORR and JTCVS manuscript tables and Word validation |
 

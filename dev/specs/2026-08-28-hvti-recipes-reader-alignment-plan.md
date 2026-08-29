@@ -16,7 +16,7 @@
 - Write for the HVTI/CORR biostatistician persona in `.claude/house-style.md`; do not edit that generated file.
 - Use synthetic or public data only. No PHI may appear in source, output, or examples.
 - Treat SAS as the retired workflow being replaced by R. SAS may appear only as a one-way migration landmark.
-- Target exact sibling commits: hvtiR `5227077`, hvtiPlotR `ee4ed26`, ggRandomForests `c74d6960`, TemporalHazard `aeb663a`, and hvtiRtables `64dd174`.
+- Target exact sibling commits: hvtiR `5227077`, hvtiPlotR `ee4ed26`, ggRandomForests `782f1617`, TemporalHazard `aeb663a`, and hvtiRtables `64dd174`.
 - Use randomForestRHF 2.0.0 from CRAN. Do not install the local 1.0.2 checkout over it.
 - Prefer package constructors to hand-built ggplot code where a current constructor exists.
 - Preserve the constructor -> `plot()` -> `+` decoration pattern.
@@ -37,7 +37,7 @@
 - `temporal_diagnostics.qmd`: fit checks, calibration, selection, bootstrap, censoring, and competing risks.
 - `temporal_migration.qmd`: one-way `PROC HAZARD` to maintained R migration.
 - `rf_rhf.qmd`: ggRandomForests 4.0 Random Hazard Forest workflow.
-- `data/rhf_precomputed.rds`: reviewed public-data RHF fit bundle copied from ggRandomForests `c74d6960` so the book chapter is independently runnable.
+- `data/rhf_precomputed.rds`: reviewed public-data RHF fit bundle copied from ggRandomForests `782f1617` so the book chapter is independently runnable.
 - `function_map.qmd`: workflow-level export-to-recipe map for the five-package boundary.
 
 **Retire after content migration**
@@ -82,7 +82,7 @@ for d in ../hvtiR ../hvtiPlotR ../ggRandomForests ../TemporalHazard ../hvtiRtabl
 done
 ```
 
-Expected: `main`, no status output, then `5227077`, `ee4ed26`, `c74d6960`, `aeb663a`, and `64dd174` in that order. Stop if a sibling moved or is dirty; compare the new state with the approved baseline before proceeding.
+Expected: `main`, no status output, then `5227077`, `ee4ed26`, `782f1617`, `aeb663a`, and `64dd174` in that order. Stop if a sibling moved or is dirty; compare the new state with the approved baseline before proceeding.
 
 - [ ] **Step 2: Protect the RHF dependency baseline**
 
@@ -890,7 +890,10 @@ against the reviewed bundle.
 rhf_curves <- gg_rhf(bundle$fit)
 plot(rhf_curves)
 
-auc <- gg_auct(bundle$auct_incident, method = "incident")
+auc <- gg_auct(
+  bundle$fit, marker = "haz", method = "incident",
+  auct_fit = bundle$auct_incident
+)
 plot(auc)
 
 importance <- gg_rhf_importance(bundle$importance)
