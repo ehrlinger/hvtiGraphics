@@ -56,25 +56,32 @@ nnt <- hv_nnt(
 )
 nnt$meta
 
-report_times <- c(5, 10, 20)
+target_times <- c(5, 10, 20)
 report_rows <- vapply(
-  report_times,
+  target_times,
   function(x) which.min(abs(nnt_dat$time - x)),
   integer(1)
 )
-nnt_report <- nnt_dat[report_rows, c(
-  "arr", "arr_lower", "arr_upper", "nnt", "nnt_lower", "nnt_upper"
-)]
-nnt_report <- cbind(report_time = report_times, nnt_report)
+nnt_report <- cbind(
+  target_time = target_times,
+  grid_time   = nnt_dat$time[report_rows],
+  nnt_dat[report_rows, c(
+    "arr", "arr_lower", "arr_upper", "nnt", "nnt_lower", "nnt_upper"
+  )]
+)
 rownames(nnt_report) <- NULL
-round(nnt_report, 1)
+round(nnt_report, 3)
 ```
 
 ## Build it
 
 The NNT object stores the pre-computed estimate and its CI columns. The default
-`estimate_col` is `"nnt"`, so we named only the bounds above. The plotted
-contrast is ITA minus SVG survival: a positive benefit and finite NNT favor ITA.
+`estimate_col` is `"nnt"`, so we named only the bounds above. The helper uses a
+500-point time grid, which does not land exactly on 5 or 10 years. The report
+code therefore shows each requested `target_time` beside the actual nearest
+`grid_time`; it does not relabel a nearby observation as an exact horizon. The
+plotted contrast is ITA minus SVG survival: a positive benefit and finite NNT
+favor ITA.
 
 ```{r}
 #| label: fig-nnt
@@ -93,7 +100,8 @@ plot(nnt) +
 
 This simulated NNT curve falls while the ITA survival benefit widens, reaches
 about 6 near 10 years, then rises to about 17 at 20 years as that benefit
-narrows. The report table above ties those readings to named horizons. Look for:
+narrows. The report table above shows the requested horizon and the nearby grid
+time used for each reading. Look for:
 
 - **The direction of change.** Early in follow-up the two arms have barely diverged,
   so you must treat a great many patients to prevent one event and the NNT is
@@ -143,9 +151,11 @@ plot(arr) +
 
 `hv_survival_difference()` plots the difference `S_2(t) - S_1(t)` between two
 groups over time with an optional confidence band.
-`sample_survival_difference_data()` generates the point-wise difference with
-bootstrap CI bounds from a hazard-ratio contrast. Both arms are simulated at the
-same n to keep the band width realistic.
+`sample_survival_difference_data()` generates the point-wise difference and an
+approximate normal interval from a hazard-ratio contrast. It recovers a standard
+error from each component survival band, combines the two standard errors as
+$\sqrt{SE_1^2 + SE_2^2}$, then applies the requested normal quantile. Both arms
+are simulated at the same n to keep the band width comparable.
 
 ```{r}
 #| label: surv_diff_data

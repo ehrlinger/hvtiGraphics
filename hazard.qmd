@@ -26,8 +26,8 @@ Reach for `hv_hazard()` when you have a parametric prediction grid and want
 to show the smooth curve, often with the empirical Kaplan-Meier points overlaid
 so a reviewer can judge how well the model fits. Reach for the nonparametric
 temporal-trend curve (`hv_nonparametric()`) when your outcome is a prevalence or
-a continuous measurement tracked over follow-up with a bootstrap confidence band
-rather than a survival function. Reach for the ordinal curve (`hv_ordinal()`)
+a continuous measurement tracked over follow-up with a formula-based confidence
+band rather than a survival function. Reach for the ordinal curve (`hv_ordinal()`)
 when the outcome has graded levels (regurgitation grade, severity class) and you
 want one probability curve per grade. All three take pre-computed data and hand
 back an S3 object. Inspect that object first, then call `plot()` to get the bare
@@ -131,15 +131,16 @@ plot(haz_rate) +
 
 ### Cumulative hazard
 
-The `"cumhaz"` column equals $100\{-\log[S(t)]\}$ because these sample curves
-use a per-100 scale. It rises monotonically, is not a percentage, and its local
-slope is the event rate per 100 patient-years. Reach for cumulative hazard when
-the question concerns accumulated event intensity rather than the surviving
-fraction.
+The `"cumhaz"` column equals $100\{-\log[S(t)]\}$. Cumulative hazard $H(t)$ is
+dimensionless; the helper multiplies it by 100 for display, but that scaling
+does not turn it into a percentage or a count per 100 patients. The local slope
+of $100H(t)$ is the event rate per 100 patient-years. Reach for cumulative
+hazard when the question concerns accumulated event intensity rather than the
+surviving fraction.
 
 ```{r}
 #| label: fig-hazard-cumhaz
-#| fig-cap: "Cumulative hazard per 100 patients, rising with a local slope equal to the event rate per 100 patient-years"
+#| fig-cap: "Scaled cumulative hazard, 100 × H(t), a dimensionless quantity whose local slope is the event rate per 100 patient-years"
 haz_cumhaz <- hv_hazard(
   dat_hp,
   estimate_col  = "cumhaz",
@@ -151,7 +152,7 @@ plot(haz_cumhaz) +
   scale_colour_manual(values = c("darkorange"), guide = "none") +
   scale_fill_manual(values = c("darkorange"), guide = "none") +
   scale_x_continuous(limits = c(0, 10), breaks = 0:10) +
-  labs(x = "Years", y = "Cumulative hazard (per 100)") +
+  labs(x = "Years", y = "Scaled cumulative hazard, 100 × H(t)") +
   theme_hv_manuscript()
 ```
 
@@ -268,10 +269,13 @@ plot(haz_age) +
 
 When the outcome is a prevalence or a continuous measurement tracked over
 follow-up rather than a survival function, `hv_nonparametric()` prepares the
-average curve with a bootstrap CI ribbon. `sample_nonparametric_curve_data()`
-generates the average curve and CI; `sample_nonparametric_curve_points()`
-generates the binned summary points that overlay it. Build the S3 object once
-with the matching `lower_col`/`upper_col` and optional `data_points`, then
+average curve with a formula-based CI ribbon. For probability outcomes,
+`sample_nonparametric_curve_data()` computes an effective-sample-size standard
+error and applies a normal quantile on the logit scale. For continuous outcomes,
+it applies the normal quantile to a fixed residual standard error divided by the
+square root of the effective sample size. `sample_nonparametric_curve_points()`
+generates the binned summary points that overlay the curve. Build the S3 object
+once with the matching `lower_col`/`upper_col` and optional `data_points`, then
 `plot()`.
 
 ```{r}
@@ -294,22 +298,23 @@ np <- hv_nonparametric(
 
 The bare panel shows the average curve, its CI ribbon, and the binned summary
 points in default colours. Read it the same way you read the empirical overlay
-in @fig-hazard: the curve should pass through the binned points, and the ribbon should
-widen at the extremes where the bootstrap sample thins. A flat curve where you
-expected a trend is a hint that the `outcome_type` or CI columns are
-misspecified.
+in @fig-hazard: the curve should pass through the binned points. The ribbon
+reflects the helper's formula-based standard error, not a changing at-risk count
+or a bootstrap distribution. A flat curve where you expected a trend is a hint
+that the `outcome_type` or CI columns are misspecified.
 
 ```{r}
 #| label: np_curve_single_bare
 plot(np)
 ```
 
-The shaded ribbon here is the 68% bootstrap CI (one standard error); pass
-`ci_level = 0.95` to `sample_nonparametric_curve_data()` for 95% bands.
+The shaded ribbon here is a 68% normal-quantile interval, approximately one
+standard error on the scale used by the helper. Pass `ci_level = 0.95` to
+`sample_nonparametric_curve_data()` for a 95% interval.
 
 ```{r}
 #| label: fig-hazard-nonparametric
-#| fig-cap: "Nonparametric temporal-trend curve with its 68% bootstrap confidence ribbon and binned summary points"
+#| fig-cap: "Nonparametric temporal-trend curve with its 68% formula-based normal-quantile interval and binned summary points"
 plot(np) +
   scale_colour_manual(values = c("steelblue"), guide = "none") +
   scale_fill_manual(values   = c("steelblue"), guide = "none") +
@@ -326,7 +331,7 @@ panel; each group gets its own CI ribbon.
 
 ```{r}
 #| label: fig-hazard-nonparametric-groups
-#| fig-cap: "Two nonparametric average curves compared in one panel, each with its own bootstrap confidence ribbon"
+#| fig-cap: "Two nonparametric average curves compared in one panel, each with its own formula-based normal-quantile interval"
 curve_grp <- sample_nonparametric_curve_data(
   n            = 400,
   time_max     = 7,
@@ -454,6 +459,8 @@ plot(np_ord_two) +
 - **Ordinal lines that do not sum to one.** If your grade curves drift above 1.0
   or cross oddly, the wide-format grade columns were probably reshaped to long
   format incorrectly. Each time point's grades should add to about 1.0.
-- **Over-reading the CI level.** The nonparametric ribbon defaults to a 68% band
-  (one standard error), which is narrower than the 95% band readers expect.
-  State the level in the caption, or switch to `ci_level = 0.95`.
+- **Over-reading the CI level.** The nonparametric ribbon defaults to a 68%
+  normal-quantile interval, approximately one standard error on the helper's
+  scale. It is narrower than the 95% interval readers expect and is not a
+  bootstrap interval. State the level and construction in the caption, or
+  switch to `ci_level = 0.95`.
