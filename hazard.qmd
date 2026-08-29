@@ -10,12 +10,17 @@ library(ggplot2)
 
 ## When to use it
 
-The survival chapter built its curves from raw patient times. This chapter is
-for the figures where the modelling is already done and you hold a table of
-fitted values: a parametric model has produced a smooth survival, hazard, or
-cumulative-hazard estimate at a grid of time points, complete with confidence
-bounds. Three related plotting functions from hvtiPlotR [@R-hvtiPlotR] turn
-those tables into figures.
+The [survival chapter](survival.qmd) starts with patient-level follow-up and asks
+what the observed cohort experienced. This chapter starts one step later: you
+already hold a grid of fitted values and want to show what a model says between
+the observed event times. That distinction matters. A smooth line is a model
+summary, not a more precise Kaplan-Meier curve.
+
+Name the quantity before you choose its column. Survival probability asks what
+proportion remains event-free beyond a time. Cumulative hazard asks how much
+event intensity has accumulated through that time. Hazard rate asks when events
+are occurring fastest among patients still at risk. They can be derived from
+one fitted model, but their scales, units, and clinical readings differ.
 
 Reach for `hv_hazard()` when you have a parametric prediction grid and want
 to show the smooth curve, often with the empirical Kaplan-Meier points overlaid
@@ -25,7 +30,10 @@ a continuous measurement tracked over follow-up with a bootstrap confidence band
 rather than a survival function. Reach for the ordinal curve (`hv_ordinal()`)
 when the outcome has graded levels (regurgitation grade, severity class) and you
 want one probability curve per grade. All three take pre-computed data and hand
-back a bare ggplot you decorate the usual way.
+back an S3 object. Inspect that object first, then call `plot()` to get the bare
+ggplot you decorate. If the empirical hazard shape suggests distinct early,
+constant, or late phases, continue to [fit an additive hazard
+model](temporal_fit.qmd); these displays come before that modeling decision.
 
 ## The data it needs
 
@@ -41,21 +49,8 @@ overlay aligned with the curve.
 #| label: hazard_data
 dat_hp <- sample_hazard_data(n = 500, time_max = 10)
 emp_hp <- sample_hazard_empirical(n = 500, time_max = 10, n_bins = 6)
-head(dat_hp)
-```
 
-## Build it
-
-The most common figure is a smooth parametric survival curve with its
-confidence band plus discrete Kaplan-Meier points and error bars. You name the
-estimate column and its two CI columns, then pass the empirical data frame and
-its CI columns to draw the overlay. Start from the decorated version since the
-constructor has no separate bare mode here; the call below is the whole figure.
-
-```{r}
-#| label: fig-hazard
-#| fig-cap: "Smooth parametric survival curve with its confidence band and overlaid binned Kaplan-Meier points with error bars"
-plot(hv_hazard(
+haz_surv <- hv_hazard(
   dat_hp,
   estimate_col  = "survival",
   lower_col     = "surv_lower",
@@ -63,7 +58,23 @@ plot(hv_hazard(
   empirical     = emp_hp,
   emp_lower_col = "lower",
   emp_upper_col = "upper"
-)) +
+)
+haz_surv$meta
+head(haz_surv$data)
+```
+
+## Build it
+
+The most common figure is a smooth parametric survival curve with its
+confidence band plus discrete Kaplan-Meier points and error bars. We named the
+estimate and CI columns when we built `haz_surv`; now `plot()` uses those stored
+roles. The curve is on the percentage scale, so 80 means 80% surviving, not
+0.80.
+
+```{r}
+#| label: fig-hazard
+#| fig-cap: "Smooth parametric survival curve with its confidence band and overlaid binned Kaplan-Meier points with error bars"
+plot(haz_surv) +
   scale_colour_manual(values = c("steelblue"), guide = "none") +
   scale_fill_manual(values = c("steelblue"), guide = "none") +
   scale_x_continuous(limits = c(0, 10), breaks = 0:10) +
@@ -95,48 +106,52 @@ discrete points. Look for:
 ### Hazard rate
 
 Switch `estimate_col` to `"hazard"` and the matching CI columns for the
-instantaneous hazard rate, expressed as percent per year. This is the curve to
-show when the question is *when* the risk is highest rather than *how many*
-survive.
+instantaneous event rate. The sample stores $100h(t)$, so its units are events
+per 100 patient-years. This is the curve to show when the question is *when*
+events occur fastest rather than *how many* survive.
 
 ```{r}
 #| label: fig-hazard-rate
-#| fig-cap: "Instantaneous hazard rate in percent per year, showing when post-operative risk is highest"
-plot(hv_hazard(
+#| fig-cap: "Instantaneous event rate per 100 patient-years, showing when post-operative events occur fastest among patients still at risk"
+haz_rate <- hv_hazard(
   dat_hp,
   estimate_col = "hazard",
   lower_col    = "haz_lower",
   upper_col    = "haz_upper"
-)) +
+)
+
+plot(haz_rate) +
   scale_colour_manual(values = c("firebrick"), guide = "none") +
   scale_fill_manual(values = c("firebrick"), guide = "none") +
   scale_x_continuous(limits = c(0, 10), breaks = 0:10) +
-  scale_y_continuous(limits = c(0, 30),
-                     labels = function(x) paste0(x, "%/yr")) +
-  labs(x = "Years", y = "Hazard (%/year)") +
+  scale_y_continuous(limits = c(0, 30)) +
+  labs(x = "Years", y = "Events per 100 patient-years") +
   theme_hv_manuscript()
 ```
 
 ### Cumulative hazard
 
-The `"cumhaz"` column equals `-log(S) * 100`. It rises monotonically and its
-slope at any point is the instantaneous hazard. We reach for it in readmission
-and repeated-event analyses, where counting accumulated risk is more natural
-than reporting a survival fraction.
+The `"cumhaz"` column equals $100\{-\log[S(t)]\}$ because these sample curves
+use a per-100 scale. It rises monotonically, is not a percentage, and its local
+slope is the event rate per 100 patient-years. Reach for cumulative hazard when
+the question concerns accumulated event intensity rather than the surviving
+fraction.
 
 ```{r}
 #| label: fig-hazard-cumhaz
-#| fig-cap: "Cumulative hazard rising monotonically, with its slope giving the instantaneous hazard"
-plot(hv_hazard(
+#| fig-cap: "Cumulative hazard per 100 patients, rising with a local slope equal to the event rate per 100 patient-years"
+haz_cumhaz <- hv_hazard(
   dat_hp,
   estimate_col  = "cumhaz",
   lower_col     = "cumhaz_lower",
   upper_col     = "cumhaz_upper"
-)) +
+)
+
+plot(haz_cumhaz) +
   scale_colour_manual(values = c("darkorange"), guide = "none") +
   scale_fill_manual(values = c("darkorange"), guide = "none") +
   scale_x_continuous(limits = c(0, 10), breaks = 0:10) +
-  labs(x = "Years", y = "Cumulative Hazard (%)") +
+  labs(x = "Years", y = "Cumulative hazard (per 100)") +
   theme_hv_manuscript()
 ```
 
@@ -158,7 +173,7 @@ emp_strat <- sample_hazard_empirical(
   groups = c("No Takedown" = 1.0, "Takedown" = 0.65)
 )
 
-plot(hv_hazard(
+haz_strat <- hv_hazard(
   dat_strat,
   estimate_col  = "survival",
   lower_col     = "surv_lower",
@@ -167,7 +182,9 @@ plot(hv_hazard(
   empirical     = emp_strat,
   emp_lower_col = "lower",
   emp_upper_col = "upper"
-)) +
+)
+
+plot(haz_strat) +
   scale_colour_manual(
     values = c("No Takedown" = "steelblue", "Takedown" = "firebrick"),
     name   = NULL
@@ -180,7 +197,8 @@ plot(hv_hazard(
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
                      labels = function(x) paste0(x, "%")) +
   labs(x = "Years after Surgery", y = "Survival (%)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
 ```
 
 ### Population life-table overlay
@@ -208,7 +226,7 @@ lt <- sample_life_table(
   time_max   = 12
 )
 
-plot(hv_hazard(
+haz_age <- hv_hazard(
   dat_age,
   estimate_col     = "survival",
   lower_col        = "surv_lower",
@@ -220,7 +238,9 @@ plot(hv_hazard(
   reference        = lt,
   ref_estimate_col = "survival",
   ref_group_col    = "group"
-)) +
+)
+
+plot(haz_age) +
   scale_colour_manual(
     values = c("<65" = "steelblue", "65–80" = "forestgreen",
                "≥80" = "firebrick"),
@@ -231,12 +251,17 @@ plot(hv_hazard(
                "≥80" = "firebrick"),
     guide  = "none"
   ) +
+  scale_linetype_manual(
+    values = c("<65" = "dashed", "65–80" = "dashed", "≥80" = "dashed"),
+    name = "Population reference"
+  ) +
   scale_x_continuous(limits = c(0, 12), breaks = seq(0, 12, 2)) +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
                      labels = function(x) paste0(x, "%")) +
   labs(x = "Years", y = "Survival (%)",
        caption = "Dashed lines: US population life table") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
 ```
 
 ### Nonparametric temporal-trend curve
@@ -371,6 +396,7 @@ severity to firebrick for Severe so the eye reads worsening as warming.
 #| label: fig-hazard-ordinal
 #| fig-cap: "One probability curve per regurgitation grade over time, coloured from grey to firebrick as severity worsens"
 np_ord <- hv_ordinal(curve_data = ord_dat, data_points = ord_pts)
+np_ord$meta
 
 plot(np_ord) +
   scale_colour_manual(
@@ -386,25 +412,35 @@ plot(np_ord) +
   theme(legend.position = c(0.75, 0.6))
 ```
 
-To collapse higher grades into a combined level (Moderate + Severe, say), subset
-and re-label before passing the data to the constructor. Here we show a
-two-grade version drawn from the same sample data.
+To collapse adjacent grades, add their probabilities at each time before
+passing the data to the constructor. Do not simply drop the middle rows; then
+the displayed levels no longer account for every patient and will not sum to
+one. Here we combine None with Mild and Moderate with Severe.
 
 ```{r}
 #| label: fig-hazard-ordinal-collapsed
-#| fig-cap: "Two-grade ordinal version with higher grades collapsed into a combined level"
-ord_two <- subset(ord_dat, grade %in% c("None", "Severe"))
+#| fig-cap: "Two-level ordinal version after summing adjacent grade probabilities; the two curves account for the full cohort at each time"
+ord_two <- transform(
+  ord_dat,
+  grade = ifelse(grade %in% c("None", "Mild"),
+                 "None or Mild", "Moderate or Severe")
+)
+ord_two <- aggregate(estimate ~ time + grade, data = ord_two, FUN = sum)
 
-plot(hv_ordinal(curve_data = ord_two)) +
+np_ord_two <- hv_ordinal(curve_data = ord_two)
+
+plot(np_ord_two) +
   scale_colour_manual(
-    values = c("None" = "steelblue", "Severe" = "firebrick"),
+    values = c("None or Mild" = "steelblue",
+               "Moderate or Severe" = "firebrick"),
     name   = NULL
   ) +
   scale_x_continuous(limits = c(0, 5), breaks = 0:5) +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2),
                      labels = scales::percent) +
   labs(x = "Follow-up (years)", y = "Grade prevalence (%)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
 ```
 
 ## Pitfalls
