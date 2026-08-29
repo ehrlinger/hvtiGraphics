@@ -1,8 +1,364 @@
 # Predict from a hazard model
 
-A fitted hazard model becomes useful when it answers a patient-profile question.
-This recipe turns the fit into survival, cumulative-hazard, instantaneous-hazard,
-and phase-specific curves on a time grid we choose.
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 7, fig.height = 4.5, dpi = 150)
+library(TemporalHazard)
+library(survival)
+library(ggplot2)
+library(hvtiPlotR)
+```
 
-Keeping the profile and time grid explicit lets us compare the curves a clinician
-will ask about, without treating a single model summary as the whole result.
+## When to use it
+
+An additive hazard fit becomes clinically useful when it tells us how risk
+changes after the operation. Survival answers how many patients remain alive.
+Cumulative hazard answers how much event intensity has accumulated.
+Instantaneous hazard answers when events are occurring fastest. In a
+multiphase model, the last curve can also show which early or constant process
+is contributing that risk.
+
+This chapter refits every model it uses. You can copy it into a clean R session
+without first running the [fitting chapter](temporal_fit.qmd). The working
+pattern is the same throughout: fit the object, inspect it, predict on an
+explicit time grid, then plot and read the result.
+
+## Refit the models
+
+The first fit is the reviewed intercept-only Weibull model for the public CABG
+cohort. Follow-up is recorded in months, so every rate we derive from its time
+grid is per patient-month.
+
+```{r}
+#| label: fit-models
+data(cabgkul, package = "TemporalHazard")
+
+fit <- hazard(
+  time = cabgkul$int_dead,
+  status = cabgkul$dead,
+  theta = c(0.01, 1),
+  dist = "weibull",
+  fit = TRUE
+)
+summary(fit)
+
+grid <- data.frame(
+  time = seq(0.5, max(cabgkul$int_dead), length.out = 120)
+)
+```
+
+## Predict survival and cumulative hazard
+
+With `se.fit = TRUE`, current `predict.hazard()` returns the estimate,
+delta-method standard error, and confidence limits. Survival limits stay
+between 0 and 1; cumulative-hazard limits stay positive. Both predictions refer
+to the same fitted curve on the same grid.
+
+```{r}
+#| label: predict-weibull
+survival <- predict(
+  fit, newdata = grid, type = "survival",
+  se.fit = TRUE, level = 0.95
+)
+cumhaz <- predict(
+  fit, newdata = grid, type = "cumulative_hazard",
+  se.fit = TRUE, level = 0.95
+)
+
+pred <- data.frame(
+  time = grid$time,
+  survival,
+  cumhazard = cumhaz$fit,
+  cumhazard_lower = cumhaz$lower,
+  cumhazard_upper = cumhaz$upper
+)
+head(pred)
+
+# Survival and cumulative hazard must describe the same fitted model.
+max(abs(pred$fit - exp(-pred$cumhazard)))
+```
+
+The last value should be zero to numerical precision because
+$S(t)=\exp\{-H(t)\}$. If it is not, first check that both predictions came from
+the same fit, profile, and time grid. That catches the common mistake of joining
+predictions made on different rows.
+
+### Survival against the empirical curve
+
+The smooth curve is a model result, so we judge it against the Kaplan-Meier
+estimate rather than letting it stand alone. The ribbon is uncertainty in the
+parametric curve; the step line is the empirical reference.
+
+```{r}
+#| label: fig-temporal-prediction-survival
+#| fig-cap: "Weibull survival with a 95% delta-method confidence band, overlaid on empirical Kaplan-Meier survival for the CABG cohort"
+km <- hzr_kaplan(cabgkul$int_dead, cabgkul$dead)
+
+ggplot() +
+  geom_step(
+    data = km,
+    aes(time, survival * 100, colour = "Kaplan-Meier"),
+    linewidth = 0.6
+  ) +
+  geom_ribbon(
+    data = pred,
+    aes(time, ymin = lower * 100, ymax = upper * 100),
+    fill = "steelblue", alpha = 0.18
+  ) +
+  geom_line(
+    data = pred,
+    aes(time, fit * 100, colour = "Weibull"),
+    linewidth = 0.9
+  ) +
+  scale_colour_manual(
+    values = c("Kaplan-Meier" = "grey35", "Weibull" = "steelblue"),
+    name = NULL
+  ) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
+                     labels = function(x) paste0(x, "%")) +
+  labs(x = "Months after CABG", y = "Freedom from death") +
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
+```
+
+The Weibull follows the broad decline but smooths over the changing early and
+late behavior in the empirical curve. A narrow band does not rescue a
+systematic shape mismatch; it only says the fitted parameters are estimated
+precisely under that Weibull model.
+
+### Accumulated event intensity
+
+The Nelson-Aalen curve provides the corresponding empirical check for
+cumulative hazard. $H(t)$ is dimensionless. Its slope, because time is in
+months, has units of events per patient-month.
+
+```{r}
+#| label: fig-temporal-prediction-cumhaz
+#| fig-cap: "Weibull cumulative hazard with a 95% delta-method confidence band, overlaid on the empirical Nelson-Aalen estimate"
+na <- hzr_nelson(cabgkul$int_dead, cabgkul$dead)
+
+ggplot() +
+  geom_step(
+    data = na,
+    aes(time, cumhaz, colour = "Nelson-Aalen"),
+    linewidth = 0.6
+  ) +
+  geom_ribbon(
+    data = pred,
+    aes(time, ymin = cumhazard_lower, ymax = cumhazard_upper),
+    fill = "firebrick", alpha = 0.16
+  ) +
+  geom_line(
+    data = pred,
+    aes(time, cumhazard, colour = "Weibull"),
+    linewidth = 0.9
+  ) +
+  scale_colour_manual(
+    values = c("Nelson-Aalen" = "grey35", "Weibull" = "firebrick"),
+    name = NULL
+  ) +
+  labs(x = "Months after CABG", y = "Cumulative hazard, H(t)") +
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
+```
+
+## Predict an additive hazard directly
+
+Now refit the reviewed AVC model. It has an early CDF phase and a constant
+phase, both on a monthly time scale. Current `predict.hazard()` supports direct
+instantaneous-hazard prediction for this multiphase model. We use that API;
+there is no need to approximate a derivative from cumulative-hazard values.
+
+```{r}
+#| label: fit-multiphase
+data(avc, package = "TemporalHazard")
+avc <- na.omit(avc)
+
+fit_multiphase <- hazard(
+  survival::Surv(int_dead, dead) ~ 1,
+  data = avc,
+  dist = "multiphase",
+  phases = list(
+    early = hzr_phase(
+      "cdf", t_half = 0.5, nu = 1, m = 1,
+      fixed = "shapes"
+    ),
+    constant = hzr_phase("constant")
+  ),
+  fit = TRUE,
+  control = list(n_starts = 3, maxit = 500)
+)
+summary(fit_multiphase)
+
+phase_grid <- data.frame(
+  time = exp(seq(log(0.01), log(max(avc$int_dead)), length.out = 240))
+)
+
+total_hazard <- predict(
+  fit_multiphase, newdata = phase_grid, type = "hazard",
+  se.fit = TRUE, level = 0.95
+)
+total_cumhaz <- predict(
+  fit_multiphase, newdata = phase_grid, type = "cumulative_hazard",
+  se.fit = TRUE, level = 0.95
+)
+head(total_hazard)
+```
+
+The instantaneous hazard and its confidence limits have units of deaths per
+patient-month. The cumulative hazard is dimensionless. Keep those labels
+separate even though the two quantities come from the same fit.
+
+## Rebuild and verify the phase contributions
+
+`hzr_phase_hazard()` and `hzr_phase_cumhaz()` return unit-scale temporal
+shapes. Multiply each by its fitted scale, `exp(log_mu)`, to recover that
+phase's contribution. The helper signatures mirror the phase specification:
+the early CDF uses `t_half`, `nu`, and `m`; the constant phase needs only its
+type.
+
+```{r}
+#| label: phase-contributions
+theta <- coef(fit_multiphase)
+early_scale <- exp(theta["early.log_mu"])
+constant_scale <- exp(theta["constant.log_mu"])
+
+early_hazard <- early_scale * hzr_phase_hazard(
+  phase_grid$time, t_half = 0.5, nu = 1, m = 1, type = "cdf"
+)
+constant_hazard <- constant_scale * hzr_phase_hazard(
+  phase_grid$time, type = "constant"
+)
+
+early_cumhaz <- early_scale * hzr_phase_cumhaz(
+  phase_grid$time, t_half = 0.5, nu = 1, m = 1, type = "cdf"
+)
+constant_cumhaz <- constant_scale * hzr_phase_cumhaz(
+  phase_grid$time, type = "constant"
+)
+
+additivity_check <- data.frame(
+  quantity = c("Instantaneous hazard", "Cumulative hazard"),
+  maximum_absolute_difference = c(
+    max(abs(total_hazard$fit - early_hazard - constant_hazard)),
+    max(abs(total_cumhaz$fit - early_cumhaz - constant_cumhaz))
+  )
+)
+additivity_check
+
+stopifnot(
+  additivity_check$maximum_absolute_difference[1] < 1e-12,
+  additivity_check$maximum_absolute_difference[2] < 1e-12
+)
+```
+
+Both differences should be at floating-point noise. If they are not, check the
+phase type, fixed shape values, time units, and fitted scale before plotting.
+The total must equal the phase sum at every time.
+
+```{r}
+#| label: fig-temporal-prediction-phase-hazard
+#| fig-cap: "Fitted AVC hazard per patient-month: the total with its 95% confidence band and the additive early and constant contributions"
+hazard_df <- rbind(
+  data.frame(time = phase_grid$time, hazard = total_hazard$fit,
+             component = "Total"),
+  data.frame(time = phase_grid$time, hazard = early_hazard,
+             component = "Early"),
+  data.frame(time = phase_grid$time, hazard = constant_hazard,
+             component = "Constant")
+)
+hazard_df$component <- factor(
+  hazard_df$component, levels = c("Total", "Early", "Constant")
+)
+
+ggplot(hazard_df, aes(time, hazard, colour = component,
+                      linetype = component)) +
+  geom_ribbon(
+    data = data.frame(phase_grid, total_hazard),
+    aes(time, ymin = lower, ymax = upper),
+    inherit.aes = FALSE, fill = "grey35", alpha = 0.14
+  ) +
+  geom_line(aes(linewidth = component)) +
+  scale_colour_manual(
+    values = c("Total" = "grey20", "Early" = "firebrick",
+               "Constant" = "steelblue"),
+    name = NULL
+  ) +
+  scale_linetype_manual(
+    values = c("Total" = "solid", "Early" = "dashed",
+               "Constant" = "dashed"),
+    name = NULL
+  ) +
+  scale_linewidth_manual(
+    values = c("Total" = 1, "Early" = 0.75, "Constant" = 0.75),
+    guide = "none"
+  ) +
+  scale_x_log10(
+    breaks = c(0.01, 0.1, 0.5, 1, 5, 20, 100),
+    labels = c("0.01", "0.1", "0.5", "1", "5", "20", "100")
+  ) +
+  scale_y_log10(
+    breaks = c(0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5),
+    labels = c("0.0005", "0.001", "0.005", "0.01", "0.05", "0.1", "0.5")
+  ) +
+  labs(x = "Months after AVC repair (log scale)",
+       y = "Deaths per patient-month (log scale)") +
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
+```
+
+The log scales keep the first postoperative days and the low constant rate
+visible on one panel. The early contribution dominates immediately after repair
+and then falls. The constant contribution is small and flat. Their sum is the
+solid total curve. If the phase order is clinically implausible, do not relabel
+it into a better story. Return to the empirical curve and the phase
+specification.
+
+```{r}
+#| label: fig-temporal-prediction-phase-cumhaz
+#| fig-cap: "Fitted AVC cumulative hazard: the total with its 95% confidence band and the additive early and constant contributions"
+cumhaz_df <- rbind(
+  data.frame(time = phase_grid$time, cumhaz = total_cumhaz$fit,
+             component = "Total"),
+  data.frame(time = phase_grid$time, cumhaz = early_cumhaz,
+             component = "Early"),
+  data.frame(time = phase_grid$time, cumhaz = constant_cumhaz,
+             component = "Constant")
+)
+cumhaz_df$component <- factor(
+  cumhaz_df$component, levels = c("Total", "Early", "Constant")
+)
+
+ggplot(cumhaz_df, aes(time, cumhaz, colour = component,
+                      linetype = component)) +
+  geom_ribbon(
+    data = data.frame(phase_grid, total_cumhaz),
+    aes(time, ymin = lower, ymax = upper),
+    inherit.aes = FALSE, fill = "grey35", alpha = 0.14
+  ) +
+  geom_line(aes(linewidth = component)) +
+  scale_colour_manual(
+    values = c("Total" = "grey20", "Early" = "firebrick",
+               "Constant" = "steelblue"),
+    name = NULL
+  ) +
+  scale_linetype_manual(
+    values = c("Total" = "solid", "Early" = "dashed",
+               "Constant" = "dashed"),
+    name = NULL
+  ) +
+  scale_linewidth_manual(
+    values = c("Total" = 1, "Early" = 0.75, "Constant" = 0.75),
+    guide = "none"
+  ) +
+  labs(x = "Months after AVC repair", y = "Cumulative hazard, H(t)") +
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
+```
+
+The early cumulative contribution rises quickly and then approaches a plateau.
+The constant contribution keeps accumulating linearly, even though its
+instantaneous rate is low. Thus a phase can look small on the hazard panel and
+still matter over long follow-up. Read the two panels together.
