@@ -1,9 +1,9 @@
 # Describe the cohort {.unnumbered}
 
-Before we model an outcome, we need to know who is in the cohort and how the
-measurements relate to one another. Start with the dataset and its Table 1, then
-choose the display that lets a clinical reader see the distribution, comparison,
-trajectory, or study flow that matters.
+Before we model an outcome, who is in the cohort and how do the measurements
+relate to one another? Start with the dataset and its Table 1, then choose the
+display that lets a clinical reader see the distribution, comparison, trajectory,
+or study flow that matters.
 
 ## Choose the next recipe
 

@@ -1,8 +1,9 @@
 # Finish and deliver the result {.unnumbered}
 
-The analysis may be settled, yet the figure still has to work in a manuscript,
-on a poster, or on a slide. These recipes choose the visual finish first, then
-combine, annotate, size, and export the result for the reader who receives it.
+The analysis may be settled, but what does the figure need before a manuscript,
+poster, or slide audience can use it? These recipes choose the visual finish
+first, then combine, annotate, size, and export the result for the reader who
+receives it.
 
 ## Choose the next recipe
 

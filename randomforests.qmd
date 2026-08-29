@@ -1,8 +1,8 @@
 # Explain predictive models {.unnumbered}
 
-You have a forest fit, but the model itself is not the clinical explanation.
-Start with whether it converged, then choose the slice that answers what it
-predicts, which variables matter, and where a predictor changes the response.
+You have a forest fit, but what does it say about a clinical prediction? Start
+with whether it converged, then choose the slice that answers what it predicts,
+which variables matter, and where a predictor changes the response.
 
 ## Choose the next recipe
 

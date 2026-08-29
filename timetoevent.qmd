@@ -1,9 +1,9 @@
 # Analyze time-to-event outcomes {.unnumbered}
 
-After cardiac surgery, the question is usually not whether an event happened,
-but when it happened and what changed along the way. These recipes begin with
-the observed follow-up and then move from familiar survival displays to an
-additive hazard model when the shape of risk needs more than a Cox model.
+After cardiac surgery, when did the event happen and what changed along the
+way? These recipes begin with the observed follow-up and then move from familiar
+survival displays to an additive hazard model when the shape of risk needs more
+than a Cox model.
 
 ## Choose the next recipe
 
