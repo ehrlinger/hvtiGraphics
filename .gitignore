@@ -3,6 +3,9 @@
 .RData
 .Ruserdata
 
+# Isolated implementation workspaces
+/.worktrees/
+
 # Quarto build outputs and caches
 /_book/
 /.quarto/
