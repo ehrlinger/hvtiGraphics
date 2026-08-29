@@ -46,13 +46,15 @@ Strong passages stay. The purpose is alignment, not rewriting for its own sake.
 
 ## Package baseline and boundary
 
-The book targets the current clean `main` branch of each sibling repository:
+The book targets the approved source revision for each sibling repository. That
+is current clean `main` except for the reviewed hvtiPlotR repair required by the
+book's at-risk workflow:
 
 | Package | Version | Approved source | Role in the book |
 |---|---:|---|---|
 | `hvtiR` | 1.0.13 | `main` at `5227077` | install, update, diagnose, and inspect the family |
-| `hvtiPlotR` | 2.7.10 | `main` at `ee4ed26` | house figures, themes, composition, and export |
-| `ggRandomForests` | 4.0.0 | `main` at `782f1617` | forest, varPro, and Random Hazard Forest interpretation |
+| `hvtiPlotR` | 2.7.11 | authorized repair at `a808123` (pending merge) | house figures, themes, composition, and export |
+| `ggRandomForests` | 4.0.0 | `main` at `8e1b1f66` | forest, varPro, and Random Hazard Forest interpretation |
 | `TemporalHazard` | 1.2.6 | `main` at `aeb663a` | time-to-event modeling, prediction, and diagnostics |
 | `hvtiRtables` | 1.0.0 | `main` at `64dd174` | CORR and JTCVS manuscript tables and Word validation |
 

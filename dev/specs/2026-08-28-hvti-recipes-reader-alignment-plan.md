@@ -6,7 +6,7 @@
 
 **Architecture:** Keep the Quarto book as the only product, reorganize its navigation into five reader tasks, and normalize worked chapters to one recipe contract. Preserve strong existing material, split the overloaded TemporalHazard material, add the ggRandomForests 4.0 Random Hazard Forest workflow, and close with a public-function coverage map. Every executable source edit is rendered and committed with its matching `_freeze/` output; a clean full rebuild is the final integration gate.
 
-**Tech Stack:** Quarto book, R 4.6.1, knitr, ggplot2, hvtiR 1.0.13, hvtiPlotR 2.7.10, ggRandomForests 4.0.0, randomForestRHF 2.0.0, TemporalHazard 1.2.6, hvtiRtables 1.0.0, `gt`, `patchwork`, macOS `quartz_pdf`.
+**Tech Stack:** Quarto book, R 4.6.1, knitr, ggplot2, hvtiR 1.0.13, hvtiPlotR 2.7.11, ggRandomForests 4.0.0, randomForestRHF 2.0.0, TemporalHazard 1.2.6, hvtiRtables 1.0.0, `gt`, `patchwork`, macOS `quartz_pdf`.
 
 **Spec:** `dev/specs/2026-08-28-hvti-recipes-reader-alignment-design.md`
 
@@ -16,7 +16,7 @@
 - Write for the HVTI/CORR biostatistician persona in `.claude/house-style.md`; do not edit that generated file.
 - Use synthetic or public data only. No PHI may appear in source, output, or examples.
 - Treat SAS as the retired workflow being replaced by R. SAS may appear only as a one-way migration landmark.
-- Target exact sibling commits: hvtiR `5227077`, hvtiPlotR `ee4ed26`, ggRandomForests `782f1617`, TemporalHazard `aeb663a`, and hvtiRtables `64dd174`.
+- Target exact sibling commits: hvtiR `5227077`, the authorized hvtiPlotR at-risk repair `a808123`, ggRandomForests current `main` at `8e1b1f66`, TemporalHazard `aeb663a`, and hvtiRtables `64dd174`.
 - Use randomForestRHF 2.0.0 from CRAN. Do not install the local 1.0.2 checkout over it.
 - Prefer package constructors to hand-built ggplot code where a current constructor exists.
 - Preserve the constructor -> `plot()` -> `+` decoration pattern.
@@ -37,7 +37,7 @@
 - `temporal_diagnostics.qmd`: fit checks, calibration, selection, bootstrap, censoring, and competing risks.
 - `temporal_migration.qmd`: one-way `PROC HAZARD` to maintained R migration.
 - `rf_rhf.qmd`: ggRandomForests 4.0 Random Hazard Forest workflow.
-- `data/rhf_precomputed.rds`: reviewed public-data RHF fit bundle copied from ggRandomForests `782f1617` so the book chapter is independently runnable.
+- `data/rhf_precomputed.rds`: reviewed public-data RHF fit bundle copied from ggRandomForests `8e1b1f66` so the book chapter is independently runnable.
 - `function_map.qmd`: workflow-level export-to-recipe map for the five-package boundary.
 
 **Retire after content migration**
@@ -82,7 +82,7 @@ for d in ../hvtiR ../hvtiPlotR ../ggRandomForests ../TemporalHazard ../hvtiRtabl
 done
 ```
 
-Expected: `main`, no status output, then `5227077`, `ee4ed26`, `782f1617`, `aeb663a`, and `64dd174` in that order. Stop if a sibling moved or is dirty; compare the new state with the approved baseline before proceeding.
+Expected approved revisions after the two documented drift decisions: `5227077`, `a808123`, `8e1b1f66`, `aeb663a`, and `64dd174` in that order. The hvtiPlotR repair remains on its isolated branch until reviewed through its own PR; the ggRandomForests source is the detached current-main worktree because the primary sibling checkout is on unrelated feature work. Stop if an approved source moves or is dirty; compare the new state with the recorded baseline before proceeding.
 
 - [ ] **Step 2: Protect the RHF dependency baseline**
 
@@ -1161,7 +1161,7 @@ git status --short
 git check-ignore _book HVTI-Recipes.pdf
 ```
 
-Expected: the JSON records hvtiR 1.0.13, hvtiPlotR 2.7.10, ggRandomForests 4.0.0, TemporalHazard 1.2.6, and hvtiRtables 1.0.0; `_book` and the PDF are ignored; source files are unchanged.
+Expected: the JSON records hvtiR 1.0.13, hvtiPlotR 2.7.11, ggRandomForests 4.0.0, TemporalHazard 1.2.6, and hvtiRtables 1.0.0; `_book` and the PDF are ignored; source files are unchanged.
 
 - [ ] **Step 6: Review orphan deletions before staging**
 
