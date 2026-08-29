@@ -205,9 +205,9 @@ treat what it reports as a prompt to look rather than proof.
 ### Why not `gt::gtsave()`?
 
 The honest answer starts with a concession: `gt` writes Word, and writes it
-well. `gt::gtsave(as_gt(tbl), "table1.docx")` hands you a `.docx` with the right
-numbers on an unmerged grid, and `hv_check_docx()` finds nothing wrong with it.
-The shortcut does not mangle the table.
+well. `gt::gtsave(as_gt(tbl_corr), "table1.docx")` hands you a `.docx` with the
+right numbers on an unmerged grid, and `hv_check_docx()` finds nothing wrong
+with it. The shortcut does not mangle the table.
 
 What `gt` has no mechanism for is putting anything *outside* the table. The
 house rules want the footnotes and the abbreviation key as ordinary document
@@ -379,16 +379,21 @@ Word file.
 The part worth reading closely in either format is the denominator: which N
 belongs to the percentage in front of you, and where the table says so.
 
-The flat table says so once, in the header. `N = 77` and `N = 123` are group
-sizes, and every percentage in the column beneath is taken against them. That is
-all the counting the table does. Where a variable has missing data, plain
-`tbl_summary()` reports it as an `Unknown` row underneath that variable rather
-than by adjusting a denominator, so read the rows, not the header, for
-availability. Note what this means for the default `*` footnote: it describes a
-count of non-missing values, and a flat table built this way prints no such
-count. On a table with no missing data the note is harmless but idle; on one
-with missing data it points at a number that is not there. Either give the table
-that count or leave the `*` out, with ``footnotes = hv_man_footnotes()["†"]``.
+The flat table reports cohort group sizes once, in the header: `N = 77` and
+`N = 123`. Those numbers are the categorical denominators only when the
+variable is complete. By default, `tbl_summary()` calculates a categorical
+percentage among patients with a non-missing value, then displays the missing
+count as an `Unknown` row. If ten women had no recorded diabetes status, the
+header would remain 77 and `Unknown` would be 10, but the diabetes percentages
+would use 67 as their denominator. Read the header and the `Unknown` row
+together.
+
+That behavior also exposes a limitation of this flat layout: it does not print
+the non-missing denominator beside the statistic. The default `*` footnote
+describes a count of non-missing values, but the table has no such count for it
+to mark. On a complete table the note is harmless but idle; with missing data it
+points at a number that is not there. Either add the row-level N or leave the
+`*` out, with ``footnotes = hv_man_footnotes()["†"]``.
 
 The JTCVS table says so on every row. The N sub-column beside each group's
 statistic is the number of non-missing patients contributing to that row. In

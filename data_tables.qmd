@@ -13,17 +13,18 @@ Use this chapter before analysis: inspect the data, question what you find, and
 build the dictionary that records the cohort you actually received. This is
 dataset reconnaissance, not the publication table itself.
 
-The first thing most of us do with a new SAS dataset is run `PROC CONTENTS`,
-then `PROC MEANS`. Neither one produces a table anybody will publish. You run
-them because you cannot decide what belongs in Table 1 until you know what you
-are holding: which variables are there, what type each one came in as, and how
-much of each is actually populated.
+Start with `proc_contents()` to inventory the variables and their missingness,
+then use `proc_means()` to inspect the numeric distributions.
+`data_dictionary()` turns that inventory into the one-page artifact you hand a
+collaborator. These are R-side checks, and none produces a table anybody will
+publish. You run them because you cannot decide what belongs in Table 1 until
+you know what you are holding: which variables are there, what type each one
+came in as, and how much of each is actually populated.
 
-That is this recipe. It is the *pre-analysis* table, the one that runs before
-the Table 1 in the [publication tables](qt_tables.qmd) chapter has a shape.
-`hvtiRutilities` gives you both procedures under the names you already type,
-`proc_contents()` and `proc_means()`, plus `data_dictionary()`, which flattens
-the first into the one-page artifact you hand a collaborator.
+For readers moving an older workflow to R, the first two names are migration
+landmarks for the retired `PROC CONTENTS` and `PROC MEANS` steps. That is this
+recipe: the *pre-analysis* table, the one that runs before the Table 1 in the
+[publication tables](qt_tables.qmd) chapter has a shape.
 
 Reach for it whenever a dataset is new to you, has just been re-extracted, or
 arrives with someone telling you it is "the same as last time." Ten seconds of
