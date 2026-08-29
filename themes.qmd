@@ -39,6 +39,17 @@ and `theme_hv_ppt_dark()` for navy or dark-gradient decks where the convention
 is white-on-dark. Match the theme to the background it will sit on and the
 distance it will be read from, and the rest takes care of itself.
 
+One behaviour is shared by all four and is easy to read as a bug the first time
+you meet it. Each sets `legend.position = "none"`, so every figure below comes
+back without a key even though `decorate()` gives both scales a name. That is the
+house convention rather than an oversight: a CORR figure names its groups on the
+panel, where the reader's eye already is, instead of sending it out to a margin
+box and back once per series. @sec-annotation-series has that recipe, including
+why the label takes the theme's ink rather than the colour of the series it
+names. When a grouping genuinely cannot be named on the panel, the
+[legends](legends.qmd) chapter covers putting a key back, and `hv_legend_inside()`
+does it without surrendering panel width.
+
 We render the same base trends plot under each theme, then show targeted
 overrides. The shared decorations are factored out once.
 
@@ -204,6 +215,12 @@ decorate(p_base) +
   reviewer notices. When the same analysis travels from a conference to a
   manuscript, re-render with `theme_hv_manuscript()` rather than shrinking the
   poster version, so the text scales correctly for its new size.
+- **A vanished legend is the theme working, not failing.** All four
+  `theme_hv_*()` functions set `legend.position = "none"`. If you add a house
+  theme and your key disappears, nothing has broken; the convention is to name
+  groups on the panel instead. Restore a key deliberately when the grouping
+  cannot be named that way: pass `legend.position` through the theme's `...`, or
+  apply `hv_legend_inside()` after the theme so its position wins.
 - **Dark theme on a white slide.** `theme_hv_ppt_dark()` sets a transparent
   background and white text on the assumption that a dark slide sits behind it.
   Drop that figure onto a white slide and the white text vanishes. The reverse
