@@ -193,9 +193,16 @@ mh_wt <- hv_mirror_hist(
 )
 
 mh_wt$meta[c("score_col", "group_col", "binwidth", "n_obs", "n_dropped")]
-mh_wt$tables$diagnostics[c("effective_n_by_group", "smd_before",
-                           "smd_weighted")]
+weight_total_by_group <- mh_wt$tables$diagnostics$effective_n_by_group
+weight_total_by_group
+mh_wt$tables$diagnostics[c("smd_before", "smd_weighted")]
 ```
+
+Despite the component name in hvtiPlotR 2.7.10,
+`effective_n_by_group` stores the **sum of weights** in each group. It is not the
+Kish effective sample size, $(\sum w)^2 / \sum w^2$. We give it the accurate
+local name `weight_total_by_group`; in this normalized example the totals are
+2,000 and 2,000, the same as the raw group counts.
 
 The bare weighted panel looks like the binary-match bare plot, but the overlay
 encodes IPTW weight sums, not counts. Read it the same way: balanced upper and
@@ -237,20 +244,22 @@ p_wt +
   theme_hv_manuscript()
 ```
 
-Weighted diagnostics include the effective N (the sample size the weights behave
-like, always smaller than the raw count) and the weighted SMD:
+The weight totals describe the scale of the weighted histogram, while the
+weighted SMD evaluates balance:
 
 ```{r}
 #| label: mirror_histogram_weighted_diagnostics
 mh_wt$tables$diagnostics$smd_weighted
-mh_wt$tables$diagnostics$effective_n_by_group
+weight_total_by_group
 ```
 
 Here the x-axis remains propensity score, but the overlay height is the sum of
 IPTW weights within a bin, not a patient count. Compare the weighted upper and
-lower shapes and report effective N with the weighted SMD. A well-aligned overlay
-supports covariate balance on the score; it does not by itself identify a causal
-treatment effect.
+lower shapes and report the group weight totals with the weighted SMD. In this
+frozen example the weighted SMD is 0.543, still well above the 0.1 rule of thumb,
+so the weighting is inadequate; the figure is an example of diagnosing failed
+balance, not declaring success. Even adequate balance on the score would not by
+itself identify a causal treatment effect.
 
 ### Stacked histogram: counts over time
 

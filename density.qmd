@@ -53,13 +53,20 @@ same recipe run after you replace `num` with another continuous column name.
 ## Inspect it
 
 There is no constructor object to inspect in this direct ggplot2 recipe, so
-inspect the measurement and the group sizes before smoothing. The nonmissing
-count is the information a normalized curve will otherwise hide.
+inspect the measurement and the rows each curve will actually use before
+smoothing. `geom_density()` drops a row with a missing ejection fraction; the
+grouped version also needs a nonmissing group. These nonmissing counts are the
+information a normalized curve will otherwise hide.
 
 ```{r}
 #| label: density_inspect
-summary(dat[[num]])
-table(dat[[grp]], useNA = "ifany")
+single_curve_rows  <- !is.na(dat[[num]])
+grouped_curve_rows <- single_curve_rows & !is.na(dat[[grp]])
+
+summary(dat[[num]][single_curve_rows])
+c(single_curve_n = sum(single_curve_rows),
+  grouped_curve_n = sum(grouped_curve_rows))
+table(dat[[grp]][grouped_curve_rows], useNA = "ifany")
 ```
 
 ## Build it

@@ -24,11 +24,10 @@ valve area, regurgitation grade) is the natural candidate.
 
 This chapter covers two related displays. The spaghetti plot, `hv_spaghetti()`,
 keeps every patient's trajectory visible, so you see the spread as well as the
-trend. Its companion, `hv_trends()`, throws the individual lines away and plots a
-single summary per time point (a mean or median per year), which is what you want
-when the question is the population-level drift and the per-patient detail is
-noise. You reach for the spaghetti when individual variation is the story, and
-for the trend curve when the annual summary is.
+trend. Its companion, `hv_trends()`, removes the individual lines, fits a LOESS
+curve to the raw observations, and overlays one annual summary point per group.
+Use it when the population-level pattern matters more than tracing individual
+patients.
 
 Both return a bare ggplot you finish with scales, labels, and a house theme.
 
@@ -36,11 +35,13 @@ Both return a bare ggplot you finish with scales, labels, and a house theme.
 
 `hv_spaghetti()` expects long-format data: one row per measurement, with an id
 column identifying the patient, a time column, and the value being tracked.
-Optionally, a grouping column lets you colour trajectories by stratum.
+Optionally, a grouping column lets the smoother compare strata when
+`add_smooth = TRUE`. In hvtiPlotR 2.7.10 the individual trajectory layer remains
+black even when `colour_col` is set; the group colours apply to the smoother.
 `sample_spaghetti_data()` generates 150 patients with up to 6 observations each,
 split by a named proportion vector that stands in for a sex stratification. Build
-both the plain and the colour-stratified objects up front so the variants below
-can reuse them.
+both the plain and the group-aware objects up front so the variants below can
+reuse them.
 
 ```{r}
 #| label: spaghetti_data
@@ -65,7 +66,8 @@ the annual summary internally, so you do not pre-aggregate. The `year_range` and
 
 Both spaghetti objects use the `hv_spaghetti` plot method. Inspecting their
 metadata confirms the patient identifier, observation count, and whether a
-grouping colour was retained before either object is plotted.
+grouping column was retained for the optional smoother before either object is
+plotted.
 
 ```{r}
 #| label: spaghetti_inspect
@@ -134,7 +136,7 @@ stay as neutral context while the coloured smooths carry the group comparison.
 
 ```{r}
 #| label: fig-spaghetti-smooth
-#| fig-cap: "Stratified trajectories with a per-group LOESS overlay carrying the trend while the individual lines fade to context"
+#| fig-cap: "Black patient trajectories with coloured group-specific LOESS smoothers carrying the comparison"
 plot(sp_col, add_smooth = TRUE) +
   scale_colour_manual(
     values = c(Female = "firebrick", Male = "steelblue"),
@@ -185,14 +187,15 @@ true change from selective follow-up.
 
 ### Temporal trend: a single annual series
 
-When the per-patient detail stops being the point, `hv_trends()` collapses the
-cohort to one summary per year. Subset to a single group and fit with
-`group_col = NULL` for a single annual series. `hv_trends()` plots the annual mean
-of the continuous `value` column, so set the x-axis to the study window and let
-the y-axis span the observed range of the mean (here roughly 20 to 70). One
-detail to watch, called out again in the pitfalls below: setting `limits` tighter
-than the data, for instance `c(0, 10)`, silently drops every point and line and
-leaves a blank panel. The `c(0, 80)` limits here comfortably contain the series.
+When the per-patient detail stops being the point, `hv_trends()` replaces the
+individual trajectories with a smoother plus one summary point per year. Subset
+to a single group and fit with `group_col = NULL` for a single series. The points
+are annual means of the continuous `value` column, but the LOESS curve is fitted
+to the raw rows in `tr1$data`, not to those means. Set the x-axis to the study
+window and let the y-axis span both layers (here roughly 20 to 70). One detail to
+watch, called out again in the pitfalls below: setting `limits` tighter than the
+data, for instance `c(0, 10)`, silently drops every point and line and leaves a
+blank panel. The `c(0, 80)` limits here comfortably contain the series.
 
 ```{r}
 #| label: trends_data
@@ -206,7 +209,7 @@ head(dta_tr)
 
 ```{r}
 #| label: fig-spaghetti-trend
-#| fig-cap: "A single annual mean series from hv_trends() for one group across the study window"
+#| fig-cap: "Annual mean points for one group with a LOESS curve fitted to the underlying raw observations"
 one_grp <- dta_tr[dta_tr$group == "Group I", ]
 tr1 <- hv_trends(one_grp, group_col = NULL)
 class(tr1)
@@ -216,26 +219,28 @@ head(tr1$tables$summary)
 plot(tr1) +
   scale_x_continuous(limits = c(1968, 2000), breaks = seq(1968, 2000, 4)) +
   scale_y_continuous(limits = c(0, 80),      breaks = seq(0, 80, 20)) +
-  labs(x = "Year", y = "Annual mean outcome") +
+  labs(x = "Year", y = "Outcome") +
   theme_hv_manuscript()
 ```
 
-Year is on the x-axis and the annual mean is on the y-axis. Each point uses the
-observations available in that year, and the LOESS curve smooths those annual
-means. It describes the observed series; it does not show that calendar time
-caused the outcome to change.
+Year is on the x-axis and the outcome is on the y-axis. Each point is the mean of
+the observations available in that year. The LOESS curve instead fits all raw
+observations, so years with more rows can exert more influence than years with
+fewer rows. Both layers describe the observed series; neither shows that
+calendar time caused the outcome to change.
 
 ### Temporal trend: multiple groups
 
-When `group_col` is set, the constructor computes per-group annual means and
-`plot()` draws one line per group. Pairing `scale_colour_brewer()` with
+When `group_col` is set, the constructor computes per-group annual means for the
+points and `plot()` fits a raw-observation smoother within each group. Pairing
+`scale_colour_brewer()` with
 `scale_shape_manual()` gives each group both a distinct colour and a distinct
 marker, so the figure stays readable when it is printed or photocopied in
 greyscale.
 
 ```{r}
 #| label: fig-spaghetti-trend-groups
-#| fig-cap: "Annual mean series for four groups, each given a distinct colour and marker so the figure survives greyscale printing"
+#| fig-cap: "Annual mean points and raw-observation LOESS curves for four groups, with distinct colours and point shapes"
 tr <- hv_trends(dta_tr)
 tr$meta
 head(tr$tables$summary)
@@ -247,24 +252,25 @@ plot(tr) +
     name = "Group"
   ) +
   scale_x_continuous(limits = c(1968, 2000), breaks = seq(1968, 2000, 4)) +
-  labs(x = "Year", y = "Annual mean outcome") +
+  labs(x = "Year", y = "Outcome") +
   theme_hv_manuscript() +
   theme(legend.position = "right")
 ```
 
-### Temporal trend: with a confidence ribbon
+### Temporal trend: with a model-based smoother band
 
-Pass `se = TRUE` to add a `geom_ribbon()` around the mean line, and `alpha` to
-control its opacity. The ribbon turns a bare trend line into an honest one: it
-shows where the annual mean is well determined and where it rests on too few
-patients to trust.
+Pass `se = TRUE` to ask `geom_smooth()` for its model-based uncertainty band
+around the LOESS fitted to raw observations, and use `alpha` to control the
+band's opacity. This is not a confidence interval for the annual mean points and
+does not directly display the number of observations available in each year.
+Show yearly counts separately when that denominator matters.
 
 ```{r}
 #| label: fig-spaghetti-trend-ribbon
-#| fig-cap: "The annual mean series with a confidence ribbon showing where the estimate is well determined and where it thins"
+#| fig-cap: "Annual mean points with a model-based uncertainty band around the LOESS fitted to raw observations"
 plot(tr1, se = TRUE, alpha = 0.2) +
   scale_x_continuous(limits = c(1968, 2000), breaks = seq(1968, 2000, 4)) +
-  labs(x = "Year", y = "Annual mean outcome") +
+  labs(x = "Year", y = "Outcome") +
   theme_hv_manuscript()
 ```
 
@@ -288,10 +294,10 @@ support.
 - **Too many lines.** Past a few hundred patients the spaghetti turns into a solid
   block and the individual trajectories stop being legible. At that point lower
   the line `alpha`, or switch to the trend curve, which is built for exactly this.
-- **Reading a trend line without its ribbon.** A bare `hv_trends()` line looks
-  equally confident at every year, but the early and late years of a study often
-  rest on a handful of patients. Add `se = TRUE` so the reader can see where the
-  estimate is thin.
+- **Reading the smoother band as yearly precision.** With `se = TRUE`, the band
+  belongs to the raw-observation LOESS fit. It is not a confidence interval for
+  each annual mean and does not reveal the yearly denominator. Inspect or report
+  annual counts separately.
 - **Mistaking attrition for change.** Both displays connect only the patients who
   were measured. If sicker patients drop out, the surviving bundle drifts toward
   the healthy end, and the trend line follows. A trend is only a trend if the same
