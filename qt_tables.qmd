@@ -13,6 +13,10 @@ library(dplyr)
 library(hvtiPlotR)
 ```
 
+Use `gt` when the finished table belongs in HTML or in this book. If the same
+numbers are headed for a CORR or JTCVS Word manuscript, use
+[manuscript tables](hv_tables.qmd) instead.
+
 This chapter builds the table by hand, directly with `gt`. That is worth
 doing for two reasons. Assembling a Table 1 a row group at a time is how
 you learn what is actually in one: which variables earn a row, which
@@ -22,8 +26,7 @@ an HTML document, this book included, rather than a Word file bound for a
 journal.
 
 That splits the work along a clean line: hand-built `gt` for understanding and
-for the web, the `hv_*()` functions in
-[manuscript tables](hv_tables.qmd) when it goes to a manuscript.
+for the web, and `hvtiRtables` when it goes to a manuscript.
 
 ## When to use it
 

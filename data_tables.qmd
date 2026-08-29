@@ -9,6 +9,10 @@ library(hvtiRutilities)
 
 ## When to use it
 
+Use this chapter before analysis: inspect the data, question what you find, and
+build the dictionary that records the cohort you actually received. This is
+dataset reconnaissance, not the publication table itself.
+
 The first thing most of us do with a new SAS dataset is run `PROC CONTENTS`,
 then `PROC MEANS`. Neither one produces a table anybody will publish. You run
 them because you cannot decide what belongs in Table 1 until you know what you

@@ -9,6 +9,11 @@ library(gtsummary)
 library(flextable)
 ```
 
+Use `hvtiRtables` when the destination is a CORR or JTCVS manuscript in Word.
+The package turns a checked statistical summary into the required table shape,
+writes the surrounding caption and notes, and then checks the saved document's
+structure.
+
 The [publication tables](qt_tables.qmd) chapter built a Table 1 by hand with
 `gt`. This chapter takes the same cohort to a different destination, and to the
 statistics that destination asks for. When the table is going into a manuscript,
@@ -78,7 +83,7 @@ footnotes are the only ones in the file.
 
 ```{r}
 #| label: hv-summary
-tbl <- tbl_summary(
+tbl_corr <- tbl_summary(
   dta,
   by        = sex,
   include   = c(age, bmi, gfr_bs, diabetes),
@@ -93,8 +98,8 @@ single non-merged header row, Times New Roman, and the house font size.
 
 ```{r}
 #| label: hv-flextable
-ft <- hv_man_table(tbl)
-ft
+ft_corr <- hv_man_table(tbl_corr)
+ft_corr
 ```
 
 Font size defaults to 12 points; pass `font_size = 11` for a table wide enough
@@ -112,8 +117,8 @@ shape <- function(x) {
     header_span = max(as.vector(x$header$spans$rows)),
     body_span   = max(as.vector(x$body$spans$rows)))
 }
-rbind(hv_man_table  = shape(ft),
-      as_flex_table = shape(as_flex_table(tbl)))
+rbind(hv_man_table  = shape(ft_corr),
+      as_flex_table = shape(as_flex_table(tbl_corr)))
 ```
 
 Read that as a check on your own table rather than as a scoreboard. Plain
@@ -150,7 +155,7 @@ footnotes, sorted alphabetically.
 #| label: hv-save
 #| eval: false
 hv_man_table_save(
-  ft,
+  ft_corr,
   file = "table1.docx",
   abbreviations = c(
     BMI  = "body mass index",
@@ -175,9 +180,13 @@ the table frame. It returns one row per finding, so zero rows means clean.
 
 ```{r}
 #| label: hv-check
-out <- tempfile(fileext = ".docx")
-hv_man_table_save(ft, out, abbreviations = c(BMI = "body mass index"))
-hv_check_docx(out)
+out_corr <- tempfile(fileext = ".docx")
+hv_man_table_save(
+  ft_corr,
+  out_corr,
+  abbreviations = c(BMI = "body mass index")
+)
+hv_check_docx(out_corr)
 ```
 
 It never modifies the file, and it does not care who wrote it, so it also works
@@ -226,18 +235,18 @@ docx_scan <- function(path) {
 }
 ```
 
-`out` is still the file `hv_man_table_save()` wrote a moment ago. Give `gt` the
-same footnote to place and let it choose where.
+`out_corr` is still the file `hv_man_table_save()` wrote a moment ago. Give
+`gt` the same footnote to place and let it choose where.
 
 ```{r}
 #| label: hv-vs-gtsave
 gt_out <- tempfile(fileext = ".docx")
 gt::gtsave(
-  gt::tab_source_note(as_gt(tbl), "Median (15th, 85th percentile)."),
+  gt::tab_source_note(as_gt(tbl_corr), "Median (15th, 85th percentile)."),
   gt_out
 )
 
-rbind(hv_man_table_save = docx_scan(out),
+rbind(hv_man_table_save = docx_scan(out_corr),
       gt_gtsave         = docx_scan(gt_out))
 ```
 
@@ -264,17 +273,18 @@ variable list and sort the variables into type buckets, instead of using
 
 ```{r}
 #| label: hv-jtcvs-summary
-tbl_j <- hv_tbl_summary(
+tbl <- hv_tbl_summary(
   dta,
-  by     = "sex",
+  by = "sex",
   groups = list(
     "Demographics" = c("age", "bmi"),
-    "Comorbidity"  = c("gfr_bs", "diabetes")
+    "Comorbidity" = c("gfr_bs", "diabetes")
   ),
-  continuous  = c("age", "bmi", "gfr_bs"),
-  categorical = c("diabetes"),
-  compare     = "pvalue"
+  continuous = c("age", "bmi", "gfr_bs"),
+  categorical = "diabetes",
+  compare = "pvalue"
 )
+tbl
 ```
 
 `groups` is the macro's `LIST=`, and it does double duty: it fixes the display
@@ -288,13 +298,15 @@ Continuous variables are summarised as median with the percentile pair from
 throughout, so there is no per-variable normality decision to make or defend.
 
 `compare` adds the trailing comparison column: `"pvalue"`, `"smd"`, `"both"`, or
-`"none"`. The result carries two attributes that the renderer wants, and you
-pass them straight through.
+`"none"`. The printed result is still a `gtsummary` table, so inspect it before
+conversion. Each group cell shows the non-missing N, the `|||` separator used by
+the JTCVS renderer, and then the statistic. The result also carries two
+attributes that the renderer wants, and you pass them straight through.
 
 ```{r}
 #| label: hv-jtcvs-attrs
-attr(tbl_j, "hv_stat_label")
-attr(tbl_j, "hv_trailing")
+attr(tbl, "hv_stat_label")
+attr(tbl, "hv_trailing")
 ```
 
 `hv_man_table_jtcvs()` then builds the merged shape. Its own `groups` argument
@@ -304,18 +316,16 @@ the label text yourself.
 
 ```{r}
 #| label: hv-jtcvs-table
-n_sex <- table(dta$sex)
-
-ft_j <- hv_man_table_jtcvs(
-  tbl_j,
+ft <- hv_man_table_jtcvs(
+  tbl,
   groups = c(
-    stat_1 = sprintf("Female (n=%d)", n_sex[["Female"]]),
-    stat_2 = sprintf("Male (n=%d)",   n_sex[["Male"]])
+    stat_1 = sprintf("Female (n=%d)", table(dta$sex)[["Female"]]),
+    stat_2 = sprintf("Male (n=%d)", table(dta$sex)[["Male"]])
   ),
-  trailing   = attr(tbl_j, "hv_trailing"),
-  stat_label = attr(tbl_j, "hv_stat_label")
+  trailing = attr(tbl, "hv_trailing"),
+  stat_label = attr(tbl, "hv_stat_label")
 )
-ft_j
+ft
 ```
 
 Compare the structure with the flat table above and the two modes separate
@@ -324,8 +334,8 @@ full-width shaded section rows in the body.
 
 ```{r}
 #| label: hv-jtcvs-structure
-rbind(hv_man_table       = shape(ft),
-      hv_man_table_jtcvs = shape(ft_j))
+rbind(hv_man_table       = shape(ft_corr),
+      hv_man_table_jtcvs = shape(ft))
 ```
 
 JTCVS marks each p-value with a superscript letter naming the test behind it,
@@ -335,7 +345,7 @@ the body-row indices, so you are not counting rows by hand.
 
 ```{r}
 #| label: hv-jtcvs-footnotes
-fn <- hv_test_footnotes_jtcvs(tbl_j)
+fn <- hv_test_footnotes_jtcvs(tbl)
 fn
 ```
 
@@ -346,17 +356,23 @@ table and renders the lettered notes below it.
 
 ```{r}
 #| label: hv-jtcvs-save
-#| eval: false
+out <- tempfile(fileext = ".docx")
 hv_man_table_save_jtcvs(
-  ft_j,
-  file      = "table1_jtcvs.docx",
-  caption   = "Table 1. Baseline Characteristics",
-  footnotes = fn,
-  abbreviations = c(eGFR = "estimated glomerular filtration rate")
+  ft,
+  file = out,
+  caption = "Table 1. Baseline Characteristics",
+  footnotes = fn
 )
+hv_check_docx(out)
 ```
 
 The caption is not auto-numbered; write the number into the string yourself.
+The last call reopens the file that was just written. It checks for floating
+text over the grid, a hidden narrow spacer column, and a footnote embedded as a
+table row. An empty result means none of those three structural problems was
+found. It does not check whether you selected the right variables or interpreted
+the comparisons correctly, which is why we inspect `tbl` before we deliver the
+Word file.
 
 ## Read it
 
@@ -375,10 +391,20 @@ with missing data it points at a number that is not there. Either give the table
 that count or leave the `*` out, with ``footnotes = hv_man_footnotes()["†"]``.
 
 The JTCVS table says so on every row. The N sub-column beside each group's
-statistic repeats the group N alongside the number it divides, so a reader
-comparing two rows never has to track back to the header. It is the same
-quantity the flat header carries, printed where it is used rather than once at
-the top.
+statistic is the number of non-missing patients contributing to that row. In
+this example all four characteristics are complete, so 77 and 123 match the
+female and male cohort sizes printed in the spanning headers. If a variable is
+missing for ten women, its row N falls to 67 while the header remains 77. That
+distinction tells the clinical reader whether a difference in percentages
+reflects the cohort or the available data.
+
+The comparison column asks whether the female and male distributions differ for
+each characteristic. Here `hv_tbl_summary()` uses a Wilcoxon rank-sum test for
+the continuous rows and Pearson's chi-squared test for diabetes. The superscript
+letters and the paragraphs produced by `hv_test_footnotes_jtcvs()` keep those
+tests attached to the p-values they explain. A p-value is evidence about a group
+comparison, not a measure of clinical importance; read it beside the displayed
+medians, counts, and percentages.
 
 Then the section headers, which are a JTCVS feature and not a flat-table one.
 `hv_tbl_summary()`'s `groups` breaks the variable list into labelled blocks, and
