@@ -132,11 +132,15 @@ p_hazard <- plot(rhf_curves, idx = case_ids) + theme_hv_manuscript()
 hv_legend_inside(p_hazard)
 ```
 
-`theme_hv_manuscript()` sets `legend.position = "none"`, which is right for the
-single-series figures elsewhere in this part and wrong here, where colour is
-carrying subject identity. `hv_legend_inside()` puts the key back and drops it in
-the emptiest corner, the same pattern the [legends](legends.qmd) chapter uses. Six
-unlabelled coloured lines are not a figure anyone can read.
+All four house themes set `legend.position = "none"` on purpose: a CORR figure
+carries no legend, and groups get named on the panel instead, which is the recipe
+in @sec-annotation-series. This figure is the documented exception rather than a
+departure from it. The six lines are simulated subject identifiers, not clinical
+groups, so there is nothing meaningful to annotate beside each curve, and
+[legends](legends.qmd) is explicit that you want a key whenever the grouping is
+not already named on the panel. `hv_legend_inside()` is how you add one without
+giving up panel width: apply it after the theme so its position wins, and it
+anchors the key in whichever corner the data leave emptiest.
 
 Hazard here is a local event rate: a high point says events are occurring at a high
 instantaneous rate among the subjects still at risk around that time. It is not the
@@ -363,11 +367,12 @@ different behaviour there, the change belongs upstream.
   `gg_tune_rhf()` will each compute their input when you omit it. That is fine once
   and painful in a document you re-render, which is why this chapter passes
   `auct_fit`, `importance_fit`, and a completed tuning path.
-- **The house manuscript theme turns legends off.** `theme_hv_manuscript()` sets
-  `legend.position = "none"`, which suits the single-series figures it was built
-  for. Add it to a plot where colour carries meaning and the key disappears
-  without warning. Restore it deliberately: `hv_legend_inside()` for a handful of
-  named series, an explicit `legend.position` for a continuous scale.
+- **The house themes suppress legends deliberately, so add one deliberately.**
+  All four `theme_hv_*()` functions set `legend.position = "none"` because a CORR
+  figure names its groups on the panel rather than in a margin key. When the
+  grouping genuinely cannot be named that way, restore the key after the theme:
+  `hv_legend_inside()` for a handful of series, an explicit `legend.position` for
+  a continuous scale that would occlude the data if placed inside.
 - **Late windows rest on fewer patients.** The number at risk falls sharply across the
   importance windows here. Read late-window contrasts with that in mind rather than as
   equals of the early ones.
