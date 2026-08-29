@@ -74,11 +74,26 @@ through the cloud.
 #| label: fig-rf_dependence
 #| fig-cap: "Variable dependence for bilirubin, age, and albumin: predicted survival at the median follow-up against each patient's predictor value, with a loess smooth through the cloud"
 #| fig-height: 4
-gg_v <- gg_variable(rf)
+gg_v <- gg_variable(rf, time = t_eval)
 plot(gg_v, xvar = c("bili", "age", "albumin"), time = t_eval,
      panel = TRUE) +
+  labs(y = paste0("Survival at ", t_eval, " days")) +
   theme_hv_manuscript()
 ```
+
+The horizon goes on `gg_variable()`, not on `plot()`, and that is the easiest
+thing to get wrong here. `gg_variable()` slices the predicted survival matrix at
+a time when it builds the frame, and it defaults to the median of the forest's
+own event-time grid (`median(rf$time.interest)`, which is `r median(rf$time.interest)`
+days here) when you do not give it one. Passing `time` only to `plot()` therefore
+selects a horizon that was never extracted, and you silently get the forest's
+median instead of yours. The two differ: `t_eval` is `r t_eval`.
+
+That `labs(y = ...)` is not decoration. `plot.gg_variable()` builds its survival
+y-axis label as `paste("Survival at", time, "year")`, with the unit hardcoded, so
+on `pbc`, whose follow-up is recorded in days, the default axis reads "Survival
+at `r t_eval` year" for a horizon that is `r t_eval` **days**. Set the label
+yourself on any survival dependence figure whose time is not in years.
 
 Reading the smooths: predicted survival at `r t_eval` days falls steeply as
 serum bilirubin rises, declines gently with age, and tracks upward with higher
@@ -138,6 +153,41 @@ variable can show a flatter or steeper effect, since the predictors that drive
 early events are not always the ones that drive late ones. Whenever you change
 the time, change the caption too.
 
+### Readable variable names
+
+The panels above are labelled `bili`, `age`, and `albumin`, which is what the
+data frame calls them and not what a manuscript reader calls them. Pass `labels`
+a named character vector and the facet strips take the readable name instead.
+Variables you do not name keep their raw column name, so you can label only the
+ones a reviewer will see.
+
+```{r}
+#| label: fig-rf_dependence-labels
+#| fig-cap: "The same variable dependence with reader-facing labels on the facet strips, showing age in the days the dataset actually stores rather than the years a reader would assume"
+#| fig-height: 4
+pbc_labels <- c(
+  bili    = "Serum bilirubin (mg/dL)",
+  age     = "Age (days)",
+  albumin = "Serum albumin (g/dL)"
+)
+
+plot(gg_v, xvar = c("bili", "age", "albumin"), time = t_eval,
+     panel = TRUE, labels = pbc_labels) +
+  labs(y = paste0("Survival at ", t_eval, " days")) +
+  theme_hv_manuscript()
+```
+
+Labelling is where unit errors surface, which is a good reason to do it early.
+`age` in `pbc` is recorded in **days**, not years: the median is `r round(median(pbc$age))`,
+which is about `r round(median(pbc$age) / 365.25)` years. A figure labelled
+"Age (years)" would have been wrong on an axis nobody would think to re-check.
+
+`labels` also accepts a labelled data frame, in which case it reads each
+column's `label` attribute, or a two-column key/label frame. The same argument
+works on `gg_udependent()`, `gg_sdependent()`, `gg_vimp()`, `gg_shap()`, and the
+varPro plot methods, so one label vector can carry across every figure in a
+manuscript.
+
 ### Lowering the cost of partial dependence
 
 Partial dependence refits predictions across the whole grid, so it scales with
@@ -147,11 +197,14 @@ or two variables you actually need to discuss, and only then reduce `ntree`.
 
 ## Pitfalls
 
-- **Survival dependence needs a time and an `xvar`.** On a survival forest,
-  `gg_variable()` has nothing to plot until you tell `plot()` which time point to
-  evaluate and (with `panel = TRUE`) which predictors to draw. Omit the time and
-  the call fails to produce a figure, because predicted survival is undefined
-  without a horizon.
+- **Set the horizon on `gg_variable()`, not on `plot()`.** Predicted survival is
+  undefined without a time, so `gg_variable()` slices the prediction matrix as it
+  builds the frame. Give it no `time` and it quietly falls back to
+  `median(rf$time.interest)`, the median of the forest's event-time grid, which is
+  not the median follow-up and is rarely the horizon you meant. `plot()` then
+  labels whatever was extracted, so a `time` passed only to `plot()` produces a
+  figure that disagrees with your own caption. Pass it to both and they agree.
+  `panel = TRUE` still needs its `xvar` selection.
 - **Pick the time deliberately and report it.** Changing `time` or
   `partial.time` can change the shape of the curve. Choose a clinically
   meaningful horizon, state it, and do not quietly compare a figure read at the

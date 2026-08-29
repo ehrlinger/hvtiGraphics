@@ -22,6 +22,12 @@ built-in cutoff (so the method tells you which variables to keep, not just how t
 rank them), when you want the direction and magnitude of a local effect, or when
 you want to flag unusual observations the same forest can isolate.
 
+So varPro sits alongside VIMP as a statement about the model, while
+[SHAP](rf_shap.qmd) speaks about a patient and
+[dependence](rf_dependence.qmd) speaks about a predictor. The
+[SHAP chapter](rf_shap.qmd#when-to-use-it) lays those four views out side by
+side if you are deciding which one a figure needs.
+
 `ggRandomForests` [@R-ggRandomForests] provides a family of `gg_*` extractors
 that pull these scores out of a fitted `varpro` object and render them as tidy
 ggplot2 graphics. This chapter works through the main extractors on a regression
@@ -255,6 +261,11 @@ for it when you need to *name* the variables rather than point at a picture.
 #| fig-height: 5.5
 plot(gg_sdependent(uv)) + theme_hv_manuscript()
 ```
+
+Both `gg_udependent()` and `gg_sdependent()` take a `labels` argument, the same
+named character vector used in the [dependence chapter](rf_dependence.qmd), so a
+graph built on raw column names can be relabelled for a manuscript without
+renaming anything in the data.
 
 Highlighted variables are the detected signal set, and the caption reports how
 many of them cleared the threshold. Four arguments carry over from
