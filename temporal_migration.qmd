@@ -110,7 +110,11 @@ The package ships a public synthetic fixture with the row layout of an
 `OUTHAZ=` dataset. `hzr_read_outhaz()` reads that artifact into estimates,
 free/fixed status, a covariance block for free parameters, and model-structure
 flags. The same function can read a real `.sas7bdat` file when `haven` is
-installed, but the fixture keeps this recipe public and reproducible.
+installed, but the fixture keeps this recipe public and reproducible. The
+reader is experimental, and its return shape may change. Its `_STATUS_` coding
+is asserted only for this synthetic fixture. A historical file that uses a
+different convention may populate the estimates while returning an empty
+covariance matrix.
 
 ```{r}
 #| label: import-outhaz-fixture
@@ -132,16 +136,23 @@ data.frame(
 data.frame(
   parameter = names(legacy_fit$estimates),
   estimate = unname(legacy_fit$estimates),
-  free = unname(legacy_fit$status == 1L)
+  fixture_status = unname(legacy_fit$status),
+  free_in_fixture = unname(legacy_fit$status == 1L)
+)
+
+data.frame(
+  flag = names(legacy_fit$flags),
+  fixture_value = unname(legacy_fit$flags)
 )
 ```
 
-This import can verify that parameter names, stored estimates, fixed/free
-status, covariance dimensions, and phase flags were carried into R. It cannot
-recover the original analysis rows, the original log-likelihood, deletion
-tallies, event-time coding, or every data transformation. It is not a refit and
-cannot establish that a new model is correct merely because selected numbers
-match.
+For this fixture, the output inventories parameter names, stored estimates,
+fixture-specific status codes, covariance dimensions, and imported phase flags.
+It does not validate the coding conventions of another `OUTHAZ=` artifact. Nor
+can it recover the original analysis rows, the original log-likelihood,
+deletion tallies, event-time coding, or every data transformation. It is not a
+refit and cannot establish that a new model is correct merely because selected
+numbers match.
 
 Use the artifact once as a migration checksum. Then refit from the reviewed R
 analysis data, run the diagnostics in [Check a hazard

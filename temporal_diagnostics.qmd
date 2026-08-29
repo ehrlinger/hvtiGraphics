@@ -88,16 +88,19 @@ data.frame(
 ```{r}
 #| label: fig-temporal-diagnostics-gof
 #| fig-cap: "Kaplan-Meier survival for the AVC cohort compared with Weibull survival evaluated at the mean covariate profile"
-gof_long <- rbind(
-  data.frame(time = gof$time, survival = gof$km_surv * 100,
-             curve = "Kaplan-Meier, cohort"),
-  data.frame(time = gof$time, survival = gof$par_surv * 100,
-             curve = "Weibull, mean profile")
-)
-
-ggplot(gof_long, aes(time, survival, colour = curve,
-                     linetype = curve)) +
-  geom_line(linewidth = 0.75) +
+ggplot() +
+  geom_step(
+    data = gof,
+    aes(time, km_surv * 100, colour = "Kaplan-Meier, cohort",
+        linetype = "Kaplan-Meier, cohort"),
+    linewidth = 0.75
+  ) +
+  geom_line(
+    data = gof,
+    aes(time, par_surv * 100, colour = "Weibull, mean profile",
+        linetype = "Weibull, mean profile"),
+    linewidth = 0.75
+  ) +
   scale_colour_manual(
     values = c("Kaplan-Meier, cohort" = "grey35",
                "Weibull, mean profile" = "steelblue"),
@@ -115,11 +118,14 @@ ggplot(gof_long, aes(time, survival, colour = curve,
   theme(legend.position = "top")
 ```
 
-The gap is systematic, and the final residual is negative: the Weibull curve
-at the mean covariate profile underpredicts the cohort's accumulated events.
-That is a reason to revisit the shape and how we summarize covariates, not a
-reason to tune the plot. Use subject-specific prediction checks for formal
-model calibration.
+The curves differ, and the summary reports fewer expected events at the mean
+covariate profile than were observed in the cohort. Those quantities have
+different estimands: one is conditional on a single reference profile, while
+the other is marginal over the cohort. The discrepancy therefore demonstrates
+an estimand mismatch, not underprediction or a misspecified hazard shape. Before
+concluding that the model is miscalibrated, standardize predictions over the
+cohort or use a subject-specific check such as the decile observed-to-expected
+comparison below.
 
 ## Is age sensible on the logit scale?
 
