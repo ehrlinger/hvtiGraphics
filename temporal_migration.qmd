@@ -1,8 +1,164 @@
 # Move a legacy HAZARD analysis into R
 
-The destination is a maintained R analysis. TemporalHazard can translate the
-structure of a legacy `PROC HAZARD` job, after which the R code, model object,
-diagnostics, and predictions become the source we keep.
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 7, fig.height = 4.5, dpi = 150)
+library(TemporalHazard)
+```
 
-The goal is to carry forward the clinical question and model structure that SAS
-users already trust, while leaving a reproducible R analysis for the next run.
+## When to use it
+
+The destination is a maintained R analysis. `TemporalHazard`
+[@R-TemporalHazard] can read the structure of a historical `PROC HAZARD` job,
+translate the parts it recognizes, and import a legacy `OUTHAZ=` artifact for
+a bounded comparison. Once we have checked the mapping, the R code, fitted
+object, diagnostics, and predictions become the source we keep. A SAS license
+or live SAS job is not part of the new workflow.
+
+Think of the old program as a set of labeled boxes. `TIME`, `EVENT`, `PARMS`,
+and the phase statements tell us what each box contained. The migration job is
+to unpack those boxes once into named R arguments, inspect the result, and then
+work in the current API.
+
+The example below is synthetic and contains no patient data.
+
+## Translate a short historical input
+
+`hzr_translate_sas()` reads a file path, so we write the small text block to a
+session temporary file. No legacy software is called. The parser reads the
+statements and returns an `hzr_sas_job` containing the R expressions it would
+place in a translated Quarto document.
+
+```{r}
+#| label: translate-historical-input
+sas_text <- c(
+  "PROC HAZARD DATA=AVC CONSERVE CONDITION=14;",
+  "  TIME INT_DEAD;",
+  "  EVENT DEAD;",
+  "  PARMS MUE=0.20 NU=1;",
+  "RUN;"
+)
+
+sas_path <- tempfile(fileext = ".sas")
+writeLines(sas_text, sas_path)
+job <- hzr_translate_sas(sas_path)
+
+cat(paste(sas_text, collapse = "\n"))
+data.frame(
+  tokens_seen = job$coverage$tokens_seen,
+  tokens_mapped = job$coverage$tokens_mapped,
+  untranslated_constructs = nrow(job$untranslated),
+  emitted_expressions = length(job$calls)
+)
+```
+
+Coverage reports what the parser recognized, not whether a model has been
+validated. For this bounded input all six tokens are mapped and no construct
+is left untranslated. Now inspect the emitted fit call itself.
+
+```{r}
+#| label: inspect-translated-call
+cat(paste(deparse(job$calls$fit, width.cutoff = 80), collapse = "\n"))
+```
+
+The generated call carries `TIME` to `time`, derives a 0/1 status from the
+historical event count, preserves event counts as weights, turns the early
+parameters into `hzr_phase("cdf", ...)`, and carries `CONSERVE` and
+`CONDITION=14` into `control`. The returned job also contains a data guard and
+status expression. Translation does not recreate a SAS `DATA` step, so you
+must bind the reviewed R data frame before running the generated fit.
+
+::: {.callout-warning}
+## Read the generated code before you run it
+
+The translator deliberately refuses some constructs, including a `SELECTION`
+statement and censoring combinations that cannot be expressed by one current R
+argument. An unresolved external fit or prediction grid can also stop the
+generated document. Never replace that stop with guessed code. Rebuild the
+unsupported step directly in R and document the choice.
+:::
+
+## Map the old names once
+
+`hzr_argument_mapping()` exposes the package's formal crosswalk. Keep planned
+rows visible during migration: the status column distinguishes a maintained
+mapping from a broader legacy concept that still needs review.
+
+```{r}
+#| label: inspect-argument-map
+argument_map <- hzr_argument_mapping(include_planned = TRUE)
+
+argument_map[
+  argument_map$sas_statement %in% c("TIME", "EVENT", "PARMS", "DIST", "G1", "G2"),
+  c("sas_statement", "legacy_input", "r_parameter",
+    "transform_rule", "implementation_status")
+]
+```
+
+The general `PARMS` row remains marked as planned even though the translator
+can parse the small early-phase subset above. Treat that as a limit on the
+claim: the successful example is evidence for those statements, not blanket
+support for every historical parameter combination. For a new analysis, write
+the reviewed `hazard()` and `hzr_phase()` call directly rather than carrying
+legacy names forward.
+
+## Import an old `OUTHAZ=` artifact for a bounded check
+
+The package ships a public synthetic fixture with the row layout of an
+`OUTHAZ=` dataset. `hzr_read_outhaz()` reads that artifact into estimates,
+free/fixed status, a covariance block for free parameters, and model-structure
+flags. The same function can read a real `.sas7bdat` file when `haven` is
+installed, but the fixture keeps this recipe public and reproducible.
+
+```{r}
+#| label: import-outhaz-fixture
+outhaz_path <- system.file(
+  "extdata", "outhaz-fixture.rds",
+  package = "TemporalHazard"
+)
+legacy_fit <- hzr_read_outhaz(outhaz_path)
+
+data.frame(
+  fixture = basename(outhaz_path),
+  parameter_estimates = length(legacy_fit$estimates),
+  status_values = length(legacy_fit$status),
+  free_parameters = nrow(legacy_fit$vcov),
+  covariance_columns = ncol(legacy_fit$vcov),
+  structure_flags = length(legacy_fit$flags)
+)
+
+data.frame(
+  parameter = names(legacy_fit$estimates),
+  estimate = unname(legacy_fit$estimates),
+  free = unname(legacy_fit$status == 1L)
+)
+```
+
+This import can verify that parameter names, stored estimates, fixed/free
+status, covariance dimensions, and phase flags were carried into R. It cannot
+recover the original analysis rows, the original log-likelihood, deletion
+tallies, event-time coding, or every data transformation. It is not a refit and
+cannot establish that a new model is correct merely because selected numbers
+match.
+
+Use the artifact once as a migration checksum. Then refit from the reviewed R
+analysis data, run the diagnostics in [Check a hazard
+model](temporal_diagnostics.qmd), save the R model object and code under version
+control, and retire the legacy artifact from the active workflow.
+
+## What the maintained record should contain
+
+Before calling the migration complete, keep these pieces together:
+
+- the reviewed R data-building code and a public or synthetic test example;
+- the explicit `hazard()` model, phase definitions, starting values, and time
+  units;
+- any translator warnings and every manual resolution;
+- the comparison quantities chosen in advance, with tolerances;
+- the fitted R object, diagnostics, predictions, and session/package versions.
+
+That record answers the question the old file cannot: not only whether a few
+stored estimates matched, but exactly how the maintained analysis was built and
+how we will rerun it next time.

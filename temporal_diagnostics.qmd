@@ -1,8 +1,412 @@
 # Check a hazard model
 
-A smooth curve is not evidence of a faithful model. We compare the parametric
-fit with the observed data, check calibration, assess selection uncertainty,
-and examine competing outcomes before reporting it.
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 7, fig.height = 4.5, dpi = 150)
+library(TemporalHazard)
+library(survival)
+library(ggplot2)
+library(hvtiPlotR)
+```
 
-These checks keep the figure tied to the data it is meant to describe, and make
-the uncertainty visible before the model enters a manuscript.
+## When to use it
+
+A smooth curve is not evidence of a faithful model. Once the optimizer has
+converged, we still have five decisions to make. Does the fitted shape follow
+the empirical survival? Is a continuous covariate sensible on the scale we
+gave it? Does predicted risk agree with observed experience across the cohort?
+Would variable selection or resampling tell a different story? And have we
+defined competing outcomes with the right risk set?
+
+These checks form a sequence, not a collection of stamps to put on a model.
+Global misfit sends us back to the hazard shape. Curvature in a grouped
+functional-form check sends us back to the covariate transformation. Poor
+decile agreement sends us back to the linear predictor or baseline hazard.
+Unstable selection or bootstrap estimates tell us to simplify the model or
+collect more information. None of them turns an observational association into
+a causal effect.
+
+Everything here uses public data bundled with `TemporalHazard`
+[@R-TemporalHazard]. The chapter is independently runnable and requires no
+patient extract.
+
+## Refit the reviewed model
+
+The AVC example follows 305 complete records after atrioventricular canal
+repair. Follow-up is in months. We refit the reviewed Weibull model so every
+diagnostic below refers to one known object and one analysis cohort.
+
+```{r}
+#| label: fit-reviewed-model
+data(avc, package = "TemporalHazard")
+avc <- na.omit(avc)
+
+fit <- hazard(
+  survival::Surv(int_dead, dead) ~ age + status + mal + com_iv,
+  data = avc,
+  dist = "weibull",
+  theta = c(mu = 0.20, nu = 1.0, rep(0, 4)),
+  fit = TRUE,
+  control = list(maxit = 500)
+)
+
+data.frame(
+  records = nrow(avc),
+  deaths = sum(avc$dead),
+  maximum_follow_up_months = max(avc$int_dead),
+  converged = fit$fit$converged,
+  log_likelihood = fit$fit$objective
+)
+```
+
+Stop here if `converged` is not `TRUE`. A diagnostic cannot repair a fit that
+never reached its optimum.
+
+## Does the overall shape fit?
+
+`hzr_gof()` places the fitted Weibull survival beside the Kaplan-Meier
+estimate and accumulates observed and expected events over follow-up. With
+covariates in the model, the parametric curve is evaluated at the mean design
+values. The Kaplan-Meier curve is marginal over the cohort. Thus this is a
+first-pass shape and conservation check, not patient-specific calibration.
+
+```{r}
+#| label: inspect-gof
+gof <- hzr_gof(fit)
+gof_summary <- attr(gof, "summary")
+
+data.frame(
+  records = gof_summary$n,
+  observed_events = gof_summary$total_observed,
+  expected_events_at_mean_profile = gof_summary$total_expected,
+  final_residual_expected_minus_observed = gof_summary$final_residual
+)
+```
+
+```{r}
+#| label: fig-temporal-diagnostics-gof
+#| fig-cap: "Kaplan-Meier survival for the AVC cohort compared with Weibull survival evaluated at the mean covariate profile"
+gof_long <- rbind(
+  data.frame(time = gof$time, survival = gof$km_surv * 100,
+             curve = "Kaplan-Meier, cohort"),
+  data.frame(time = gof$time, survival = gof$par_surv * 100,
+             curve = "Weibull, mean profile")
+)
+
+ggplot(gof_long, aes(time, survival, colour = curve,
+                     linetype = curve)) +
+  geom_line(linewidth = 0.75) +
+  scale_colour_manual(
+    values = c("Kaplan-Meier, cohort" = "grey35",
+               "Weibull, mean profile" = "steelblue"),
+    name = NULL
+  ) +
+  scale_linetype_manual(
+    values = c("Kaplan-Meier, cohort" = "solid",
+               "Weibull, mean profile" = "dashed"),
+    name = NULL
+  ) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
+                     labels = function(x) paste0(x, "%")) +
+  labs(x = "Months after AVC repair", y = "Freedom from death") +
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
+```
+
+The gap is systematic, and the final residual is negative: the Weibull curve
+at the mean covariate profile underpredicts the cohort's accumulated events.
+That is a reason to revisit the shape and how we summarize covariates, not a
+reason to tune the plot. Use subject-specific prediction checks for formal
+model calibration.
+
+## Is age sensible on the logit scale?
+
+The name `hzr_calibrate()` comes from the historical grouped-screening
+workflow, but its current contract is narrower than a fitted survival-model
+calibration. It bins a continuous `x`, counts a binary `event` within each
+group, and transforms that observed proportion. It does not use event time or
+censoring. Here it asks whether eventual death is roughly linear in age on the
+logit scale, which is a functional-form screen for the next model fit.
+
+```{r}
+#| label: inspect-age-groups
+cal <- hzr_calibrate(
+  x = avc$age,
+  event = avc$dead,
+  groups = 10,
+  link = "logit"
+)
+cal
+```
+
+```{r}
+#| label: fig-temporal-diagnostics-calibration
+#| fig-cap: "Observed binary death proportion by age group, shown on the logit scale as a functional-form check"
+ggplot(cal, aes(mean, link_value)) +
+  geom_point(size = 2.4, colour = "steelblue") +
+  geom_line(colour = "steelblue", linewidth = 0.6) +
+  geom_smooth(method = "lm", formula = y ~ x, se = FALSE,
+              colour = "grey35", linetype = "dashed", linewidth = 0.65) +
+  labs(x = "Mean age at repair within group (months)",
+       y = "Logit of observed death proportion") +
+  theme_hv_manuscript()
+```
+
+Strong curvature would argue for a transformation, spline, or clinically
+defined age categories before refitting. A straight pattern would support a
+linear age term, but it would not prove that the full survival model is
+calibrated.
+
+## Does risk-group agreement hold?
+
+`hzr_deciles()` asks a different question. It ranks all 305 patients by
+predicted survival at 120 months and divides them into ten nearly equal groups.
+The horizon defines the ranking only. Within each group, observed events use
+each patient's full follow-up and expected events sum predicted cumulative
+hazard at each patient's own follow-up time. No patient is excluded for having
+less than 120 months of observation.
+
+```{r}
+#| label: inspect-risk-deciles
+dec <- hzr_deciles(fit, time = 120, groups = 10)
+dec_overall <- attr(dec, "overall")
+
+data.frame(
+  risk_horizon_months = dec_overall$time,
+  included = dec_overall$n_included,
+  excluded = dec_overall$n_excluded,
+  observed_events = dec_overall$total_events,
+  expected_events = dec_overall$total_expected,
+  chi_square = dec_overall$chi_sq,
+  degrees_freedom = dec_overall$df,
+  p_value = dec_overall$p_value
+)
+dec
+```
+
+```{r}
+#| label: fig-temporal-diagnostics-deciles
+#| fig-cap: "Full-follow-up observed and expected event rates within groups ranked by predicted 120-month risk"
+dec_long <- rbind(
+  data.frame(group = dec$group, rate = dec$observed_rate * 100,
+             series = "Observed"),
+  data.frame(group = dec$group, rate = dec$expected_rate * 100,
+             series = "Expected")
+)
+
+ggplot(dec_long, aes(group, rate, fill = series)) +
+  geom_col(position = position_dodge(width = 0.78), width = 0.7) +
+  scale_fill_manual(values = c("Observed" = "grey55",
+                               "Expected" = "steelblue"), name = NULL) +
+  scale_x_continuous(breaks = 1:10) +
+  labs(x = "Predicted-risk group (1 = lowest)",
+       y = "Full-follow-up events per 100 patients") +
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
+```
+
+The omnibus result is compatible with agreement across these groups, but a
+non-significant test is not proof of calibration. Read the group sizes and the
+observed-versus-expected pattern with the statistic. Sparse events and the
+choice of groups both limit what this check can see.
+
+## Does automated selection tell a stable story?
+
+For the selection demonstration, we start from the reviewed early-plus-
+constant model. The `scope` is phase-specific, so `age` can enter the early
+phase without being forced into the constant phase. We request two-way
+selection with the refit-based Wald criterion and keep the optimizer bounded.
+
+```{r}
+#| label: stepwise-selection
+base_mp <- hazard(
+  survival::Surv(int_dead, dead) ~ 1,
+  data = avc,
+  dist = "multiphase",
+  phases = list(
+    early = hzr_phase(
+      "cdf", t_half = 0.5, nu = 1, m = 1,
+      fixed = "shapes"
+    ),
+    constant = hzr_phase("constant")
+  ),
+  fit = TRUE,
+  control = list(n_starts = 3, maxit = 500)
+)
+
+selection_warnings <- character()
+selected <- withCallingHandlers(
+  hzr_stepwise(
+    base_mp,
+    scope = list(
+      early = ~ age + status + mal + com_iv,
+      constant = ~ age + status + mal + com_iv
+    ),
+    data = avc,
+    direction = "both",
+    criterion = "wald",
+    trace = FALSE,
+    control = list(n_starts = 2, maxit = 500)
+  ),
+  warning = function(w) {
+    selection_warnings <<- c(selection_warnings, conditionMessage(w))
+    invokeRestart("muffleWarning")
+  }
+)
+
+trace <- stepwise_trace(selected)
+cat(paste(trace, collapse = "\n"))
+
+data.frame(
+  final_converged = selected$fit$converged,
+  final_positive_definite = selected$fit$pd,
+  final_reciprocal_condition = selected$fit$rcond,
+  accepted_steps = nrow(selected$steps),
+  intermediate_ill_conditioned = sum(grepl("ill-conditioned", selection_warnings)),
+  intermediate_not_positive_definite = sum(grepl("not positive-definite", selection_warnings)),
+  intermediate_nonpositive_variance = sum(grepl("Non-positive variance", selection_warnings)),
+  intermediate_unidentified_phase = sum(grepl("contributes at most", selection_warnings))
+)
+```
+
+The trace names the criterion and records each accepted addition or removal.
+This run adds five phase-specific terms. The final model converges with a
+positive-definite covariance matrix, but intermediate candidate fits produce
+ill-conditioned Hessians, non-positive variances, and one unidentified phase.
+That instability is part of the selection result. The entry and stay thresholds
+are a search rule, not a correction for repeated testing, and the selected path
+is conditional on this sample. Preserve clinically required covariates with
+`force_in`, examine the fit after every accepted step, and do not describe a
+selected coefficient as a causal effect.
+
+## How much do the estimates move under resampling?
+
+`hzr_bootstrap()` resamples the analysis rows, refits the same Weibull formula,
+and summarizes the fitted parameters among successful replicates. The seed
+makes this teaching run reproducible. Thirty replicates are enough to exercise
+the real refit path in a book render; they are not enough for study inference.
+
+```{r}
+#| label: bootstrap-stability
+boot <- hzr_bootstrap(fit, n_boot = 30, seed = 20260828)
+
+data.frame(
+  requested_replicates = 30,
+  successful_replicates = boot$n_success,
+  failed_replicates = boot$n_failed,
+  parameter_rows = nrow(boot$replicates)
+)
+boot$summary
+```
+
+```{r}
+#| label: fig-temporal-diagnostics-bootstrap
+#| fig-cap: "Teaching-run percentile intervals for the four Weibull covariate coefficients across 30 bootstrap refits"
+boot_beta <- subset(
+  boot$summary,
+  parameter %in% c("age", "status", "mal", "com_iv")
+)
+boot_beta$parameter <- factor(
+  boot_beta$parameter,
+  levels = boot_beta$parameter[order(boot_beta$mean)]
+)
+boot_beta$parameter <- factor(
+  boot_beta$parameter,
+  levels = c("age", "mal", "status", "com_iv"),
+  labels = c("Age (per month)", "Malalignment", "NYHA status (per class)",
+             "Interventricular communication")
+)
+
+ggplot(boot_beta, aes(mean, parameter)) +
+  geom_vline(xintercept = 0, colour = "grey65", linetype = "dashed") +
+  geom_errorbarh(aes(xmin = ci_lower, xmax = ci_upper),
+                 height = 0.16, colour = "steelblue") +
+  geom_point(size = 2.4, colour = "steelblue") +
+  labs(x = "Bootstrap mean and percentile interval",
+       y = "Covariate coefficient") +
+  theme_hv_manuscript()
+```
+
+The `mal` interval crosses zero in this small run, while the other displayed
+intervals do not. That is a stability signal, not a final confidence interval.
+For a study analysis, prespecify a substantially larger resample, review the
+failure count, and report the resampling method with the model specification.
+
+## Are competing events using the right denominator?
+
+Competing-risk incidence is built from a shared risk set. At each event time,
+`n_risk` is the number still free of every modeled event just before the events
+at that time. A cause-specific cumulative-incidence curve adds the current
+event-free survival multiplied by that cause's event proportion. The curves
+therefore share one probability budget: event-free survival plus every cause's
+cumulative incidence equals 1.
+
+The public `omc` extract contains death/last-contact follow-up and indicators
+that one or more thromboembolic events were recorded, but it does not contain
+the thromboembolism date. We use the required three-state construction to show
+the estimator mechanics. Do not interpret the resulting type 1 curve as a
+clinical time-to-thromboembolism estimate. For that analysis, supply the time
+to first thromboembolism or death and code the first observed event.
+
+```{r}
+#| label: competing-risk-object
+data(omc, package = "TemporalHazard")
+
+event <- with(
+  omc,
+  ifelse(
+    te1 == 1 | te2 == 1 | te3 == 1,
+    1L,
+    ifelse(dead == 1, 2L, 0L)
+  )
+)
+cr <- hzr_competing_risks(omc$int_dead, event)
+
+data.frame(
+  records = nrow(omc),
+  censored = sum(event == 0),
+  any_thromboembolism_recorded = sum(event == 1),
+  death_without_recorded_thromboembolism = sum(event == 2),
+  event_times = nrow(cr),
+  final_probability_sum = tail(cr$surv + cr$incid_1 + cr$incid_2, 1)
+)
+head(as.data.frame(cr)[
+  c("time", "n_risk", "n_event_1", "n_event_2", "n_censor",
+    "surv", "incid_1", "incid_2")
+])
+```
+
+```{r}
+#| label: fig-temporal-diagnostics-competing-risks
+#| fig-cap: "Estimator demonstration using OMC follow-up classification; the public extract does not contain the thromboembolism time required for clinical incidence"
+cif <- rbind(
+  data.frame(time = cr$time, incidence = cr$incid_1 * 100,
+             cause = "Any thromboembolism recorded"),
+  data.frame(time = cr$time, incidence = cr$incid_2 * 100,
+             cause = "Death without recorded thromboembolism")
+)
+
+ggplot(cif, aes(time, incidence, colour = cause, linetype = cause)) +
+  geom_step(linewidth = 0.75) +
+  scale_colour_manual(
+    values = c("Any thromboembolism recorded" = "steelblue",
+               "Death without recorded thromboembolism" = "firebrick"),
+    name = NULL
+  ) +
+  scale_linetype_manual(
+    values = c("Any thromboembolism recorded" = "solid",
+               "Death without recorded thromboembolism" = "dashed"),
+    name = NULL
+  ) +
+  labs(x = "Months to death or last contact",
+       y = "Cumulative incidence in constructed example (%)") +
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
+```
+
+If the probability sum is not 1 to numerical precision, the event coding or
+risk-set construction needs attention. In a real competing-risk analysis,
+also verify that every row carries the time to the first event of any modeled
+cause, not a later administrative time.
