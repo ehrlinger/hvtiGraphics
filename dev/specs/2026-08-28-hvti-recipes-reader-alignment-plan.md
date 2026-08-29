@@ -116,10 +116,12 @@ Expected: the commands end with `* DONE (hvtiR)`, `* DONE (hvtiPlotR)`,
 Run:
 
 ```bash
-Rscript -e 'want <- c(hvtiR="1.0.13", hvtiPlotR="2.7.10", ggRandomForests="4.0.0", TemporalHazard="1.2.6", hvtiRtables="1.0.0", randomForestRHF="2.0.0"); got <- vapply(names(want), function(p) as.character(packageVersion(p)), character(1)); print(got); stopifnot(identical(got, want)); stopifnot(all(c("gg_rhf", "gg_auct", "gg_rhf_importance", "gg_tune_rhf") %in% getNamespaceExports("ggRandomForests"))); stopifnot(all(c("install", "status", "update", "doctor") %in% getNamespaceExports("hvtiR")))'
+Rscript -e 'want <- c(hvtiR="1.0.13", hvtiPlotR="2.7.11", ggRandomForests="4.0.0", TemporalHazard="1.2.6", hvtiRtables="1.0.0", randomForestRHF="2.0.0"); got <- vapply(names(want), function(p) as.character(packageVersion(p)), character(1)); print(got); stopifnot(identical(got, want)); stopifnot(all(c("gg_rhf", "gg_auct", "gg_rhf_importance", "gg_tune_rhf") %in% getNamespaceExports("ggRandomForests"))); stopifnot(all(c("install", "status", "update", "doctor") %in% getNamespaceExports("hvtiR")))'
 ```
 
 Expected: exact version vector and exit 0.
+
+**Corrected 2026-08-29:** this vector asserted `hvtiPlotR="2.7.10"`, which contradicts the pinned commit. The approved at-risk repair `a808123` carries version 2.7.11, and 2.7.11 is what is installed, so the assertion failed as written. Note that `sibling-versions.json` on this branch still records 2.7.10, which suggests Tasks 1-10 rendered against hvtiPlotR `main` rather than the approved repair. Task 16's clean rebuild is what settles the record.
 
 ### Task 2: Rebuild the book navigation around reader questions
 
@@ -897,14 +899,14 @@ auc <- gg_auct(
 )
 plot(auc)
 
-importance <- gg_rhf_importance(bundle$importance)
+importance <- gg_rhf_importance(bundle$fit, importance_fit = bundle$importance)
 plot(importance)
 
 tuning <- gg_tune_rhf(bundle$tune_risk)
 plot(tuning)
 ```
 
-Use the exact bundle component names in the precomputed object. Add the cumulative-hazard, tuning-by-iAUC, and returned-object variations documented in the source vignette.
+Use the exact bundle component names in the precomputed object. **Corrected 2026-08-29:** this step previously read `gg_rhf_importance(bundle$importance)`, which errors. `gg_rhf_importance` dispatches only on class `rhf`, and `bundle$importance` is an `importance.rhf`, so the fit is the object and the saved result goes in `importance_fit=`. Verified by running both forms. Add the cumulative-hazard, tuning-by-iAUC, and returned-object variations documented in the source vignette.
 
 - [ ] **Step 4: Explain upstream boundaries honestly**
 
