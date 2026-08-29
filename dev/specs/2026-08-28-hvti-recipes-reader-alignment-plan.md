@@ -16,7 +16,8 @@
 - Write for the HVTI/CORR biostatistician persona in `.claude/house-style.md`; do not edit that generated file.
 - Use synthetic or public data only. No PHI may appear in source, output, or examples.
 - Treat SAS as the retired workflow being replaced by R. SAS may appear only as a one-way migration landmark.
-- Target exact sibling commits: hvtiR `5227077`, the authorized hvtiPlotR at-risk repair `a808123`, ggRandomForests current `main` at `8e1b1f66`, TemporalHazard `aeb663a`, and hvtiRtables `64dd174`.
+- Target exact sibling commits: hvtiR `5227077`, the authorized hvtiPlotR at-risk repair `a808123`, ggRandomForests current `main` at `7b0335e3`, TemporalHazard `aeb663a`, and hvtiRtables `64dd174`.
+- **Baseline moved 2026-08-29, during Task 11.** ggRandomForests advanced `8e1b1f66` -> `7b0335e3` in response to findings from this book work: `d85f5db3` adds `labels=` to `plot.gg_variable()`, `plot.gg_udependent()` and `plot.gg_sdependent()`, and `9915733e` scopes the `gg_variable` `facet_grid` labeller to the variable dimension. Those are Task 11's own functions, so the task adopts the newer revision rather than pinning behind it. Tasks 1-10 froze their chapters against `8e1b1f66`; Task 16's clean rebuild is what reconciles the cache to one baseline.
 - Use randomForestRHF 2.0.0 from CRAN. Do not install the local 1.0.2 checkout over it.
 - Prefer package constructors to hand-built ggplot code where a current constructor exists.
 - Preserve the constructor -> `plot()` -> `+` decoration pattern.
