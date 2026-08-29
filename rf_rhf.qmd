@@ -30,9 +30,10 @@ lab that drifts. If your predictors are genuinely fixed at baseline, the
 [survival](survival.qmd) and [forest prediction](rf_predicted.qmd) recipes are the
 simpler and better fit, and nothing here improves on them for that case.
 
-This chapter reads a fitted forest. Growing one is `randomForestRHF`'s job, and the
-boundary between the two packages is worth keeping straight, so it has its own
-section near the end.
+This chapter reads a fitted forest. Growing one is the job of `randomForestRHF`
+[@R-randomForestRHF]; the reading is done by `ggRandomForests`
+[@R-ggRandomForests]. The boundary between the two is worth keeping straight, so
+it has its own section near the end.
 
 ## The data it needs
 
