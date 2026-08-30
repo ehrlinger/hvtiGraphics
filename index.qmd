@@ -3,7 +3,7 @@
 Every figure in a CORR manuscript or presentation has been made before. The
 Kaplan-Meier curve with numbers at risk, the propensity-balance plot, the
 spaghetti plot of repeated echo measurements, the CONSORT diagram that opens the
-paper -- we draw the same handful of figures over and over. This book collects
+paper: we draw the same handful of figures over and over. This book collects
 them in one place, each with the code that produces it, so the next person who
 needs one starts from a working recipe instead of a blank script.
 

@@ -75,7 +75,7 @@ and `R` for recurrence.
 One difference from those chapters is worth stating rather than leaving in the
 code. They fit `breast` as it ships; we drop its four incomplete rows with
 `na.omit()` first, taking 198 patients down to 194. The fit is not what needs
-this -- `rfsrc()` handles the missing values either way. It is `newdata` that
+this, since `rfsrc()` handles the missing values either way. It is `newdata` that
 needs it. Hand `gg_shap()` a row carrying a missing predictor and the
 attribution stops with `no records in the NA-processed data`, an error raised
 downstream in `randomForestSRC` rather than anywhere you were looking. Dropping

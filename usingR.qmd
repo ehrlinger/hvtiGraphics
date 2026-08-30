@@ -22,7 +22,7 @@ plot(obj) +
   theme_hv_manuscript()
 ```
 
-The constructor (`hv_*()`) does the analysis -- fitting the survival curve,
+The constructor (`hv_*()`) does the analysis, fitting the survival curve,
 computing standardized differences, aggregating annual counts. `plot()` returns
 a ggplot with the data drawn but nothing styled: no colour scale, no axis
 labels, no theme. Then `+` is ordinary ggplot2: add the labels, scale, and house

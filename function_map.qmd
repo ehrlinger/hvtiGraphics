@@ -209,7 +209,7 @@ cat(sprintf(
 ```
 
 ```{r}
-#| label: tbl-function-map
+#| label: function-map-tables
 #| results: asis
 for (pkg in names(expected)) {
   rows <- map[map$Package == pkg, c("Function", "Role", "Recipe", "Coverage")]
