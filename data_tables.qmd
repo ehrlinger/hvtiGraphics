@@ -47,7 +47,7 @@ dim(dta)
 
 ## Build it
 
-### What is in this dataset — `proc_contents()`
+### What is in this dataset: `proc_contents()`
 
 `proc_contents()` prints what SAS prints: a header carrying the observation and
 variable counts, then one row per variable with its creation position, name, SAS
@@ -75,7 +75,7 @@ reoperation follow-up time. It exists only for the 33 patients who had a
 reoperation. Missingness with a reason is structure; missingness you cannot
 account for is a question for whoever built the extract.
 
-### What the numbers look like — `proc_means()`
+### What the numbers look like: `proc_means()`
 
 `proc_means()` summarises the numeric columns you name, defaulting to SAS's own
 default five statistics.
@@ -118,7 +118,7 @@ class variable are dropped, again matching SAS, so a total that comes up short
 tells you how many patients had no group to sit in. Here 77 and 123 add to 200,
 and nothing was dropped.
 
-### The whole dictionary — `data_dictionary()`
+### The whole dictionary: `data_dictionary()`
 
 `data_dictionary()` is `proc_contents()` in creation order with the SAS-storage
 columns dropped and a summary put in their place. Out go `num`, `type`, and

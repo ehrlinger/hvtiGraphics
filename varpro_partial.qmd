@@ -93,7 +93,7 @@ into a manuscript.
 
 ## Classification: probability or log-odds
 
-A classification fit defaults to **probability** — `P(Y = the target class)`,
+A classification fit defaults to **probability**, `P(Y = the target class)`,
 bounded 0 to 1 and the scale a clinician expects.
 
 ```{r}
@@ -145,7 +145,7 @@ plot(gg_partial_varpro(object = o_surv, nvars = 4, scale = "rmst", method = "rnd
 ```
 
 The third option, `scale = "mortality"`, is the unbounded ensemble-mortality
-score — higher is worse, the opposite direction from the two bounded scales above.
+score, where higher is worse, the opposite direction from the two bounded scales above.
 It is the right choice only when you are comparing against other random-forest
 mortality outputs; for a figure a reviewer reads, prefer `surv` or `rmst`.
 
@@ -177,6 +177,6 @@ mortality outputs; for a figure a reviewer reads, prefer `surv` or `rmst`.
   forwards straight to `varPro::partialpro()`, which grows its own isolation
   forest for the partial-dependence draws; leave `method` unset and that forest
   defaults to `unsupv`, handing `randomForestSRC` a zero-length `yvar.wt`
-  pointer. Nothing breaks in practice — the pointer is formed, never
-  dereferenced — but the real fix belongs upstream. Set it anyway: every call
+  pointer. Nothing breaks in practice, since the pointer is formed and never
+  dereferenced, but the real fix belongs upstream. Set it anyway: every call
   in this chapter does, because these are the chunks readers copy.

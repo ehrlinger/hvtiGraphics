@@ -278,7 +278,7 @@ labels yet.
 
 ```{r}
 #| label: gfup_basic
-# Bare plot — no scales or labels yet
+# Bare plot, no scales or labels yet
 plot(gf)
 ```
 

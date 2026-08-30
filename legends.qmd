@@ -9,7 +9,7 @@ library(ggplot2)
 ```
 
 ggplot2 [@R-ggplot2] places the legend outside the panel by default. For publication figures
-we often move it inside, drop it, or shrink it — the axis labels frequently do
+we often move it inside, drop it, or shrink it, since the axis labels frequently do
 the identification work already. Legend behaviour is controlled through
 `theme()` (or directly via a theme's `...`), and per-aesthetic via `guide =`.
 

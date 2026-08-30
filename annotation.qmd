@@ -62,7 +62,7 @@ plot(km) +
 
 ## Annotations with `annotate()`
 
-`annotate()` places text, segments, or arrows at fixed data coordinates —
+`annotate()` places text, segments, or arrows at fixed data coordinates:
 a sample-size callout in a corner, or an arrow pointing to an event.
 
 ```{r}

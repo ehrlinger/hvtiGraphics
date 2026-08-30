@@ -62,7 +62,7 @@ plot(km) +
 
 ## ColorBrewer palettes
 
-`scale_colour_brewer()` applies a perceptually uniform, print-safe palette —
+`scale_colour_brewer()` applies a perceptually uniform, print-safe palette,
 which matters when figures go to black-and-white PDF. Use `palette = "Set1"`
 for categorical data, `"RdYlGn"` for diverging, `"Blues"` for sequential.
 

@@ -72,7 +72,7 @@ decorate <- function(p) {
 
 ## Manuscript
 
-Default for journal submissions — white background, black text, minimal chrome.
+Default for journal submissions: white background, black text, minimal chrome.
 Font sizes tuned for letter-size PDFs reduced to a column width.
 
 ```{r}

@@ -40,7 +40,7 @@ The extractors read from a fitted `varpro` object, so the input is whatever
 `varpro()` itself needs: a formula and a data frame. The outcome type decides
 the family, and that matters here because several of the extractors are
 family-specific. We start with a regression fit on the `housing` data shipped
-with `randomForestSRC` [@R-randomForestSRC] — 2,930 homes and 80 predictors,
+with `randomForestSRC` [@R-randomForestSRC]: 2,930 homes and 80 predictors,
 modelling sale price (`SalePrice`). This is the same kind of dataset the
 random-forest chapters use, and the extra width is the point: variable priority
 earns its keep when there are far more candidates than you can eyeball.
@@ -169,7 +169,7 @@ plot(gg_ivarpro(oc)) + theme_hv_manuscript()
 ```
 
 Each panel summarises how strongly individual observations rely on a given
-variable. You can focus on a single outcome level with `which_class` — here the
+variable. You can focus on a single outcome level with `which_class`, here the
 recurrence class:
 
 ```{r}
@@ -218,7 +218,7 @@ selected variable moves the prediction. `gg_partial_varpro()` runs
 `varPro::partialpro()` on the fitted forest and draws a marginal-effect curve per
 variable, with a `scale` argument that sets the y-axis to suit the outcome
 family. Because that treatment spans regression, classification, and survival, it
-gets its own chapter — see [varPro partial dependence](varpro_partial.qmd).
+gets its own chapter; see [varPro partial dependence](varpro_partial.qmd).
 (`gg_partialpro()` is the superseded name for this extractor; it is now a thin
 alias for `gg_partial_varpro()`, so reach for the new name.)
 
@@ -227,8 +227,8 @@ alias for `gg_partial_varpro()`, so reach for the new name.)
 The beta plot in @fig-varpro-beta-uvarpro was a first taste of an *unsupervised*
 fit. `varPro::uvarpro()` grows a forest with no response to predict, then scores
 how strongly each variable depends on the others. `gg_udependent()` reads those
-cross-variable scores and draws them as a dependency graph — nodes are
-variables, edges the dependencies between them — so you can see which predictors
+cross-variable scores and draws them as a dependency graph, where nodes are
+variables, edges the dependencies between them, so you can see which predictors
 travel together before any modelling. Reach for it when you want to understand
 the structure among the predictors themselves, for example to spot a cluster of
 collinear measurements.
@@ -270,8 +270,8 @@ renaming anything in the data.
 Highlighted variables are the detected signal set, and the caption reports how
 many of them cleared the threshold. Four arguments carry over from
 `gg_udependent()`: `threshold`, `q.signal`, `directed`, and `min.degree`.
-`threshold` (default 0.25) only builds the dependency graph — it decides which
-entries of the lasso-coefficient matrix count as an edge — so raising it shrinks
+`threshold` (default 0.25) only builds the dependency graph, deciding which
+entries of the lasso-coefficient matrix count as an edge, so raising it shrinks
 the signal set solely by isolating nodes, which then get dropped before scoring
 ever runs. The argument that actually sizes the signal set is `q.signal` (default
 0.75): a variable is flagged as signal when its degree in that graph clears

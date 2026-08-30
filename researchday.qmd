@@ -22,7 +22,7 @@ margin key in mind while tracking a curve. @sec-annotation-series has the recipe
 
 ## A poster-styled plot
 
-`theme_hv_poster()` uses a 16 pt base — every text element scales from it, so a
+`theme_hv_poster()` uses a 16 pt base, and every text element scales from it, so a
 single argument controls overall legibility.
 
 ```{r}

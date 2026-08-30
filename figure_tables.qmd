@@ -14,7 +14,7 @@ Many manuscript figures are paired with a small numeric table: a
 numbers-at-risk strip below a Kaplan-Meier curve, or the count panel
 beneath a longitudinal participation bar chart. The `hvtiPlotR` plot
 objects carry these companion tables alongside the plot data, so we can
-pull the numbers straight out and render them with `gt` [@R-gt] — the
+pull the numbers straight out and render them with `gt` [@R-gt], the
 right tool, as in the [publication tables](qt_tables.qmd) chapter, when a
 table's destination is this book or another HTML document.
 [Manuscript tables](hv_tables.qmd) headed for a Word file go through

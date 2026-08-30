@@ -181,8 +181,8 @@ ggplot(dat, aes(x = .data[[grp]], y = .data[[num]], fill = .data[[grp]])) +
   theme_hv_manuscript()
 ```
 
-When the fill encodes a *second* variable the boxes are dodged by — not the
-x-axis group — the legend earns its place; keep it then, placed inside the panel
+When the fill encodes a *second* variable the boxes are dodged by, not the
+x-axis group, the legend earns its place; keep it then, placed inside the panel
 so it does not crowd the boxes.
 
 ## Deliver it

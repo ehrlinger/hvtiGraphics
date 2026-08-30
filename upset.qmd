@@ -39,7 +39,7 @@ larger intersections.
 `hv_venn()`, from hvtiPlotR [@R-hvtiPlotR], builds one from the same kind of
 set-membership data the UpSet plot uses: pass the data frame and the columns to
 treat as sets, then `plot()`. We pick three procedures that can co-occur. A Venn
-is coordinate-free, so we do **not** add a house theme — `plot.hv_venn()` styles
+is coordinate-free, so we do **not** add a house theme. `plot.hv_venn()` styles
 the diagram itself, and `theme_hv_manuscript()` would only paste spurious x/y
 axes back onto it.
 

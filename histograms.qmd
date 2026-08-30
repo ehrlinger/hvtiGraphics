@@ -94,7 +94,7 @@ pre-match bars and two greens for the matched subsets. The annotations use
 `y = Inf`/`-Inf` with `vjust` to pin the group labels at the panel edges no
 matter the count scale, and `scale_y_continuous(labels = abs)` turns the
 internal negative counts of the lower group back into positive numbers. Put each
-label in the corner the bars leave empty — the upper group thins out to the
+label in the corner the bars leave empty: the upper group thins out to the
 right, so `SAVR` sits top-right, while the lower group thins to the left, so
 `TF-TAVR` sits bottom-left. An in-panel label belongs in dead space, never on top
 of the data it names.

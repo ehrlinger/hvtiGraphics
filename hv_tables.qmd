@@ -33,7 +33,7 @@ Most of the rules in that memo come down to one idea: everything a reader sees
 in the table should be *in* the table. A header that spans two columns by
 merging their cells, a hidden quarter-inch spacer column doing the alignment, a
 caption floating in a text box positioned over the grid, a footnote living as an
-extra row inside the table's own frame — each of these puts content in a layer
+extra row inside the table's own frame: each of these puts content in a layer
 that the table structure itself does not account for. They look fine on your
 screen. They come apart when the manuscript is re-flowed into the journal's
 template, and they are invisible to a screen reader.
@@ -67,7 +67,7 @@ table(dta$sex)
 
 ## Build it
 
-### Summarise, then convert — `hv_man_table()`
+### Summarise, then convert: `hv_man_table()`
 
 You build the summary with `gtsummary` the way you normally would. Two things
 are worth setting deliberately. The first is `statistic`, because the house
@@ -127,7 +127,7 @@ because a `by`-grouped summary has nothing in it that wants merging in the first
 place. The numbers earn their keep further down, as the contrast against the
 JTCVS shape.
 
-### Write the Word file — `hv_man_table_save()`
+### Write the Word file: `hv_man_table_save()`
 
 `hv_man_table_save()` writes the `.docx`. Footnotes default to
 `hv_man_footnotes()`, the two notes that are universal to the house rules rather
@@ -170,7 +170,7 @@ list(`†` = "..."))`` replaces one, and ``c(hv_man_footnotes(), list(`‡` = ".
 adds a study-specific note alongside the defaults. Keeping only the `†` is worth
 knowing about, for reasons the reading guide below gets to.
 
-### Check what you wrote — `hv_check_docx()`
+### Check what you wrote: `hv_check_docx()`
 
 Writing the file and trusting it are different things, and the failure modes
 here are structural rather than visual. `hv_check_docx()` reads a `.docx` and
@@ -441,7 +441,7 @@ structural claim you get to make, so make it deliberately.
 - **A standardised mean difference needs exactly two groups.** `compare = "smd"`
   and `compare = "both"` are only defined between two groups and error
   otherwise. The version of this that costs an afternoon is a `by` variable that
-  is a factor carrying a level nothing in the data has — after a cohort filter,
+  is a factor carrying a level nothing in the data has, after a cohort filter,
   say. It looks like two groups when you `table()` it and counts as three here.
   `droplevels()` on the filtered frame is the fix. `compare = "pvalue"` works at
   any number of groups.

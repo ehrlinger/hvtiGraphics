@@ -58,7 +58,7 @@ What each one is for:
   shared labels and panel tags.
 - **survival** [@R-survival; @survival-book]: the `Surv()` objects and
   Kaplan-Meier machinery underneath the survival figures.
-- **mlbench** [@R-mlbench]: example data only — the ROC chapter borrows its Pima
+- **mlbench** [@R-mlbench]: example data only: the ROC chapter borrows its Pima
   Indians diabetes set for a classification forest that discriminates well enough
   to draw a ROC curve worth reading. Loaded just in that chapter.
 
@@ -109,7 +109,7 @@ pak::pak(c("gt", "kernelshap", "mlbench", "ehrlinger/ggsankey"))
 ```
 
 Expect that second list to get shorter. It holds only what no family package
-depends on yet, so a package the family absorbs drops out of it — `gt` is the
+depends on yet, so a package the family absorbs drops out of it. `gt` is the
 likely next one to go, as table work consolidates into `hvtiRtables`.
 
 Later, to find out whether an installed package has fallen behind GitHub `main`:
