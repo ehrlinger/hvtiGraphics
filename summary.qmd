@@ -50,8 +50,9 @@ Word tables, turning a `gtsummary` summary into CORR's flat-header format (or
 JTCVS's merged one).
 
 Manuscript scaffolding beyond the figure and the table, the project skeleton a
-paper is written into, is companion material for a future book rather than this
-one. It is named here only so you know it is not a gap you missed.
+paper is written into, lives in `hvtiRtemplates`. That is companion material for
+a future book rather than this one, and it is named here only so you know it is
+not a gap you missed.
 
 Treat the book as living. When you build a figure for a paper that is not here,
 or find a cleaner way to draw one that is, add it. The point of collecting these

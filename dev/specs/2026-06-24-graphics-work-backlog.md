@@ -113,6 +113,30 @@ balance / follow-up), but it's listed as a plain chapter and gets numbered (17).
 Restructure `_quarto.yml`: make it a `part:` page over consort/sankey/balance/
 combination so it stops being a numbered chapter. (Renumbers later chapters.)
 
+### Resolution of #6, 2026-08-29
+
+**Done where the data allows; blocked upstream where it does not.** `hv_atrisk()`
+and `hv_atrisk_compose()` landed in `hvtiPlotR` and the composite is in
+`survival.qmd` and `figure_tables.qmd`.
+
+`hazard.qmd` and `nnt.qmd` cannot have it as they stand, and the reason is a data
+model rather than an oversight. A numbers-at-risk panel needs subject-level
+`time`/`status`; `hv_atrisk()` says so itself when handed anything else ("This
+object has no `$tables$risk`. Pass subject-level data with
+`time`/`status`/`group`"). Both chapters run on pre-computed curves by design:
+`sample_hazard_data()` returns a prediction grid and `sample_nnt_data()` an NNT
+curve, neither carrying patient rows, and `hazard.qmd` states the premise in its
+own prose, that all three of its constructors take pre-computed data.
+`survival.qmd` can compose because `sample_survival_data()` is subject-level.
+
+Bolting a separate synthetic cohort under those curves would put counts beneath a
+curve they did not generate. That is a figure that lies, so it was not done.
+
+**What would unblock it**, in `hvtiPlotR` rather than here: either a subject-level
+hazard constructor whose object carries `$tables$risk`, or `hv_atrisk()` accepting
+a grid plus a denominator. Until one exists, treat #6 as closed for the survival
+family and out of scope for the pre-computed-curve chapters.
+
 ### Status (book session, branch `feat/book-chapter-improvements`)
 - **DONE (6 commits):** #5 filled boxplots (Ch. 13, `4efcf76`); #3 annotations
   (Ch. 10, `b5a6057`); #3 Ch. 9 observed-vs-parametric overlay (`c6b322d`); #8
