@@ -88,11 +88,19 @@ plot(km) +
 
 ## Naming series without a legend {#sec-annotation-series}
 
-A CORR figure carries no legend. Not in a manuscript, not on a slide.
+A finished CORR figure carries no legend. Not in a manuscript, not on a slide.
 `theme_hv_manuscript()`, `theme_hv_poster()`, `theme_hv_ppt_light()` and
 `theme_hv_ppt_dark()` all set `legend.position = "none"`, so the groups get
 named on the panel instead, with `annotate()`, where the reader's eye already
-is. A key sends that eye out to the margin and back once per curve. On a slide
+is.
+
+The word doing the work there is *finished*. A draft you are reading yourself is
+a different object with a different reader, and a key is often the faster way to
+see what you have. The same goes for a figure whose series cannot sensibly be
+named on the panel, six simulated subject identifiers being the case in
+[Random Hazard Forests](rf_rhf.qmd). Reach for `hv_legend_inside()` there, applied
+after the theme so its position wins, and drop the key when the figure goes into
+the paper. A key sends that eye out to the margin and back once per curve. On a slide
 that is most of the fifteen seconds you had.
 
 Two things make a direct label read as part of the figure rather than as one
@@ -207,7 +215,14 @@ make_footnote("R/analysis.R")        # <- no footnote call
 ```
 
 Build any figure, then `print()` it and call `make_footnote()` with the source
-path. The default stamp appends a timestamp.
+path. The default stamp appends the current date and time, which is the whole
+point of a draft footnote: it tells you which run of the analysis a printout came
+from.
+
+The two figures below pin that stamp to a fixed string instead, because a live
+clock would redraw them on every render and make the committed figure cache churn
+for no reason. In your own work leave the default alone and let it stamp the real
+time.
 
 ```{r}
 #| label: fig-annotation-footnote
@@ -224,8 +239,10 @@ p_draft <- plot(km) +
   labs(x = "Years after Operation", y = "Survival (%)") +
   theme_hv_manuscript()
 
+book_stamp <- "2026-08-29 20:44"   # your own work: drop this and the timestamp
+                                   # argument, and let make_footnote() stamp now
 print(p_draft)
-make_footnote("annotation.qmd")
+make_footnote(paste("annotation.qmd", book_stamp), timestamp = FALSE)
 ```
 
 Pass any string as `text` and set `timestamp = FALSE` for a stable analyst tag.
@@ -234,9 +251,11 @@ Pass any string as `text` and set `timestamp = FALSE` for a stable analyst tag.
 #| label: footnote_analyst
 #| fig-width: 7
 #| fig-height: 5
+book_date <- "2026-08-29"   # your own work: use Sys.Date()
+
 print(p_draft)
 make_footnote(
-  text      = paste("J. Ehrlinger |", Sys.Date()),
+  text      = paste("J. Ehrlinger |", book_date),
   timestamp = FALSE,
   prefix    = ""
 )

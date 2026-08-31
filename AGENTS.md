@@ -1,6 +1,6 @@
 # hvtiGraphics
 
-The **HVTI Recipes** book — 51 Quarto chapters, ~8,000 lines, published to
+The **HVTI Recipes** book: 52 Quarto chapters, ~10,500 lines, published to
 `gh-pages`. It is the CORR group's reference for figures, tables and R recipes
 for manuscripts.
 
@@ -10,15 +10,15 @@ in `CLAUDE.md`, which imports this file.
 
 ## This is not an R package, and must not become one
 
-The book **consumes** the family; it does not produce it. Across 51 chapters
-there are exactly three function definitions (`shape`, `docx_scan`, `decorate`,
-all single-chapter helpers), while 41 chapters call into the sibling packages
-and `library(hvtiPlotR)` alone appears 34 times.
+The book **consumes** the family; it does not produce it. Across 52 chapters
+there are four function definitions (`shape` and `docx_scan` in `hv_tables.qmd`,
+`decorate` in `themes.qmd`, `chapters_calling` in `function_map.qmd`, every one a
+single-chapter helper), while `library(hvtiPlotR)` alone appears in 37 chapters.
 
 So there is no `DESCRIPTION`, no `NAMESPACE`, no `man/`, and no `tests/`, and
-adding them would produce a package with three exports and no callers. Do not
+adding them would produce a package with four exports and no callers. Do not
 propose it. `devtools::check()`, `roxygen`, `testthat` and `lintr` have nothing
-to act on here — if a habit reaches for them, that habit is in the wrong repo.
+to act on here: if a habit reaches for them, that habit is in the wrong repo.
 
 If a chapter helper ever earns reuse, it belongs in `hvtiRutilities`, not in a
 new package carved out of the book.
@@ -32,7 +32,7 @@ new package carved out of the book.
   which keys on the source file changing rather than on the code changing, and
   the freeze stores the chapter's whole rendered markdown. Edit a sentence
   without re-rendering and CI fails with `Unable to locate an installed version
-  of R` — verified 2026-08-21. Only chapters with no chunks at all are exempt.
+  of R`, verified 2026-08-21. Only chapters with no chunks at all are exempt.
 - The rendered result was actually looked at. This repo's output is figures and
   tables; "it rendered" is not the same as "the figure is right".
 
@@ -46,7 +46,7 @@ surface, and the gate below is the only thing standing in for one.
 | `pr-check.yml` | a changed chapter that runs code whose `_freeze/` was not updated, then `quarto render --to html` |
 | `publish.yml` | the render on `main`, then deploys `_book/` to `gh-pages` |
 | `house-style.yaml` | `.claude/house-style.md` drifting from the vault sources it was composed from |
-| `version-check.yml` | nothing — reports sibling version drift as a tracking issue, weekly |
+| `version-check.yml` | nothing; it reports sibling version drift as a tracking issue, weekly |
 | `deep-render.yml` | the render, when run manually with the freeze bypassed |
 
 **CI does not run R.** Neither workflow sets up R, so every render in CI reads
@@ -68,13 +68,13 @@ is already committed.
 **Stale `_freeze/` publishes a lie that nothing can detect.**
 
 Change a chunk, skip the local re-render, and the site keeps serving the *old*
-output beside the *new* code — indefinitely, with a green build, because CI
+output beside the *new* code, indefinitely, with a green build, because CI
 never re-executes anything. There is no failing test to catch it downstream;
 the freeze cache is the published result.
 
 `pr-check.yml` blocks the version of this it can see: chunk content changed in
 a PR without a matching `_freeze/` update. It compares chunk bodies, not whole
-files — but that comparison only words the error now, it no longer decides it.
+files, but that comparison only words the error now, it no longer decides it.
 The gate fires on **any** source change to a chapter that contains a chunk,
 prose included, because `freeze: auto` invalidates the cache on any change to
 the `.qmd`. It was narrower than that until 2026-08-21, which meant a
@@ -84,7 +84,7 @@ message. Chapters with no chunks at all are exempt and pass untouched.
 **The version it cannot see is the dangerous one.** This book is a reverse
 dependency of `hvtiPlotR`, `ggRandomForests`, `TemporalHazard`,
 `hvtiRutilities` and `hvtiRtables`. When one of those changes an API, argument
-default or returned object, nothing in this repo changes — so no gate fires,
+default or returned object, nothing in this repo changes, so no gate fires,
 and the published figures silently become output from a version of the package
 that no longer exists.
 
@@ -92,21 +92,21 @@ that no longer exists.
 here as though it did.** `freeze: auto` re-executes a chapter only when that
 chapter's *source* changes. After a sibling release nothing in this repo has
 changed, so `quarto render` reuses every cache and reports success without
-running a single line of R — verified 2026-08-21 by completing a full render
+running a single line of R, verified 2026-08-21 by completing a full render
 with R removed from `PATH`. It produces a green log and byte-identical output,
 which reads as "checked, no drift" when nothing was checked. **Delete the cache
-first** — or nothing executes. Deleting `_freeze` alone is not enough locally;
+first**, or nothing executes. Deleting `_freeze` alone is not enough locally;
 see "A forced rebuild has to delete more than `_freeze`" under Gotchas.
 
 What now covers it, in two pieces that do different jobs:
 
 | | when | cost | catches |
 |---|---|---|---|
-| `version-check.yml` (A) | weekly, and on demand | none — no R, no render | that versions have **moved** |
+| `version-check.yml` (A) | weekly, and on demand | none, no R and no render | that versions have **moved** |
 | `deep-render.yml` (B) | `workflow_dispatch` only | installs the family, executes every chunk | that something has **broken** |
 
-Job A compares `sibling-versions.json` — written by the render itself, see
-"What this build used" in `packages.qmd` — against each sibling's `DESCRIPTION`
+Job A compares `sibling-versions.json`, written by the render itself and
+described under "What this build used" in `packages.qmd`, against each sibling's `DESCRIPTION`
 on `main`. On divergence it opens or updates one reused tracking issue and
 **exits 0 regardless**. A red scheduled run on `main` would claim the book is
 broken, which is not what it learned; it learned that a re-render is due.
@@ -126,7 +126,7 @@ other versions. The record becomes exact for the whole book after one forced
 full re-render (see Gotchas for what that has to delete), and approximate
 again as chapters are
 re-rendered piecemeal. Divergence can also mean the last render ran against
-unreleased local code — a sibling checkout on a feature branch — rather than
+unreleased local code, a sibling checkout on a feature branch, rather than
 against `main`; rule that out before re-rendering.
 
 ## Rules for this repo
@@ -134,9 +134,10 @@ against `main`; rule that out before re-rendering.
 - **Synthetic or public data only. No PHI, ever.** The book states this itself
   in `data_governance.qmd` and every chapter runs on generated cohorts, seeded
   for reproducibility. A recipe book is the realistic place for someone to
-  paste a real extract to make an example look better — do not, and say so if
+  paste a real extract to make an example look better. Do not, and say so if
   asked to.
-- **`_freeze/` is committed on purpose.** 474 files, 46 chapter caches, ~54 MB.
+- **`_freeze/` is committed on purpose.** 407 files, 42 chapter caches, ~41 MB
+  after the 2026-08-29 clean rebuild.
   `.gitignore` records the reason. It is the build input for CI, not clutter.
 - **`_book/` is not committed** and is gitignored. Never add it.
 - **HTML is built in CI; the PDF is built locally.** The `pdf` format needs a
@@ -152,7 +153,7 @@ against `main`; rule that out before re-rendering.
 
   It is still the command to run while iterating, and in the ordinary case it
   needs nothing after it. `freeze: auto` re-executes only the chapters whose
-  source changed, so the render walks all 51 and rewrites the cache for yours
+  source changed, so the render walks all 52 and rewrites the cache for yours
   alone. Measured 2026-08-24: one edited chapter, 51 processed, 51 HTML files
   and the book PDF written, and exactly one `_freeze/` directory touched. This
   rule prescribed a prune as a routine step until then; it is not one.
@@ -181,7 +182,7 @@ against `main`; rule that out before re-rendering.
 
 - **Never add a branch to `publish.yml`'s `push:` trigger.** The deploy step
   uses `force_orphan: true`, which replaces the whole `gh-pages` history rather
-  than adding to it — so any branch listed there can overwrite the entire
+  than adding to it, so any branch listed there can overwrite the entire
   published site with a partial book. It deploys from `main` only, plus
   `workflow_dispatch` for a manual run. A long-lived `feat/plot-recipes` entry
   sat here until 2026-08-21, outliving the branch itself; that is the shape of
@@ -190,9 +191,9 @@ against `main`; rule that out before re-rendering.
   `hvtiPlotR::hv_theme_*`'s `accent` default), so `_quarto.yml`'s
   `theme: [cosmo, brand]` is no longer a dangling reference. This entry used to
   say the opposite and warn against adding one. A forced full re-render will
-  pick it up across all 51 chapters; that is expected, not drift.
+  pick it up across all 52 chapters; that is expected, not drift.
 - **`.gitignore`'s note names three local-source dependencies
-  (`TemporalHazard`, `hvtiRutilities`, `ggsankey`); the real set is larger** —
+  (`TemporalHazard`, `hvtiRutilities`, `ggsankey`); the real set is larger.**
   `hvtiPlotR` and `hvtiRtables` are also local-source and load in far more
   chapters. The list understates what a fresh machine needs to render.
 - **Prose configuration is generated; never hand-maintain a second copy.**
@@ -204,13 +205,17 @@ against `main`; rule that out before re-rendering.
   without anyone noticing. Read the generated artifact; do not mirror it.
 - **A `_freeze/` directory does not tell you whether a chapter carries code.**
   Measured 2026-08-21: 51 chapters, 13 of them chunk-free, but 46 freeze
-  directories — six chunk-free chapters (`formatting`, `publications`,
-  `randomforests`, `specialty`, `summary`, `usingR`) keep leftover directories
-  from when they had chunks. So a predicate of the form "does `_freeze/<ch>/`
-  exist" over-fires on exactly the prose-only pages it should ignore.
-  `pr-check.yml` worked that way once; it now reads the chapter's content for a
-  chunk instead. Do not reinstate the directory test. The leftover directories
-  are inert — a chunk-free chapter renders clean with a stale one or none.
+  directories, because six chunk-free chapters kept leftover directories from
+  when they had chunks. So a predicate of the form "does `_freeze/<ch>/` exist"
+  over-fires on exactly the prose-only pages it should ignore. `pr-check.yml`
+  worked that way once; it now reads the chapter's content for a chunk instead.
+
+  **The 2026-08-29 clean rebuild reset this**, and the counts now agree: 52
+  chapters, 10 chunk-free, 42 chunk-bearing, 42 freeze directories. A rebuild
+  writes only what a live chunk emits, so every leftover went. That is a
+  temporary state, not a new invariant. `freeze: auto` only ever adds, so the
+  directories drift apart again as chapters are renamed or lose their chunks.
+  Do not reinstate the directory test on the strength of today's tidy numbers.
 - **`_freeze/` accumulates orphans, so a clean rebuild deletes far more than
   you will expect.** `freeze: auto` only ever adds to the cache. Rename a chunk
   label and the old figure stays behind forever, sitting beside the new one
@@ -246,32 +251,48 @@ against `main`; rule that out before re-rendering.
 
   Nothing in that list is tracked. After it the cache holds only what a live
   chunk emits, which is the only version of it worth committing.
+- **`_book/` holds one format at a time.** `quarto render --to pdf` deletes every
+  HTML file in it, and `--to html` deletes the PDF. Neither is a defect, and
+  neither touches `_freeze/`, so the missing format comes back from the warm
+  cache in well under a minute. But a preview meant to show both needs the PDF
+  copied aside and put back. Measured 2026-08-29, after a `--to pdf` render left
+  zero of the 52 HTML pages standing.
+- **`cairo_pdf` on this machine writes no file and does not error.** It warns
+  `failed to load cairo DLL` and returns normally. Measured 2026-08-29:
+  `ggsave(f, p, device = cairo_pdf)` reported success and `file.exists(f)` was
+  `FALSE`, while `grDevices::quartz(type = "pdf")` wrote 19 KB. A silent no-op is
+  worse than a visible failure, and `manuscripts.qmd` and `researchday.qmd` both
+  shipped that recipe until Task 13 replaced it. If a chapter or a reader's
+  script passes a `device`, check the file appeared rather than trusting the
+  return.
 - **The PDF's figures are drawn by `quartz_pdf`, and that is macOS only.**
   `_quarto.yml` sets `dev: quartz_pdf` under `format: pdf:` because the default
   `pdf()` device is single-byte: it substitutes `.` for `τ`, `α` and `•`, `>=`
   for `≥`, `-` for `—`, and says so only in an `mbcsToSbcs` warning nobody
   reads. Every locally built PDF up to 2026-08-24 printed `RMST (. = 1788)`.
-  Most of those glyphs are not the book's to fix — `ggRandomForests` supplies
-  the `τ` label and `hvtiPlotR`'s sample data the `≥` — so editing chapter
+  Most of those glyphs are not the book's to fix, since `ggRandomForests`
+  supplies the `τ` label and `hvtiPlotR`'s sample data the `≥`, so editing chapter
   literals would have covered a fraction of it and re-broken on the next
   sibling release. `cairo_pdf` also works but wants XQuartz, which the build
   machine does not have; quartz is part of macOS, so this adds no dependency
   the local PDF build did not already have. Two consequences. Rendering the PDF
-  on anything other than macOS — Linux, Windows, a runner — will now fail at
+  on anything other than macOS (Linux, Windows, a runner) will now fail at
   the device. And because the freeze hash covers format metadata, this
-  invalidated all 51 `tex.json` at a stroke: the next `--to pdf` re-executes
+  invalidated every `tex.json` at a stroke, 42 of them: the next `--to pdf` re-executes
   the whole book, while `--to html` reads its cache untouched, verified with R
   off `PATH`.
 
 ## Git and versioning
 
 - **Never push to `main`.** Branch, then open a PR and let the maintainer merge.
-- **`main` is protected by an active ruleset named `protect main`** — verified,
-  not assumed. A rejected push comes from the server, not a local hook. Never
+- **`main` is protected by an active ruleset named `protect main`**, verified
+  rather than assumed. A rejected push comes from the server, not a local hook. Never
   force-push around it.
-- **This repo has no version number.** With no `DESCRIPTION` there is nothing to
-  bump and no `NEWS.md` to match. Do not invent a versioning scheme for it; the
-  published site is the artifact and `git log` is the history.
+- **The version is an edition badge in `README.md`, and nothing else.** There is
+  no `DESCRIPTION` to bump and no `NEWS.md` to match, so do not invent a second
+  scheme or add version strings to chapters. The badge reads `3.1.0` as of
+  2026-08-29. Rolling the minor or major digit is the maintainer's call, never an
+  agent's; the published site is the artifact and `git log` is the history.
 
 ## Change discipline
 
@@ -288,12 +309,12 @@ against `main`; rule that out before re-rendering.
    problems separately.
 4. **Goal-driven execution.** State what done looks like before starting. Here
    the criterion is a rendered chapter you have actually looked at, with its
-   `_freeze/` committed — not a clean render log.
+   `_freeze/` committed, not a clean render log.
 
 ## Prose
 
 Recipe chapters, captions and README text follow the house voice, composed into
-`.claude/house-style.md` from the vault sources. Read that file — it is
+`.claude/house-style.md` from the vault sources. Read that file: it is
 self-contained and states the active reader persona for this repo. In Claude
 Code, apply the `ehrlinger-writing` skill.
 
@@ -302,7 +323,7 @@ to do something, so they carry more narrative scaffolding than package
 documentation, and they compose without the package structure rules that govern
 README order, the roxygen contract and vignette roles.
 
-`.claude/house-style.md` is **generated — do not edit it.** Edit the vault
+`.claude/house-style.md` is **generated, so do not edit it.** Edit the vault
 sources and recompose:
 
 ```
@@ -310,7 +331,7 @@ git clone --branch house-style-v1 https://github.com/ehrlinger/house-style ../ho
 Rscript ../house-style/compose-house-style.R --repo hvtiGraphics
 ```
 
-Clone the `house-style-v1` **tag**, not the default branch — that is the ref CI
+Clone the `house-style-v1` **tag**, not the default branch, because that is the ref CI
 pins. Composing against a newer composer than CI validates with produces a clean
 local result and a red build, which is the confusion the pin exists to prevent.
 Add `--check` to report drift without rewriting the artifact; that is what CI

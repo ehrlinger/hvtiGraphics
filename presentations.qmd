@@ -118,7 +118,7 @@ cross, the plotted summary points are what tells them apart.
 
 ### Naming the series
 
-A CORR figure carries no legend, on a slide or on a journal page.
+A finished CORR figure carries no legend, on a slide or on a journal page.
 `theme_hv_ppt_dark()` and `theme_hv_ppt_light()` both set
 `legend.position = "none"`, and `hv_ppt_series()` deliberately leaves that
 alone. You name the groups on the panel instead, in the theme's own ink.
