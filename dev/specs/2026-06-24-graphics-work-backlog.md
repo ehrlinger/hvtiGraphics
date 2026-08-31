@@ -115,9 +115,17 @@ combination so it stops being a numbered chapter. (Renumbers later chapters.)
 
 ### Resolution of #6, 2026-08-29
 
-**Done where the data allows; blocked upstream where it does not.** `hv_atrisk()`
-and `hv_atrisk_compose()` landed in `hvtiPlotR` and the composite is in
-`survival.qmd` and `figure_tables.qmd`.
+**Done where the data allows; blocked in `hvtiPlotR` where it does not.** Three of
+the four chapters #6 named now have it. `hv_atrisk()` and `hv_atrisk_compose()`
+landed in `hvtiPlotR`, and the composite is in `survival.qmd`,
+`figure_tables.qmd`, and `temporal_fit.qmd`, which inherited the Ch. 9 slot when
+`temporal_hazard.qmd` was split four ways. The temporal one works because
+`TemporalHazard`'s `cabgkul` is subject-level, 5,880 rows of `int_dead` and
+`dead`, the same records `hzr_kaplan()` reads.
+
+**Note the package boundary.** `hv_atrisk()`, `hv_hazard()` and `hv_nnt()` are all
+`hvtiPlotR`. `TemporalHazard` supplies only the cohort and the estimators, so any
+fix for the two blocked chapters belongs to `hvtiPlotR`.
 
 `hazard.qmd` and `nnt.qmd` cannot have it as they stand, and the reason is a data
 model rather than an oversight. A numbers-at-risk panel needs subject-level
