@@ -69,7 +69,7 @@ jobs:
             "ehrlinger/hvtiPlotR",
             "ehrlinger/hvtiRutilities",
             "ehrlinger/hvtiRtables",
-            "ehrlinger/temporal_hazard",
+            "ehrlinger/TemporalHazard",
             "ehrlinger/ggRandomForests",
             "ehrlinger/ggsankey"
           ))
