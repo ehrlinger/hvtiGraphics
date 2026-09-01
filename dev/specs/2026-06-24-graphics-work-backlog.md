@@ -113,6 +113,36 @@ balance / follow-up), but it's listed as a plain chapter and gets numbered (17).
 Restructure `_quarto.yml`: make it a `part:` page over consort/sankey/balance/
 combination so it stops being a numbered chapter. (Renumbers later chapters.)
 
+### Correction, 2026-09-01: #6 is now closed for three of four, and hazard is done
+
+The 2026-08-29 resolution below called `hazard.qmd` permanently blocked. That was
+right on the evidence then and is wrong now. **`sample_hazard_cohort()` shipped in
+hvtiPlotR v2.7.11** and returns the subject-level records
+`sample_hazard_empirical()` computes its overlay from, which is exactly the
+missing piece.
+
+**Verified before use, because the whole objection was correspondence.** Refitting
+a Kaplan-Meier to `sample_hazard_cohort(n = 500, time_max = 10)` reproduces
+`sample_hazard_empirical(n = 500, time_max = 10, n_bins = 6)` at every one of its
+six points to a difference of **0**. So the counts genuinely belong to the figure.
+The same cohort sits up to **2.31 percentage points** from the smooth parametric
+grid, which is the ordinary and correct relationship: a risk table counts
+patients, the smooth curve is the model. `hazard.qmd` now carries the composite
+and says this in its prose.
+
+**`nnt.qmd` stays blocked, for a narrower reason than before.** A grouped cohort
+can be drawn, but nothing in that figure comes from it: `sample_nnt_data()` plots
+a parametric ARR/NNT curve with no empirical overlay, and a cohort drawn from the
+same model does not reproduce it (at t = 20, cohort ARR 6.15pp against the
+curve's 5.75). Counts under that curve would describe a cohort that did not
+generate it, which is the thing this backlog entry refused to do in the first
+place. It needs either an empirical overlay for the NNT curve or an
+`hv_atrisk()` that accepts a grid plus a denominator.
+
+**Standing: 3 of 4.** `survival.qmd`, `figure_tables.qmd`, `temporal_fit.qmd`, and
+now `hazard.qmd`, which makes four sites across three of the four chapters #6
+named plus the one that inherited Ch. 9's slot.
+
 ### Resolution of #6, 2026-08-29
 
 **Done where the data allows; blocked in `hvtiPlotR` where it does not.** Three of
