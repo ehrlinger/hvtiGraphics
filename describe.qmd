@@ -1,0 +1,25 @@
+# Describe the cohort {.unnumbered}
+
+Before we model an outcome, who is in the cohort and how do the measurements
+relate to one another? Start with the dataset and its Table 1, then choose the
+display that lets a clinical reader see the distribution, comparison, trajectory,
+or study flow that matters.
+
+## Choose the next recipe
+
+| Your question | Recipe | Why this one |
+|---|---|---|
+| Who is in this dataset and what values need attention? | [Describing a dataset](data_tables.qmd) | Takes inventory before a figure or model hides the detail. |
+| How do I make a publication table from a data summary? | [Publication tables](qt_tables.qmd) | Formats a summary for a report or manuscript. |
+| How do I prepare the manuscript's Table 1? | [Manuscript tables](hv_tables.qmd) | Builds the descriptive table readers expect. |
+| What does the distribution of one continuous measure look like? | [Histogram plots](histograms.qmd) | Shows counts across meaningful bins. |
+| Is the distribution smooth, skewed, or multimodal? | [Density plots](density.qmd) | Shows the shape without committing to bins. |
+| How do groups compare on a continuous measure? | [Box plots](boxplots.qmd) | Shows center, spread, and outlying values by group. |
+| How many observations fall in each category? | [Bar chart plots](bar.qmd) | Makes categorical counts or proportions easy to compare. |
+| Do two continuous measures move together? | [Scatter plots](scatter.qmd) | Shows the relationship one observation at a time. |
+| How does each patient change across repeated measurements? | [Spaghetti plots](spaghetti.qmd) | Preserves the within-patient trajectory. |
+| How do several outcomes fit into a compact small-multiple display? | [Postage stamp plots](postagestamp.qmd) | Repeats one clear view across outcomes or groups. |
+| How did patients move through the study? | [CONSORT patient-flow diagrams](consort.qmd) | Documents cohort assembly and exclusions. |
+| Which sets of patients overlap? | [Venn diagrams and UpSet plots](upset.qmd) | Shows intersections more clearly than a long list of counts. |
+| How does a cohort move between categories? | [Alluvial and Sankey plots](sankey.qmd) | Traces flows from one state to the next. |
+| Did treatment groups balance before and after adjustment? | [Covariate balance and follow-up](balance.qmd) | Checks the comparability needed before outcome interpretation. |

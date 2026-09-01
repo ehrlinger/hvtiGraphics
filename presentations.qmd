@@ -11,7 +11,7 @@ library(ggplot2)
 A slide is read from across a room and sits on a coloured background, not white
 paper. Two things change from a manuscript figure. The type scales up the way a
 poster's does, so it carries to the back of the room; and the theme has to match
-the deck — dark for a projected slide, light or transparent for a printed
+the deck: dark for a projected slide, light or transparent for a printed
 handout or a light template. hvtiPlotR ships a pair of PowerPoint themes for
 exactly this, plus `save_ppt()`, which drops the finished plot onto a slide as an
 *editable* vector graphic rather than a flat image.
@@ -21,7 +21,7 @@ exactly this, plus `save_ppt()`, which drops the finished plot onto a slide as a
 `theme_hv_ppt_dark()` styles a plot for a projected deck: white ink, no
 gridlines, and a large base size so the figure reads from the back of the room.
 It deliberately leaves the figure background *transparent* so the slide's own
-background shows through — which is what you want on a real deck, but it makes the
+background shows through, which is what you want on a real deck, but it makes the
 white axis text vanish on this white page. For the preview below we add a dark
 `plot.background` to stand in for the slide; on the actual deck, drop that line
 and let `save_ppt()` place the transparent figure on the slide.
@@ -41,7 +41,7 @@ background, for a printed handout or a light template.
 p + theme_hv_ppt_light(base_size = 18)
 ```
 
-Both themes default to a 32 pt Arial base — sized for a slide projected across a
+Both themes default to a 32 pt Arial base, sized for a slide projected across a
 room. We drop `base_size` to 18 here so the figure previews legibly on the page;
 leave it at the default for the real deck, and raise it further for a large hall.
 
@@ -118,7 +118,7 @@ cross, the plotted summary points are what tells them apart.
 
 ### Naming the series
 
-A CORR figure carries no legend, on a slide or on a journal page.
+A finished CORR figure carries no legend, on a slide or on a journal page.
 `theme_hv_ppt_dark()` and `theme_hv_ppt_light()` both set
 `legend.position = "none"`, and `hv_ppt_series()` deliberately leaves that
 alone. You name the groups on the panel instead, in the theme's own ink.
@@ -153,5 +153,5 @@ save_ppt(
 The chunk is `eval: false` because it writes a binary `.pptx`. The code is shown,
 not executed during the book build. Pair the dark theme with a dark `template`
 and the light theme with a light one, and keep `theme_hv_ppt_dark()` at its 32 pt
-default here — the template is laid out for that size. Pass `panel_box` to move or
+default here, since the template is laid out for that size. Pass `panel_box` to move or
 resize the plot rectangle, and `slide_titles` to set the slide heading.

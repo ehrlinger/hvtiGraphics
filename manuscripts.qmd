@@ -19,7 +19,7 @@ figure set.
 
 ## A manuscript-styled plot
 
-`theme_hv_manuscript()` uses a 12 pt base on a white background — sized for the
+`theme_hv_manuscript()` uses a 12 pt base on a white background, sized for the
 final printed page rather than the screen.
 
 ```{r}
@@ -32,7 +32,7 @@ p_ms
 ## Manuscript PDF
 
 For most figures the quickest path is `save_manuscript()`, which writes a
-finished plot at the house manuscript size — 6 × 4 inches — in one call.
+finished plot at the house manuscript size, 6 × 4 inches, in one call.
 
 ```{r}
 #| label: save-manuscript-default
@@ -42,21 +42,21 @@ save_manuscript(p_ms, "trends_manuscript.pdf")
 
 It is the manuscript counterpart of `save_ppt()`: it fixes the output geometry,
 not the theme, so the 12 pt type comes from the `theme_hv_manuscript()` you have
-already applied. Override the size when a journal asks for it — for a single
-column, say `save_manuscript(p_ms, "fig.pdf", width = 3.5, height = 3)` — and
-pass `device = cairo_pdf` to embed fonts where your system has cairo. The chunks
+already applied. Override the size when a journal asks for it, for a single
+column, say `save_manuscript(p_ms, "fig.pdf", width = 3.5, height = 3)`, and
+pass a `device` when you need font embedding, with the caveat below. The chunks
 in this section are `eval: false` because each writes a binary file.
 
 ### Holding the panel constant across a figure set
 
 `save_manuscript()`, like `ggsave()`, fixes the *file* dimensions but lets the
 panel float inside them. When you need the panel content area identical across
-several figures — so the data regions line up regardless of how much room each
-plot's axis labels take — `hv_ggsave_dims()` inverts the problem: you specify the
+several figures, so the data regions line up regardless of how much room each
+plot's axis labels take, `hv_ggsave_dims()` inverts the problem: you specify the
 panel content area you want (the rectangular bounding box of the gtable cells
 tagged `panel`) and it returns the `width`/`height`/`units` such that `ggsave()`
 yields exactly that panel size, expanding the file to absorb axes, titles, and
-legend (the "chrome"). The result is a named list shaped to splat directly into
+any remaining chrome. The result is a named list shaped to splat directly into
 `ggsave()` via `do.call()`.
 
 ```{r}
@@ -67,16 +67,26 @@ dims <- hv_ggsave_dims(p_ms, width = 6.5, height = 4.0, units = "in")
 do.call(
   ggsave,
   c(
-    list(filename = "trends_manuscript.pdf", plot = p_ms, device = cairo_pdf),
+    list(filename = "trends_manuscript.pdf", plot = p_ms,
+         device = grDevices::quartz, type = "pdf"),
     dims
   )
 )
 ```
 
-`cairo_pdf` is the device of choice here: it embeds fonts and renders
-transparency and custom typefaces correctly, where the base `pdf` device can
-substitute fonts. The chunk is `eval: false` because it writes a binary file.
-The code is shown, not run during the book build.
+The device matters, and the usual recommendation has a failure mode worth
+knowing. `cairo_pdf` embeds fonts and renders transparency and custom typefaces
+correctly, where the base `pdf` device substitutes them. But on a Mac without
+XQuartz it warns "failed to load cairo DLL", returns **without error**, and writes
+no file. Measured on this machine: `ggsave()` reported success and the target PDF
+did not exist. A silent no-op is worse than a failure you can see, so check that
+the file appeared before assuming a cairo export worked.
+
+The quartz device above is the macOS answer: part of the operating system,
+nothing to install, fonts embedded, full Unicode range. It is what this book's own
+PDF build uses, for the same reason. On Linux, `cairo_pdf` with a working cairo is
+the right call. The chunk is `eval: false` because it writes a binary file; the
+code is shown, not run during the book build.
 
 For multi-panel figure sets where the data region must be identical across
 several PDFs regardless of label length, call `hv_ggsave_dims()` with the same

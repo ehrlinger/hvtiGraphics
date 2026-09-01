@@ -1,22 +1,18 @@
-# Time-to-event figures {.unnumbered}
+# Analyze time-to-event outcomes {.unnumbered}
 
-The catalog opens here because this is most of what we publish. Cardiac-surgery
-outcomes are almost always time-to-event questions -- freedom from reoperation,
-survival after a valve repair, the cumulative risk of a complication over years
-of follow-up -- so the survival family earns the front of the book.
+After cardiac surgery, when did the event happen and what changed along the
+way? These recipes begin with the observed follow-up and then move from familiar
+survival displays to an additive hazard model when the shape of risk needs more
+than a Cox model.
 
-Each chapter takes one view of the same kind of data, a follow-up time and an
-event indicator, and answers a different question with it. The Kaplan-Meier
-curve, with its numbers-at-risk table, is the workhorse for showing how a group
-survives over time. Hazard curves read the same data as an instantaneous rate
-rather than a running total, and the temporal-hazard plot shows how that rate
-rises or falls across the follow-up window. The number-needed-to-treat chapter
-closes the part by turning an effect size into the single count a clinician acts
-on. Every recipe builds its own sample cohort, so you can run it before pointing
-it at your own data.
+## Choose the next recipe
 
-When a Cox model is too rigid for your data -- when a predictor's effect bends,
-or depends on the patient it acted on -- a survival random forest can find that
-structure without you specifying it up front. The
-[*Random forests & model visualization*](randomforests.qmd) part, later in the
-book, fits one and reads the same time-to-event question off it.
+| Your question | Recipe | Why this one |
+|---|---|---|
+| How does freedom from an event change over follow-up? | [Survival plots](survival.qmd) | Draws the Kaplan-Meier view with the information readers expect. |
+| When is risk highest or lowest? | [Hazard and nonparametric curves](hazard.qmd) | Shows instantaneous risk rather than cumulative survival. |
+| How large is the clinical difference between two survival curves? | [Number needed to treat and survival difference](nnt.qmd) | Turns a survival contrast into a count a clinician can use. |
+| Which phases belong in an additive hazard model? | [Fit additive hazard models](temporal_fit.qmd) | Starts with the empirical curve before selecting early, constant, or late phases. |
+| What does the fitted model predict for this patient profile? | [Predict from a hazard model](temporal_prediction.qmd) | Produces survival, cumulative-hazard, instantaneous-hazard, and phase-specific curves. |
+| Does the hazard model agree with the observed data? | [Check a hazard model](temporal_diagnostics.qmd) | Compares fit, calibration, selection uncertainty, and competing outcomes. |
+| How do I move a `PROC HAZARD` analysis into maintained R code? | [Move a legacy HAZARD analysis into R](temporal_migration.qmd) | Carries the model structure into an R workflow that we can keep. |

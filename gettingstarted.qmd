@@ -1,7 +1,14 @@
-# Getting started {.unnumbered}
+# Start a reproducible analysis {.unnumbered}
 
-Before the figures, a little groundwork. This part covers the packages we reach
-for and the small set of conventions that keep the recipes consistent: how we
-load and document the data, and the two-step pattern every plot in the book
-follows. None of it is long, and you can skip ahead to a figure and refer back
-when something is unfamiliar.
+You have a new CORR analysis. Which packages and conventions let the next
+biostatistician run the same script? Start here to install the maintained R
+family, work in the book's two-step plotting pattern, and keep example data in
+the safe, reproducible form these recipes require.
+
+## Choose the next recipe
+
+| Your question | Recipe | Why this one |
+|---|---|---|
+| Which packages make up the HVTI R family? | [Packages](packages.qmd) | Install and update the maintained packages from one place. |
+| How do we use R in place of the familiar SAS figure workflow? | [Using R for figures](usingR.qmd) | Establishes the R-first workflow and its conventions. |
+| What data can go in a reproducible example or figure recipe? | [Data governance and reproducibility](data_governance.qmd) | Keeps the analysis synthetic or public and records its provenance. |

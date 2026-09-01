@@ -17,14 +17,33 @@ That last part is what makes survival analysis its own method: a patient who is
 alive at last contact is **right-censored**, not a non-event, and the
 product-limit estimator is what lets those partial observations still count.
 
+Before you choose a panel, name the question. These displays share a time axis,
+but they do not answer the same thing:
+
+- **Survival probability, $S(t)$:** What proportion remains alive and event-free
+  beyond time $t$?
+- **Cumulative hazard, $H(t)$:** How much event intensity has accumulated through
+  time $t$? This is dimensionless and is not a probability.
+- **Hazard rate, $h(t)$:** Among patients still at risk at time $t$, how quickly
+  are events occurring? Its units are events per unit of person-time.
+- **Absolute survival difference, $S_2(t)-S_1(t)$:** How many percentage points
+  separate two groups at a named time? We build that contrast in the
+  [NNT and survival-difference chapter](nnt.qmd).
+- **Number needed to treat, $NNT(t)$:** How many patients must receive group 2
+  rather than group 1 to prevent one event by time $t$? The direction and time
+  horizon belong beside the number.
+- **At-risk denominator, $n(t)$:** How many observed, event-free patients support
+  the estimate immediately before time $t$? It tells you how much information
+  remains; it is not another outcome curve.
+
 `hv_survival()` [@R-hvtiPlotR], built on the survival package [@R-survival],
 estimates the product-limit survival function once and stores everything five
 related panels need (the survival curve, cumulative hazard, hazard rate,
 log-log check, and integrated survivorship), plus tidy summary tables in
-`$tables`. If you have used the SAS `%kaplan` macro, these are the same five
-plots it draws. You build the S3 object once and call `plot()` with a `type`
-argument to pull out the panel you want; each one comes back as a bare ggplot
-you finish with the usual `+`.
+`$tables`. If the old program used `%kaplan`, `hv_survival()` is the maintained
+R workflow. Build the S3 object once, inspect its data and tables, then call
+`plot()` with a `type` argument to pull out the panel you want. Each panel comes
+back as a bare ggplot you finish with the usual `+`.
 
 ## The data it needs
 
@@ -41,7 +60,9 @@ dta_km <- sample_survival_data(n = 500, seed = 42)
 head(dta_km)
 
 # Build the S3 object once; reuse it across every panel below.
-km <- hv_survival(dta_km)
+km <- hv_survival(dta_km, report_times = seq(0, 20, 5))
+km$meta
+km$tables$risk
 ```
 
 ## Build it
@@ -82,6 +103,10 @@ plot(km, alpha = 0.8) +
 A Kaplan-Meier curve starts at 100% and steps downward at each event time; it
 never rises. A few things to look at:
 
+- **Censoring changes the denominator, not the curve height.** A censor time
+  removes that patient from later risk sets without creating a downward step.
+  This simulated cohort has administrative censoring at 20 years, so the final
+  at-risk count is the group still event-free when observation ends.
 - **The ribbon widens to the right.** As the at-risk population thins, each
   remaining event moves the estimate more, so the confidence band fans out. Be
   cautious reading the far-right tail, which may rest on a handful of patients.
@@ -122,12 +147,13 @@ curve <- plot(km, alpha = 0.8) +
   labs(x = "Years after Operation", y = "Freedom from Death (%)") +
   theme_hv_manuscript()
 
-hv_atrisk_compose(curve, hv_atrisk(km))
+risk_panel <- hv_atrisk(km)
+hv_atrisk_compose(curve, risk_panel)
 ```
 
 The counts under the axis are the same `km$tables$risk` numbers from above, now
-positioned at the curve's own time ticks. A stratified figure gives the table
-one row per group, labelled to match the curves.
+positioned at the curve's 0-, 5-, 10-, 15-, and 20-year ticks. A stratified
+figure gives the table one row per group, labelled to match the curves.
 
 ## Variations
 
@@ -164,18 +190,21 @@ plot(km_s, alpha = 0.8) +
   coord_cartesian(xlim = c(0, 20), ylim = c(0, 100)) +
   labs(x = "Years after Operation", y = "Freedom from Death (%)",
        title = "Survival by Valve Type") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
 ```
 
 ### Cumulative hazard
 
-`type = "cumhaz"` gives the Nelson-Aalen cumulative hazard
-`H(t) = -log S(t)`, a monotonically non-decreasing curve whose slope at any
-point is the instantaneous hazard rate. Same object, different `type`.
+`type = "cumhaz"` gives the Nelson-Aalen cumulative hazard, a monotonically
+non-decreasing estimate of accumulated event intensity. Under the usual
+survival relationship, $H(t) = -\log S(t)$; it is not $1-S(t)$ and it is not a
+percentage. The local slope is the instantaneous hazard rate. Same object,
+different `type`.
 
 ```{r}
 #| label: fig-survival-cumhaz
-#| fig-cap: "Nelson-Aalen cumulative hazard, the monotonically non-decreasing complement of the survival curve"
+#| fig-cap: "Nelson-Aalen cumulative hazard, a dimensionless measure of event intensity accumulated through each follow-up time"
 plot(km, type = "cumhaz") +
   scale_x_continuous(breaks = seq(0, 20, 5)) +
   labs(x = "Years after Operation", y = "Cumulative Hazard H(t)",
@@ -186,19 +215,25 @@ plot(km, type = "cumhaz") +
 
 ### Hazard rate
 
-`type = "hazard"` is the instantaneous hazard. The raw point estimates are
-noisy, so for a figure overlay a LOESS smooth. The smoothed curve shows the
-early-risk peak and later plateau a reviewer is looking for.
+`type = "hazard"` is the instantaneous event rate among patients still at risk.
+Because follow-up is measured in years, its units are events per patient-year.
+The raw point estimates are noisy, so for a figure overlay a LOESS smooth. The
+smoothed curve answers *when* events occur fastest; it does not report the
+probability of an event at that time. Very short event intervals can produce a
+few large point estimates, so the displayed y-range stops at 1.5 events per
+patient-year to keep the smooth and most points readable.
 
 ```{r}
 #| label: fig-survival-hazard
-#| fig-cap: "Instantaneous hazard rate with a LOESS smooth showing the early-risk peak and later plateau"
+#| fig-cap: "Instantaneous event rate per patient-year with a LOESS smooth; the y-axis stops at 1.5 so a few unstable interval spikes fall outside the displayed range"
 plot(km, type = "hazard") +
   geom_smooth(aes(x = mid_time, y = hazard, color = strata),
               method = "loess", se = FALSE, span = 0.6) +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
   scale_x_continuous(breaks = seq(0, 20, 5)) +
-  labs(x = "Years after Operation", y = "Instantaneous Hazard",
+  scale_y_continuous(breaks = seq(0, 1.5, 0.5)) +
+  coord_cartesian(xlim = c(0, 20), ylim = c(0, 1.5)) +
+  labs(x = "Years after Operation", y = "Hazard rate (events/patient-year)",
        title = "Hazard Rate") +
   theme_hv_manuscript()
 ```
@@ -252,4 +287,4 @@ plot(km, type = "life") +
   patients; the widening ribbon is the warning. Quote a landmark estimate (with
   its at-risk count) rather than the visual endpoint.
 - **Non-proportional hazards.** If the log-log curves cross, a single hazard
-  ratio is the wrong summary -- report RMST from the integrated panel instead.
+  ratio is the wrong summary. Report RMST from the integrated panel instead.

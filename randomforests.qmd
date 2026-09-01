@@ -1,56 +1,19 @@
-# Random forests & model visualization {.unnumbered}
+# Explain predictive models {.unnumbered}
 
-A Kaplan-Meier curve answers one question at a time, and a Cox model asks you to
-commit up front to which covariates enter, in what functional form, and which
-ones interact (both live in the [time-to-event part](timetoevent.qmd)). Outcomes
-data after cardiac surgery rarely behave that cleanly. The effect of age on
-reoperation risk is not a straight line; the effect of an implant type depends on
-the patient it went into; some predictors are continuous (gradient, ejection
-fraction) and some are categorical (valve position, urgency), and the
-interactions among them are exactly the part you did not anticipate.
+You have a forest fit, but what does it say about a clinical prediction? Start
+with whether it converged, then choose the slice that answers what it predicts,
+which variables matter, and where a predictor changes the response.
 
-Reach for a random forest when you want a model to find that structure for you. A
-forest grows many decision trees on bootstrap resamples of the cohort and
-averages their predictions. Because each tree splits the data on whatever
-variable helps most at each node, the ensemble picks up nonlinear effects and
-interactions without you specifying them, and it handles continuous and
-categorical predictors side by side. Every observation is left out of roughly a
-third of the trees, so the forest can predict each patient using only the trees
-that never saw them -- an OOB (out-of-bag) estimate that behaves like
-cross-validation and costs nothing extra to compute.
+## Choose the next recipe
 
-This whole part treats a forest analysis as two steps, always in the same order.
-First, **fit** a forest with `randomForestSRC::rfsrc()` [@R-randomForestSRC]: it
-grows the trees, computes the OOB predictions, and (optionally) variable
-importance. Second, **visualize** the fitted object with a `ggRandomForests`
-[@R-ggRandomForests] `gg_*()` function. Each one extracts a tidy slice of the
-forest -- error rates, predicted survival, variable importance, partial
-dependence. Most of them return a lightweight object with `plot()` and
-`autoplot()` methods that produce `ggplot` graphics. `gg_shap()` is the one that
-works differently: it hands back the attributions as a plain data frame, and
-three named renderers draw them. Either way what you end up holding is a standard
-`ggplot`, so the house style applies exactly as everywhere else in the book: add
-`+ theme_hv_manuscript()`.
-
-Most of the chapters that follow take one fitted forest and read a different
-slice of it, changing only the function they call. SHAP attribution is the
-exception, and it is worth knowing before you get there: `gg_shap()` works on
-regression and classification forests, not survival ones, so that chapter fits
-its own forest on different data and says why where it does.
-
-| Chapter | Function | Shows |
+| Your question | Recipe | Why this one |
 |---|---|---|
-| Error convergence | `gg_error()` | OOB error vs. number of trees |
-| Predicted survival | `gg_rfsrc()`, `gg_survival()` | per-observation and grouped survival |
-| Variable importance | `gg_vimp()` | VIMP ranking of predictors |
-| SHAP attribution | `gg_shap()` | per-observation, per-variable attribution |
-| Variable dependence | `gg_variable()`, `gg_partial_rfsrc()` | marginal and partial effects |
-| ROC / Brier | `gg_roc()`, `gg_brier()` | classification performance |
-| varPro | varPro constructors | rule-based variable selection |
-
-The forest does not have to be a survival forest. Give `rfsrc()` a numeric
-outcome and you get a regression forest; give it a factor and you get a
-classification forest. The `gg_*()` constructors adapt to the family of the fit,
-so the same pattern works whether the error is `1 - C-index`, mean-squared error,
-or misclassification rate. The first chapter fits a forest end to end and checks
-that it converged before reading anything downstream.
+| Did the forest settle as more trees were grown? | [Random forest error convergence](rf_error.qmd) | Reads the out-of-bag error curve before interpreting the fit. |
+| What does the forest predict for a patient or group? | [Predicted response and survival](rf_predicted.qmd) | Shows fitted responses and survival estimates. |
+| Which predictors contribute most to the fit? | [Variable importance](rf_vimp.qmd) | Ranks variables by their contribution to prediction. |
+| How did a variable contribute to an individual prediction? | [SHAP attribution](rf_shap.qmd) | Shows per-observation, per-variable attributions. |
+| How does the predicted response change over a predictor? | [Variable and partial dependence](rf_dependence.qmd) | Draws marginal and partial effects. |
+| How well does a classification forest discriminate and calibrate? | [ROC and Brier performance](rf_roc.qmd) | Gives ROC and Brier views of classification performance. |
+| Which variables survive rule-based selection? | [Variable priority with varPro](varpro.qmd) | Shows the variable-priority workflow. |
+| What does a selected variable do across its range? | [varPro partial dependence](varpro_partial.qmd) | Reads the partial effect after selection. |
+| How do I inspect a forest with time-varying covariates? | [Random Hazard Forests](rf_rhf.qmd) | Uses start-stop data when predictors and risk change with time. |

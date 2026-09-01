@@ -9,7 +9,7 @@ library(ggplot2)
 ```
 
 ggplot2 [@R-ggplot2] places the legend outside the panel by default. For publication figures
-we often move it inside, drop it, or shrink it — the axis labels frequently do
+we often move it inside, drop it, or shrink it, since the axis labels frequently do
 the identification work already. Legend behaviour is controlled through
 `theme()` (or directly via a theme's `...`), and per-aesthetic via `guide =`.
 
@@ -64,7 +64,7 @@ p_base +
 ## Automatic placement
 
 Choosing the corner by hand means re-checking it every time the data, axis
-range, or cohort change -- the first pitfall below. `hv_legend_inside()` does the
+range, or cohort change, which is the first pitfall below. `hv_legend_inside()` does the
 choosing for you: it inspects the built plot, finds the panel corner the data
 leave emptiest, and anchors the legend there, falling back to an outside legend
 when no corner is clear. Apply it last, after the theme (which sets
@@ -88,7 +88,7 @@ hv_legend_inside(p_auto)
 
 Because it reads the rendered data, the same call keeps the legend off the data
 after you change the cohort or axis range. On a dense panel where every corner is
-occupied -- stratified survival or hazard curves -- it returns an outside legend
+occupied, as with stratified survival or hazard curves, it returns an outside legend
 instead of forcing the key over the data. Add a background box with
 `+ theme(legend.background = element_rect(...))` when the chosen corner is not
 fully empty.
@@ -172,8 +172,8 @@ p_base +
   not a mental image of it, and prefer a corner the data genuinely avoid (the
   lower-left of a survival curve, the upper-left of a rising trend). When no
   corner is safe, move the legend to the bottom rather than forcing it over the
-  data. `hv_legend_inside()` (above) automates exactly this check -- emptiest
-  corner, or an outside fallback when none is clear -- so it does not have to be
+  data. `hv_legend_inside()` (above) automates exactly this check, taking the
+  emptiest corner or an outside fallback when none is clear, so it does not have to be
   redone by hand each time the data change.
 - **Redundant legends.** A legend that repeats what the panel already says is
   clutter. If an annotation labels each line, or the axis names the single

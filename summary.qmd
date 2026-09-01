@@ -7,16 +7,54 @@ going. The figure's content is decided once and its appearance as many times as
 you have audiences, and because every recipe makes its own data, you can always
 go back to a working example and adapt it.
 
+## The next analysis
+
+The chapters are organized around the questions rather than the functions, so
+the same six steps carry from one analysis to the next.
+
+**Frame the question.** Decide what the figure or table has to answer before
+choosing anything that draws it. Describing a cohort, comparing time to an event,
+and explaining a model are different jobs, and the parts of this book are split
+along exactly that line.
+
+**Choose the recipe.** Each part opens with a table matching a question to a
+chapter. When you know the function name but not the chapter, the
+[function map](function_map.qmd) goes the other way.
+
+**Inspect the object.** Every constructor returns data before it returns a
+picture. Print it, look at the columns, check the counts against what you expect
+from the cohort. A figure drawn from a frame you never read is a figure you
+cannot defend in review.
+
+**Read the result.** Say what the figure shows in the units it is drawn in, and
+be careful about which claim the estimate supports. Description, prediction,
+association and causation are not interchangeable, and most of the pitfalls
+collected in these chapters are one of those four being read as another.
+
+**Deliver it.** Match the theme to the destination and fix the geometry to the
+space you were given: `theme_hv_manuscript()` and `save_manuscript()` for a
+journal, `theme_hv_poster()` and `hv_ggsave_dims()` for a poster panel,
+`hv_ppt_series()` and `save_ppt()` for a deck. A CORR figure names its groups on
+the panel rather than in a margin key.
+
+**Record what produced it.** The build stamps the family versions it ran against
+into `sibling-versions.json`, and @sec-provenance shows how. Do the same in your
+own project. A figure whose provenance is a memory is a figure you cannot rebuild
+when a reviewer asks for one change eighteen months later.
+
+## Tables, and what is not here yet
+
 Tables split along the same line as everything else: `gt` for anything headed
 into this book or another HTML document, and `hvtiRtables` for the manuscript
 Word tables, turning a `gtsummary` summary into CORR's flat-header format (or
 JTCVS's merged one).
 
-A version note: the random-forest chapters run on the `ggRandomForests` 3.x API
-(varPro priority, partial dependence, ROC), a line that is still moving — pin the
-package version when you reproduce them.
+Manuscript scaffolding beyond the figure and the table, the project skeleton a
+paper is written into, lives in `hvtiRtemplates`. That is companion material for
+a future book rather than this one, and it is named here only so you know it is
+not a gap you missed.
 
 Treat the book as living. When you build a figure for a paper that is not here,
 or find a cleaner way to draw one that is, add it. The point of collecting these
-recipes was never to finish the list -- it was to make the next figure easier
-than the last.
+recipes was never to finish the list, it was to make the next figure easier than
+the last.

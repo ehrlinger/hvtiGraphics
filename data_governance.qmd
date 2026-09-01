@@ -30,6 +30,8 @@ None of this requires touching protected health information. Everything below
 runs on synthetic data, and the same helpers run unchanged against your real
 extract once the pipeline is wired up. Think of it as the paperwork that makes
 the science reproducible, kept light enough that you will actually do it.
+Real patient extracts never belong in this recipe repository or its freeze
+cache.
 
 ## The data it needs
 

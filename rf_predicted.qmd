@@ -1,9 +1,10 @@
-# Predicted response and survival
+# What does the forest predict?
 
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 7, fig.height = 4.5, dpi = 150)
 library(randomForestSRC)
 library(ggRandomForests)
 library(ggplot2)
@@ -12,131 +13,172 @@ library(hvtiPlotR)
 
 ## When to use it
 
-Once the error curve says the forest has converged, the next question is what the
-forest actually predicts. For a survival forest the answer is unusual: the
-prediction is not a single number but an entire **survival curve** for each
-observation. The model gives every patient their own estimated probability of
-being event-free over time, conditioned on all of their covariates at once.
+After the tree-count diagnostic is stable, we can ask what the forest predicts.
+For a survival forest the response is not one number. Each patient receives a
+survival function, the predicted probability of remaining event-free beyond
+each follow-up time.
 
-Reach for `gg_rfsrc()` when you want to see those predicted curves. It is the
-view to use when the question is about heterogeneity (how much do predicted
-risks vary across the cohort?) or about a group contrast that comes from the full
-multivariable model rather than a single univariate split. Two displays cover
-most needs: the per-observation curves, which show the spread of predicted risk
-across patients, and a population summary that averages those curves within
-levels of a grouping variable. We finish the chapter with a related tool,
-`gg_survival()`, for the raw empirical survival you compare the model against.
+Use `gg_rfsrc()` for model predictions and `gg_survival()` for the empirical
+Kaplan-Meier estimate. They answer related but different questions. One shows
+what the fitted forest predicts from all included covariates; the other
+summarizes the observed time-to-event experience without that model.
 
-## The data it needs
+## Fit a survival forest
 
-`gg_rfsrc()` reads a fitted `rfsrc` survival object, so the input is the same
-formula and data frame you used for the error chapter: a `Surv(time, status)`
-outcome (follow-up time plus a `1`/`0` event indicator) and the predictors on the
-right-hand side. Nothing about this view needs `block.size = 1`; that argument
-only matters for the error curve, so we drop it here.
+The public `veteran` trial data contain follow-up time, death status, treatment
+arm, and baseline predictors. We use 300 trees to keep the recipe bounded. A
+production fit still needs its own tree-count stability check.
 
 ```{r}
 #| label: rf-fit
 data(veteran, package = "randomForestSRC")
-rf <- rfsrc(Surv(time, status) ~ ., data = veteran, ntree = 100)
+veteran$trt <- factor(
+  veteran$trt,
+  levels = c(1, 2),
+  labels = c("Standard", "Test")
+)
+
+set.seed(20260828)
+rf <- rfsrc(
+  Surv(time, status) ~ .,
+  data = veteran,
+  ntree = 300
+)
 rf
 ```
 
-For the grouped and empirical views later in the chapter we switch to the `pbc`
-primary biliary cirrhosis trial, which carries a randomized `treatment` variable
-to stratify on.
+## Inspect OOB predicted survival
 
-## Build it
+`oob = TRUE` is the constructor default for a training forest. Each patient's
+curve is built from trees that did not use that patient to grow the tree.
 
-`gg_rfsrc(object)` returns one OOB (out-of-bag) predicted survival curve per
-subject. Plotting them together gives the bare view: every patient's predicted
-survival probability over time, drawn on one set of axes.
+```{r}
+#| label: rf-predicted-object
+pred_oob <- gg_rfsrc(rf, oob = TRUE)
+pred_oob
+head(as.data.frame(pred_oob), 4)
+
+pred_check <- c(
+  minimum = min(pred_oob$value),
+  maximum = max(pred_oob$value),
+  monotone_subjects = sum(vapply(
+    split(pred_oob$value, pred_oob$obs_id),
+    function(z) all(diff(z) <= sqrt(.Machine$double.eps)),
+    logical(1)
+  )),
+  subjects = length(unique(pred_oob$obs_id))
+)
+pred_check
+```
+
+The inspected object is long: `obs_id` identifies the patient, `variable` is
+the event-time grid, and `value` is predicted survival. Values stay between 0
+and 1, and every subject's curve is non-increasing.
 
 ```{r}
 #| label: fig-rf_predicted
-#| fig-cap: "Out-of-bag predicted survival curves, one per patient, showing the spread of predicted risk across the cohort"
-plot(gg_rfsrc(rf)) + theme_hv_manuscript()
+#| fig-cap: "OOB predicted survival curves for the veteran cohort, one curve per patient"
+plot(pred_oob, alpha = 0.18) +
+  theme_hv_manuscript() +
+  labs(x = "Follow-up time (days)", y = "Predicted survival probability") +
+  coord_cartesian(ylim = c(0, 1))
 ```
 
-That fan of curves is the forest's picture of the cohort. The pattern is the same
-two lines as everywhere else in this part of the book: a `gg_*()` constructor on
-the fitted forest, wrapped in `plot()` and themed.
+Read the fan as predicted heterogeneity. Curves that fall earlier correspond to
+higher predicted risk. They are not observed patient trajectories, and the
+separation does not identify which covariate caused an outcome.
 
-## Read it
+## OOB versus in-sample predictions
 
-A panel of predicted curves rewards reading the spread, not any single line.
+Setting `oob = FALSE` uses the full forest, including trees that may have seen
+the patient during training. The two objects share the same scale, but the
+full-forest values are in-sample descriptions and can look more decisive.
 
-- **The width of the fan** is the model's sense of how much patients differ.
-  Low-risk subjects stay high; high-risk subjects drop early. A tight bundle of
-  curves says the covariates do not separate patients much; a wide fan says they
-  do.
-- **The overall level** is the cohort's typical survival. Read it the way you
-  would a Kaplan-Meier curve, as a probability that starts near 1 and steps down.
-- **The far-right tail** rests on the patients still at risk late in follow-up,
-  which are usually few. Treat the spread there with the same caution you give the
-  tail of any survival estimate.
+```{r}
+#| label: rf-predicted-oob-check
+pred_in <- gg_rfsrc(rf, oob = FALSE)
+pred_in
 
-Because these are OOB predictions, each curve was produced by trees that never saw
-that patient, so the fan is an honest picture rather than a re-description of the
-training data.
+data.frame(
+  comparison = "Mean absolute difference",
+  survival_probability = mean(abs(pred_oob$value - pred_in$value))
+)
+```
 
-## Variations
+Use OOB predictions for an internal performance view. Use predictions from a
+separate validation cohort when the question is transportability.
 
-### Predicted survival by group
+## Predicted and empirical survival by treatment arm
 
-To compare groups, pass `by =` to `gg_rfsrc()`. It averages the predicted curves
-within each level of the grouping variable, giving a model-based analogue of
-stratified survival. We use `pbc` and its randomized `treatment` arm.
+A grouped model display summarizes the patient-level predictions within each
+arm. With `by = "trt"`, `gg_rfsrc()` resamples patients within each arm,
+computes the mean predicted survival at every time in each bootstrap sample,
+and returns the median of those bootstrap means with a pointwise 95% band. By
+default, the number of resamples for an arm equals the number of patients in
+that arm.
+
+Thus the center line is not the survival curve for a median patient. The band
+describes resampling variation in the group mean conditional on this fitted
+forest; it does not display patient-to-patient heterogeneity and does not carry
+the full uncertainty from refitting the forest. The result remains descriptive
+of this fitted model, not an adjusted treatment effect or a hypothesis test.
+
+```{r}
+#| label: rf-predicted-group-object
+pred_group <- gg_rfsrc(rf, by = "trt", conf.int = 0.95)
+pred_group
+head(as.data.frame(pred_group), 4)
+```
 
 ```{r}
 #| label: fig-rf_predicted-grouped
-#| fig-cap: "Predicted survival averaged within each treatment arm of the pbc trial, the model-based analogue of stratified survival"
-data(pbc, package = "randomForestSRC")
-rf2 <- rfsrc(Surv(days, status) ~ ., data = pbc, ntree = 100)
-plot(gg_rfsrc(rf2, by = "treatment")) + theme_hv_manuscript()
+#| fig-cap: "Median bootstrap estimate of group-mean OOB predicted survival, with pointwise 95% bands within each veteran treatment arm"
+plot(pred_group) +
+  theme_hv_manuscript() +
+  labs(x = "Follow-up time (days)", y = "Predicted survival probability",
+       color = "Treatment arm", fill = "Treatment arm") +
+  coord_cartesian(ylim = c(0, 1)) +
+  theme(legend.position = "bottom")
 ```
 
-The two treatment arms track closely, consistent with the trial's null finding.
-The difference from a univariate comparison is that this contrast comes out of the
-full multivariable forest: it is the predicted survival by arm after the model has
-accounted for every other covariate, not a raw split on treatment alone.
+For the observed comparison, `gg_survival()` handles right-censoring directly.
+The `censor` argument names the event indicator here: `status = 1` is death and
+`status = 0` is censored.
 
-### Empirical survival with `gg_survival()`
-
-`gg_rfsrc()` shows the *model's* predicted survival. When you want the raw
-**empirical** (Kaplan-Meier-style) survival of the data instead, use
-`gg_survival()` [@R-ggRandomForests]. It works directly on the data frame, no
-forest required, taking the time `interval`, the `censor` indicator, an optional
-`by` grouping, and the `data`.
+```{r}
+#| label: rf-empirical-object
+km <- gg_survival(
+  interval = "time",
+  censor = "status",
+  by = "trt",
+  data = veteran
+)
+km
+head(as.data.frame(km)[c("time", "n", "dead", "surv", "groups")], 4)
+```
 
 ```{r}
 #| label: fig-rf_predicted-empirical
-#| fig-cap: "Empirical Kaplan-Meier survival by treatment arm computed directly from the pbc data, for comparison with the forest's predicted curves"
-gg_dta <- gg_survival(
-  interval = "days",
-  censor   = "status",
-  by       = "treatment",
-  data     = pbc
-)
-plot(gg_dta) + theme_hv_manuscript() +
-  labs(y = "Survival probability", x = "Time (days)")
+#| fig-cap: "Empirical Kaplan-Meier survival by veteran treatment arm"
+plot(km) +
+  theme_hv_manuscript() +
+  labs(x = "Follow-up time (days)", y = "Observed survival probability",
+       color = "Treatment arm", fill = "Treatment arm") +
+  coord_cartesian(ylim = c(0, 1)) +
+  theme(legend.position = "bottom")
 ```
 
-The empirical curves and the forest-predicted curves should tell a consistent
-story. When they diverge, that gap is itself diagnostic: it shows how much the
-other covariates are doing in the model, since the forest curves reflect the full
-covariate set while the empirical curves reflect only the grouping variable.
+The two displays should not be expected to coincide. The empirical curves use
+only treatment groups; the forest predictions use the full predictor set and
+then summarize those predictions by treatment.
 
 ## Pitfalls
 
-- **Reading predicted curves as observed data.** The fan from `gg_rfsrc()` is the
-  model's estimate, smoothed through the ensemble, not the raw event times. For
-  the observed picture, plot `gg_survival()` alongside it and compare.
-- **Over-reading a group contrast.** `by =` averages predicted curves within a
-  level, but it does not test a difference. Closely tracking arms are consistent
-  with a null effect; clearly separated arms are a starting point for a formal
-  comparison, not the comparison itself.
-- **Forgetting these are OOB on a small cohort.** The predicted curves are honest
-  out-of-bag estimates, which is their strength. With a small cohort they are also
-  noisy, and they are not a substitute for an external test set: a clean-looking
-  fan still needs outside validation before you carry it to a new population.
+- **Calling predictions outcomes.** `pred_oob$value` is a predicted survival
+  probability. Death and censoring are stored separately in the observed data.
+- **Ignoring the tail.** Late estimates depend on fewer patients who remain
+  under follow-up. Read apparent separation there cautiously.
+- **Calling a grouped prediction causal.** Averaging predictions by treatment
+  does not control confounding, estimate a treatment effect, or test the arms.
+- **Treating OOB as transport validation.** OOB predictions are internal. A new
+  CORR era, registry, or institution remains a new-data question.

@@ -1,0 +1,255 @@
+# Fit additive hazard models
+
+```{r}
+#| label: setup
+#| include: false
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
+                      fig.width = 7, fig.height = 4.5, dpi = 150)
+library(TemporalHazard)
+library(survival)
+library(ggplot2)
+library(hvtiPlotR)
+```
+
+## When to use it
+
+Postoperative risk rarely stays constant. It may be high immediately after an
+operation, settle to a low background rate after recovery, then rise again as
+the patient and the repair age. A Kaplan-Meier curve tells us how much survival
+remains. An additive hazard model asks the companion clinical question: which
+early, constant, or late process is contributing risk at each time?
+
+Begin with the empirical curves. They are the evidence for choosing a
+parametric shape, not decoration added after the model is fit. If the empirical
+hazard falls sharply and then flattens, one monotone Weibull may be a useful
+summary. If it shows distinct regions, fit those phases explicitly and check
+the total curve against the empirical estimate.
+
+`TemporalHazard` [@R-TemporalHazard] is the maintained R implementation of the
+Blackstone, Naftel, and Turner additive hazard model. It replaces the historical
+SAS/C HAZARD workflow in this recipe. We fit and inspect the R object here; the
+[prediction chapter](temporal_prediction.qmd) then turns it into curves.
+
+## The data it needs
+
+Both examples use public data bundled with `TemporalHazard`. `cabgkul` contains
+5,880 primary isolated CABG patients, with follow-up in months and a death
+indicator. `avc` contains 310 patients after atrioventricular canal repair and
+supports the two clinically identifiable phases used below. No patient extract
+is needed to run either recipe.
+
+```{r}
+#| label: load-data
+data(cabgkul, package = "TemporalHazard")
+data(avc, package = "TemporalHazard")
+avc <- na.omit(avc)
+
+data.frame(
+  cohort = c("CABG", "AVC repair"),
+  patients = c(nrow(cabgkul), nrow(avc)),
+  deaths = c(sum(cabgkul$dead), sum(avc$dead)),
+  maximum_follow_up_months = c(max(cabgkul$int_dead), max(avc$int_dead))
+)
+```
+
+## Look at the empirical shape first
+
+`hzr_kaplan()` estimates survival and `hzr_nelson()` estimates cumulative
+hazard from the same subject-level records. Build both objects before choosing a
+distribution, then inspect the columns that will be plotted.
+
+```{r}
+#| label: empirical-objects
+km <- hzr_kaplan(cabgkul$int_dead, cabgkul$dead)
+na <- hzr_nelson(cabgkul$int_dead, cabgkul$dead)
+
+head(as.data.frame(km)[c("time", "n_risk", "n_event", "survival",
+                         "cl_lower", "cl_upper")])
+head(as.data.frame(na)[c("time", "n_risk", "n_event", "cumhaz",
+                         "cl_lower", "cl_upper")])
+```
+
+The Kaplan-Meier panel shows the surviving fraction. The Nelson-Aalen panel
+turns the same follow-up into accumulated event intensity. Its local slope is
+the empirical clue to the hazard shape: changing slope means the instantaneous
+risk is changing with time.
+
+```{r}
+#| label: fig-temporal-fit-kaplan
+#| fig-cap: "Empirical Kaplan-Meier survival for the CABG cohort, with logit-transform 95% confidence limits"
+ggplot(km, aes(time, survival * 100)) +
+  geom_ribbon(aes(ymin = cl_lower * 100, ymax = cl_upper * 100),
+              fill = "steelblue", alpha = 0.18) +
+  geom_step(colour = "steelblue", linewidth = 0.7) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
+                     labels = function(x) paste0(x, "%")) +
+  labs(x = "Months after CABG", y = "Freedom from death") +
+  theme_hv_manuscript()
+```
+
+The curve alone does not say how much cohort is left behind each part of it, and
+by the late follow-up here that is most of what a reader needs. `hv_atrisk()`
+counts the risk set at times you choose and `hv_atrisk_compose()` stacks it under
+the curve on a matched axis. It reads the same subject-level records `hzr_kaplan()`
+did, which is what makes the counts belong to this curve rather than to a cohort
+that happens to resemble it.
+
+```{r}
+#| label: fig-temporal-fit-kaplan-atrisk
+#| fig-cap: "The same Kaplan-Meier estimate with an aligned numbers-at-risk table, showing how little cohort supports the late tail"
+#| fig-height: 5
+curve <- ggplot(km, aes(time, survival * 100)) +
+  geom_ribbon(aes(ymin = cl_lower * 100, ymax = cl_upper * 100),
+              fill = "steelblue", alpha = 0.18) +
+  geom_step(colour = "steelblue", linewidth = 0.7) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
+                     labels = function(x) paste0(x, "%")) +
+  scale_x_continuous(breaks = seq(0, 144, 48)) +
+  coord_cartesian(xlim = c(0, 168)) +
+  labs(x = "Months after CABG", y = "Freedom from death") +
+  theme_hv_manuscript()
+
+risk_panel <- hv_atrisk(cabgkul, time = "int_dead", status = "dead",
+                        report_times = seq(0, 144, 48))
+
+hv_atrisk_compose(curve, risk_panel)
+```
+
+Read the two together. Freedom from death is around 60% at the right-hand edge,
+but 168 patients remain at twelve years against 5,880 at the start, so that part
+of the curve rests on a small and increasingly selected group. The widening
+confidence band says the same thing; the counts say it in a number a reviewer can
+check. Choose `report_times` that a clinical reader thinks in, and stop them where
+the cohort still supports an estimate rather than running them to the last
+observed event.
+
+```{r}
+#| label: fig-temporal-fit-nelson
+#| fig-cap: "Empirical Nelson-Aalen cumulative hazard for the CABG cohort, with lognormal 95% confidence limits"
+ggplot(na, aes(time, cumhaz)) +
+  geom_ribbon(aes(ymin = cl_lower, ymax = cl_upper),
+              fill = "firebrick", alpha = 0.18) +
+  geom_step(colour = "firebrick", linewidth = 0.7) +
+  labs(x = "Months after CABG", y = "Cumulative hazard, H(t)") +
+  theme_hv_manuscript()
+```
+
+## Fit a reviewed Weibull model
+
+Now fit the simple parametric description. The reviewed starting vector has a
+scale and shape value; it is an optimizer starting point, not a result to
+report. The estimates belong to the fitted object returned by `hazard()`.
+
+```{r}
+#| label: fit-weibull
+fit <- hazard(
+  time = cabgkul$int_dead,
+  status = cabgkul$dead,
+  theta = c(0.01, 1),
+  dist = "weibull",
+  fit = TRUE
+)
+
+summary(fit)
+data.frame(
+  converged = fit$fit$converged,
+  log_likelihood = fit$fit$objective,
+  function_evaluations = unname(fit$fit$counts["function"]),
+  gradient_evaluations = unname(fit$fit$counts["gradient"])
+)
+```
+
+The fitted Weibull shape is below 1, so its hazard declines with time. That is
+consistent with an early postoperative component, but the single curve cannot
+separate an early decline from a continuing background rate. Thus we treat it
+as a compact population summary and keep the empirical panels beside it as the
+fit check.
+
+## Fit the early and constant phases
+
+The AVC data have a clear early risk period and a much lower continuing rate.
+We represent those with an early CDF phase plus a constant phase. The early
+shape values below are the reviewed package example; `fixed = "shapes"` holds
+them fixed while the model estimates the scale of each phase. We do not invent
+new starting values.
+
+```{r}
+#| label: fit-multiphase
+fit_multiphase <- hazard(
+  survival::Surv(int_dead, dead) ~ 1,
+  data = avc,
+  dist = "multiphase",
+  phases = list(
+    early = hzr_phase(
+      "cdf", t_half = 0.5, nu = 1, m = 1,
+      fixed = "shapes"
+    ),
+    constant = hzr_phase("constant")
+  ),
+  fit = TRUE,
+  control = list(n_starts = 3, maxit = 500)
+)
+
+summary(fit_multiphase)
+```
+
+Inspect convergence separately from the coefficient table. A populated summary
+is not enough: the optimizer must converge, and the covariance calculation must
+be positive definite for the free parameters.
+
+```{r}
+#| label: inspect-multiphase
+data.frame(
+  converged = fit_multiphase$fit$converged,
+  positive_definite = fit_multiphase$fit$pd,
+  reciprocal_condition = fit_multiphase$fit$rcond,
+  log_likelihood = fit_multiphase$fit$objective
+)
+
+theta <- coef(fit_multiphase)
+check_times <- c(0.5, 12, max(avc$int_dead))
+early_scale <- exp(theta["early.log_mu"])
+constant_scale <- exp(theta["constant.log_mu"])
+
+phase_contributions <- data.frame(
+  month = check_times,
+  early_hazard_per_month = early_scale * hzr_phase_hazard(
+    check_times, t_half = 0.5, nu = 1, m = 1, type = "cdf"
+  ),
+  constant_hazard_per_month = constant_scale * hzr_phase_hazard(
+    check_times, type = "constant"
+  ),
+  early_cumulative_hazard = early_scale * hzr_phase_cumhaz(
+    check_times, t_half = 0.5, nu = 1, m = 1, type = "cdf"
+  ),
+  constant_cumulative_hazard = constant_scale * hzr_phase_cumhaz(
+    check_times, type = "constant"
+  )
+)
+phase_contributions
+```
+
+At 0.5 months, the evaluated early hazard contribution is much higher than the
+constant contribution on the same per-month scale. It then declines, while the
+constant contribution remains flat and continues to accumulate through late
+follow-up. The two phases overlap and add; the model does not switch from one to
+the other at 0.5 months. For this bounded early CDF phase, `t_half = 0.5` means
+that half of the early phase's eventual cumulative-hazard contribution has
+accumulated by 0.5 months.
+
+## Read convergence warnings before reading the curves
+
+A multiphase model can return numbers even when the data do not identify the
+requested phases. Stop and simplify the model when any of these occur:
+
+- `fit$fit$converged` is `FALSE`, especially after the iteration limit.
+- The covariance matrix is unavailable or `fit$fit$pd` is `FALSE`.
+- A free parameter has an enormous standard error, or a fitted phase scale is
+  effectively zero.
+- Two phases trace nearly the same shape and compete to explain the same
+  events.
+
+Those are model warnings, not requests for a larger `maxit`. First ask whether
+the empirical curve contains the phase at all. Fixing reviewed shape parameters
+reduces the number of quantities the data must identify; adding an unsupported
+late phase does the opposite.

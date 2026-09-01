@@ -35,6 +35,22 @@ pick: average the SHAP receipts over patients and you get a ranking that reads a
 lot like VIMP, but you cannot go the other way and recover a patient from a VIMP
 bar.
 
+Four views in this part get called "variable importance" in conversation, and
+they answer four different questions. Keep them apart before you pick one:
+
+| View | The question it answers | Recipe |
+|---|---|---|
+| VIMP | What is the model built on, overall? | [Variable importance](rf_vimp.qmd) |
+| SHAP | What moved *this patient's* prediction? | this chapter |
+| Variable and partial dependence | How does the response change across a predictor's range? | [Variable and partial dependence](rf_dependence.qmd) |
+| varPro | Which variables survive rule-based selection, and how strongly? | [Variable priority with varPro](varpro.qmd) |
+
+VIMP and varPro both rank; SHAP and dependence both describe. The split that
+matters runs the other way, though. VIMP and varPro are statements about the
+model, SHAP is a statement about a patient, and dependence is a statement about
+a predictor. Picking the wrong one is how a results figure ends up answering a
+question nobody asked.
+
 `gg_shap()`, from ggRandomForests [@R-ggRandomForests], computes those
 attributions using the kernelshap package [@R-kernelshap] and hands back one row
 per observation per variable. Three renderers draw it: `shap_importance()` for the
@@ -59,7 +75,7 @@ and `R` for recurrence.
 One difference from those chapters is worth stating rather than leaving in the
 code. They fit `breast` as it ships; we drop its four incomplete rows with
 `na.omit()` first, taking 198 patients down to 194. The fit is not what needs
-this -- `rfsrc()` handles the missing values either way. It is `newdata` that
+this, since `rfsrc()` handles the missing values either way. It is `newdata` that
 needs it. Hand `gg_shap()` a row carrying a missing predictor and the
 attribution stops with `no records in the NA-processed data`, an error raised
 downstream in `randomForestSRC` rather than anywhere you were looking. Dropping

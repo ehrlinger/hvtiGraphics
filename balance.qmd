@@ -15,6 +15,12 @@ kept track of the patients long enough to believe the outcome. Neither is the
 headline figure of a paper, but a reviewer who does not see them will ask, and
 both belong in the same quality-control habit.
 
+They answer separate decisions. Use the balance plot to decide whether measured
+baseline covariates are acceptably similar across comparison groups. Use the
+follow-up plot to decide whether outcome ascertainment covers the study window.
+Good balance cannot make up for poor follow-up, and good follow-up cannot repair
+confounding at baseline.
+
 ## Covariate balance plots
 
 ### When to use it
@@ -47,7 +53,7 @@ dta_cb <- sample_covariate_balance_data(n_vars = 12)
 head(dta_cb)
 
 # Build the S3 object once; reuse for all plot variants below
-cb <- hv_balance(dta_cb)
+cb <- hv_balance(dta_cb, threshold = 10)
 ```
 
 If your numbers arrive in wide format (one column per stage, as a summary table
@@ -75,6 +81,25 @@ dta_long <- reshape(
   idvar     = "variable"
 )
 head(dta_long)
+```
+
+### Inspect it
+
+Inspect the prepared balance object before plotting. Its metadata records the
+row order and the 10-percent threshold. The cross-tabulation then audits how
+many covariates fall inside that threshold for each stage. In this synthetic
+example, only 4 of 12 covariates are inside the guides both before and after
+matching, so the figure is a diagnosis of inadequate balance, not evidence that
+matching succeeded.
+
+```{r}
+#| label: cov_balance_inspect
+cb
+cb$meta[c("var_levels", "threshold", "n_vars", "n_groups", "n_missing")]
+with(
+  cb$data,
+  table(group, within_threshold = abs(std_diff) <= cb$meta$threshold)
+)
 ```
 
 ### Build it
@@ -105,25 +130,21 @@ plot(cb, alpha = 0.8) +
     name   = NULL
   ) +
   scale_x_continuous(
-    limits = c(-45, 35),
-    breaks = seq(-40, 30, 10)
+    limits = c(-120, 40),
+    breaks = seq(-120, 40, 20)
   ) +
   labs(x = "Standardized difference (%)", y = "") +
-  theme(legend.position = c(0.20, 0.95))
+  theme(legend.position = "top")
 ```
 
-For a finished figure, place the legend and direction-of-imbalance labels inside
-the panel and switch on the manuscript theme. `annotate()` puts text at chosen data
-coordinates, here at the far left and far right rows, so the reader knows which
-direction favours which group. `n_vars` reads the covariate count off the data
-so the top annotation lands on the top row no matter how many covariates you
-have.
+For a finished figure, put the legend above the panel and state the direction of
+imbalance in the caption. Keeping both outside the data region avoids covering
+the most imbalanced covariates and keeps the interpretation attached when the
+figure is exported.
 
 ```{r}
 #| label: fig-balance
-#| fig-cap: "Covariate balance plot showing standardized mean differences before and after matching, with direction-of-imbalance annotations"
-n_vars <- length(unique(dta_cb$variable))
-
+#| fig-cap: "Covariate balance plot showing standardized mean differences before and after matching; negative values favour TF-TAVR and positive values favour SAVR"
 cb_final <- plot(cb, alpha = 0.8) +
   scale_color_manual(
     values = c("Before match" = "red4", "After match" = "blue3"),
@@ -134,14 +155,16 @@ cb_final <- plot(cb, alpha = 0.8) +
     name   = NULL
   ) +
   scale_x_continuous(
-    limits = c(-40, 30),
-    breaks = seq(-40, 30, 10)
+    limits = c(-120, 40),
+    breaks = seq(-120, 40, 20)
   ) +
-  labs(x = "Standardized difference: SAVR - TF:TAVR (%)", y = "") +
-  annotate("text", x = -30, y = 0,      label = "More likely TF-TAVR", size = 4.5) +
-  annotate("text", x =  22, y = n_vars, label = "More likely SAVR",    size = 4.5) +
-  theme(legend.position = c(0.20, 0.935)) +
-  theme_hv_manuscript()
+  labs(
+    x = "Standardized difference: SAVR - TF:TAVR (%)",
+    y = "",
+    caption = "Negative: more likely TF-TAVR    Positive: more likely SAVR"
+  ) +
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
 
 cb_final
 ```
@@ -150,9 +173,10 @@ cb_final
 
 Read down the rows, comparing the two points in each:
 
-- **The after-match points should collapse toward zero.** That is the whole
-  claim of the figure. Blue squares sitting inside the dotted plus-or-minus-ten
-  guides, with red triangles further out, is balance achieved by matching.
+- **The after-match points should collapse toward zero.** That is the target,
+  but it is not what this synthetic example shows overall. Only 4 of 12 blue
+  squares sit inside the dotted plus-or-minus-ten guides, the same count as
+  before matching. Do not describe this cohort as balanced.
 - **Watch any covariate that stays imbalanced.** A blue point still well past
   ten percent is a variable matching did not fix. You either adjust for it in
   the outcome model or say so in the limitations.
@@ -184,7 +208,8 @@ plot(cb_ord, alpha = 0.8) +
     name   = NULL
   ) +
   labs(x = "Standardized difference (%)", y = "") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
 ```
 
 ## Goodness-of-follow-up plots
@@ -220,15 +245,7 @@ column we use later.
 #| label: gfup_data
 gfup_dta <- sample_goodness_followup_data(n = 300, seed = 42)
 head(gfup_dta)
-```
 
-### Build it
-
-Build the object with the three study dates, then look at the bare panel: each
-patient as a point and tick, no scales or labels yet.
-
-```{r}
-#| label: gfup_basic
 gf <- hv_followup(
   data        = gfup_dta,
   origin_year = 1990,
@@ -236,8 +253,32 @@ gf <- hv_followup(
   study_end   = as.Date("2019-12-31"),
   close_date  = as.Date("2021-08-06")
 )
+```
 
-# Bare plot — no scales or labels yet
+### Inspect it
+
+The returned object carries the prepared plotting rows and the dates that set
+the diagonal. Inspect both before drawing the panel. The state table is also a
+legend audit: its `Alive` and `Dead` levels must match the two manual colour and
+shape entries used below.
+
+```{r}
+#| label: gfup_inspect
+gf
+gf$meta[c("study_start", "study_end", "close_date",
+          "n_input", "n_patients", "n_excluded")]
+table(gf$data$state)
+head(gf$data)
+```
+
+### Build it
+
+Start with the bare panel: each patient is a point and tick, with no scales or
+labels yet.
+
+```{r}
+#| label: gfup_basic
+# Bare plot, no scales or labels yet
 plot(gf)
 ```
 
@@ -306,8 +347,7 @@ three-way event status (no event, the non-fatal event, death) instead of the
 binary alive-or-dead split.
 
 ```{r}
-#| label: fig-balance-followup-event
-#| fig-cap: "Goodness-of-follow-up plot showing three-way event status (no event, non-fatal event, death) for each patient"
+#| label: gfup_event_inspect
 gf2 <- hv_followup(
   gfup_dta,
   event_col           = "ev_event",
@@ -320,6 +360,22 @@ gf2 <- hv_followup(
   close_date          = as.Date("2021-08-06")
 )
 
+gf2
+gf2$meta[c("event_col", "event_time_col", "death_for_event_col",
+           "n_event_patients", "n_event_excluded")]
+table(gf2$tables$event_data$state)
+head(gf2$tables$event_data)
+```
+
+The event table makes the classification explicit before the legend appears.
+A recorded relapse is labelled `Relapse` only when it occurs before death. If
+death occurs first, the row is labelled `Death`; a patient with neither is
+labelled `No event`. Check these three counts against the event analysis set
+before interpreting the panel.
+
+```{r}
+#| label: fig-balance-followup-event
+#| fig-cap: "Goodness-of-follow-up plot showing three-way event status (no event, non-fatal event, death) for each patient"
 plot(gf2, type = "event", alpha = 0.8) +
   scale_color_manual(
     values = c("No event" = "blue", "Relapse" = "green3", "Death" = "red"),
@@ -339,8 +395,8 @@ plot(gf2, type = "event", alpha = 0.8) +
   ) +
   annotate("text", x = 1993, y = 31,
            label = "Systematic follow-up", hjust = 0, size = 3.5) +
-  theme(legend.position = c(0.85, 0.15)) +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "top")
 ```
 
 ## Pitfalls

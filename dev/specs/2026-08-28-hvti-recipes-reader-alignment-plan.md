@@ -1,0 +1,1254 @@
+# HVTI Recipes Reader Alignment Implementation Plan
+
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+
+**Goal:** Rebuild *HVTI Recipes* around the analytical questions a CORR biostatistician asks, using the approved package baselines, an R-replaces-SAS migration stance, independently runnable recipes, and reviewed HTML/PDF output.
+
+**Architecture:** Keep the Quarto book as the only product, reorganize its navigation into five reader tasks, and normalize worked chapters to one recipe contract. Preserve strong existing material, split the overloaded TemporalHazard material, add the ggRandomForests 4.0 Random Hazard Forest workflow, and close with a public-function coverage map. Every executable source edit is rendered and committed with its matching `_freeze/` output; a clean full rebuild is the final integration gate.
+
+**Tech Stack:** Quarto book, R 4.6.1, knitr, ggplot2, hvtiR 1.0.13, hvtiPlotR 2.7.11, ggRandomForests 4.0.0, randomForestRHF 2.0.0, TemporalHazard 1.2.6, hvtiRtables 1.0.0, `gt`, `patchwork`, macOS `quartz_pdf`.
+
+**Spec:** `dev/specs/2026-08-28-hvti-recipes-reader-alignment-design.md`
+
+## Global Constraints
+
+- This repository is a Quarto book, not an R package. Do not add `DESCRIPTION`, `NAMESPACE`, `man/`, or `tests/`.
+- Write for the HVTI/CORR biostatistician persona in `.claude/house-style.md`; do not edit that generated file.
+- Use synthetic or public data only. No PHI may appear in source, output, or examples.
+- Treat SAS as the retired workflow being replaced by R. SAS may appear only as a one-way migration landmark.
+- Target exact sibling commits: hvtiR `5227077`, the authorized hvtiPlotR at-risk repair `a808123`, ggRandomForests current `main` at `7b0335e3`, TemporalHazard `aeb663a`, and hvtiRtables `64dd174`.
+- **Baseline moved 2026-08-29, during Task 11.** ggRandomForests advanced `8e1b1f66` -> `7b0335e3` in response to findings from this book work: `d85f5db3` adds `labels=` to `plot.gg_variable()`, `plot.gg_udependent()` and `plot.gg_sdependent()`, and `9915733e` scopes the `gg_variable` `facet_grid` labeller to the variable dimension. Those are Task 11's own functions, so the task adopts the newer revision rather than pinning behind it. Tasks 1-10 froze their chapters against `8e1b1f66`; Task 16's clean rebuild is what reconciles the cache to one baseline.
+- Use randomForestRHF 2.0.0 from CRAN. Do not install the local 1.0.2 checkout over it.
+- Prefer package constructors to hand-built ggplot code where a current constructor exists.
+- Preserve the constructor -> `plot()` -> `+` decoration pattern.
+- A changed executable `.qmd` and its same-basename directory under `_freeze/` must be in the same commit.
+- `_freeze/` is tracked build input. `_book/`, `HVTI-Recipes.pdf`, `.tex`, `.quarto/`, and `*_files/` stay untracked.
+- Run `quarto render --to html` after every executable workstream. There is no single-chapter render command in this book project.
+- Inspect the rendered result, not only the process exit code.
+- Do not patch sibling packages without separate user approval.
+- Do not publish, deploy, push to `main`, or open a PR before the user reviews the local preview.
+
+## File Structure
+
+**Create**
+
+- `describe.qmd`: part introduction and decision guide for cohort description.
+- `temporal_fit.qmd`: TemporalHazard empirical estimates and additive phase fitting.
+- `temporal_prediction.qmd`: model predictions and phase-specific interpretation.
+- `temporal_diagnostics.qmd`: fit checks, calibration, selection, bootstrap, censoring, and competing risks.
+- `temporal_migration.qmd`: one-way `PROC HAZARD` to maintained R migration.
+- `rf_rhf.qmd`: ggRandomForests 4.0 Random Hazard Forest workflow.
+- `data/rhf_precomputed.rds`: reviewed public-data RHF fit bundle copied from ggRandomForests `8e1b1f66` so the book chapter is independently runnable.
+- `function_map.qmd`: workflow-level export-to-recipe map for the five-package boundary.
+
+**Retire after content migration**
+
+- `formatting.qmd`, `distributions.qmd`, `relationships.qmd`, `specialty.qmd`, and `tables.qmd`: thin part pages replaced by task-first navigation.
+- `temporal_hazard.qmd`: source content split among the four focused TemporalHazard chapters.
+
+**Modify by responsibility**
+
+- `_quarto.yml`, `index.qmd`, `intro.qmd`, `gettingstarted.qmd`, `timetoevent.qmd`, `randomforests.qmd`, `publications.qmd`, `summary.qmd`: navigation and reader routing.
+- `packages.qmd`, `usingR.qmd`, `data_governance.qmd`: reproducible start and hvtiR lifecycle.
+- `data_tables.qmd`, `qt_tables.qmd`, `hv_tables.qmd`: dataset, HTML, CORR, and JTCVS table workflows.
+- `histograms.qmd`, `density.qmd`, `boxplots.qmd`, `bar.qmd`, `scatter.qmd`, `spaghetti.qmd`, `postagestamp.qmd`, `upset.qmd`, `consort.qmd`, `sankey.qmd`, `balance.qmd`: cohort-description figures.
+- `survival.qmd`, `hazard.qmd`, `nnt.qmd`, `figure_tables.qmd`: nonparametric time-to-event figures and supporting tables.
+- `rf_error.qmd`, `rf_predicted.qmd`, `rf_vimp.qmd`, `rf_shap.qmd`, `rf_dependence.qmd`, `rf_roc.qmd`, `varpro.qmd`, `varpro_partial.qmd`: forest interpretation.
+- `annotation.qmd`, `themes.qmd`, `colors.qmd`, `legends.qmd`, `combination.qmd`, `manuscripts.qmd`, `researchday.qmd`, `presentations.qmd`: finishing and delivery.
+- `packages.bib`, `references.bib`: only citations newly required by the revised chapters.
+- `sibling-versions.json`: generated by `packages.qmd` during the final clean rebuild.
+
+---
+
+### Task 1: Verify and install the exact execution baseline
+
+**Files:**
+- Read: `dev/specs/2026-08-28-hvti-recipes-reader-alignment-design.md`
+- Read: sibling `DESCRIPTION`, `NAMESPACE`, `NEWS.md`, and relevant vignettes
+- Modify: none
+
+**Interfaces:**
+- Consumes: exact commits and versions in the approved design.
+- Produces: an R library able to execute every later chapter against one known baseline.
+
+- [ ] **Step 1: Verify sibling source state**
+
+Run:
+
+```bash
+for d in ../hvtiR ../hvtiPlotR ../ggRandomForests ../TemporalHazard ../hvtiRtables; do
+  git -C "$d" branch --show-current
+  git -C "$d" status --short
+  git -C "$d" rev-parse --short HEAD
+done
+```
+
+Expected approved revisions after the two documented drift decisions: `5227077`, `a808123`, `8e1b1f66`, `aeb663a`, and `64dd174` in that order. The hvtiPlotR repair remains on its isolated branch until reviewed through its own PR; the ggRandomForests source is the detached current-main worktree because the primary sibling checkout is on unrelated feature work. Stop if an approved source moves or is dirty; compare the new state with the recorded baseline before proceeding.
+
+- [ ] **Step 2: Protect the RHF dependency baseline**
+
+Run:
+
+```bash
+Rscript -e 'stopifnot(as.character(packageVersion("randomForestRHF")) == "2.0.0"); packageDescription("randomForestRHF")[c("Version", "Repository")]'
+```
+
+Expected: version `2.0.0`, repository `CRAN`. Do not install `../randomForestRHF`, whose checkout is 1.0.2.
+
+- [ ] **Step 3: Install the five approved sibling sources**
+
+Run in this order from a fresh R session:
+
+```bash
+R CMD INSTALL ../hvtiR
+R CMD INSTALL ../hvtiPlotR
+R CMD INSTALL ../TemporalHazard
+R CMD INSTALL ../hvtiRtables
+R CMD INSTALL ../ggRandomForests
+```
+
+Expected: the commands end with `* DONE (hvtiR)`, `* DONE (hvtiPlotR)`,
+`* DONE (TemporalHazard)`, `* DONE (hvtiRtables)`, and
+`* DONE (ggRandomForests)`.
+
+- [ ] **Step 4: Verify versions and required exports**
+
+Run:
+
+```bash
+Rscript -e 'want <- c(hvtiR="1.0.13", hvtiPlotR="2.7.11", ggRandomForests="4.0.0", TemporalHazard="1.2.6", hvtiRtables="1.0.0", randomForestRHF="2.0.0"); got <- vapply(names(want), function(p) as.character(packageVersion(p)), character(1)); print(got); stopifnot(identical(got, want)); stopifnot(all(c("gg_rhf", "gg_auct", "gg_rhf_importance", "gg_tune_rhf") %in% getNamespaceExports("ggRandomForests"))); stopifnot(all(c("install", "status", "update", "doctor") %in% getNamespaceExports("hvtiR")))'
+```
+
+Expected: exact version vector and exit 0.
+
+**Corrected 2026-08-29:** this vector asserted `hvtiPlotR="2.7.10"`, which contradicts the pinned commit. The approved at-risk repair `a808123` carries version 2.7.11, and 2.7.11 is what is installed, so the assertion failed as written. Note that `sibling-versions.json` on this branch still records 2.7.10, which suggests Tasks 1-10 rendered against hvtiPlotR `main` rather than the approved repair. Task 16's clean rebuild is what settles the record.
+
+### Task 2: Rebuild the book navigation around reader questions
+
+**Files:**
+- Create: `describe.qmd`, `temporal_fit.qmd`, `temporal_prediction.qmd`, `temporal_diagnostics.qmd`, `temporal_migration.qmd`, `rf_rhf.qmd`, `function_map.qmd`
+- Modify: `_quarto.yml`, `index.qmd`, `intro.qmd`, `gettingstarted.qmd`, `timetoevent.qmd`, `randomforests.qmd`, `publications.qmd`
+- Delete: `formatting.qmd`, `distributions.qmd`, `relationships.qmd`, `specialty.qmd`, `tables.qmd`
+
+**Interfaces:**
+- Consumes: the five-part architecture from the design.
+- Produces: stable chapter order and links used by every later task.
+
+- [ ] **Step 1: Write the reader decision guide in `intro.qmd`**
+
+Use a compact table with these routes and first destinations:
+
+```markdown
+| If you need to... | Start with... |
+|---|---|
+| install or update the HVTI R family | [Packages](packages.qmd) |
+| describe who is in the cohort | [Describing a dataset](data_tables.qmd) |
+| choose a distribution or relationship figure | [Describe the cohort](describe.qmd) |
+| show time until an event | [Time-to-event figures](timetoevent.qmd) |
+| explain a forest prediction | [Predictive-model graphics](randomforests.qmd) |
+| prepare a manuscript figure or table | [Finish and deliver](publications.qmd) |
+```
+
+Open by telling the CORR reader to start with the question, not a package name.
+
+- [ ] **Step 2: Turn the five part pages into useful decision guides**
+
+Use these exact titles:
+
+```markdown
+# Start a reproducible analysis {.unnumbered}
+# Describe the cohort {.unnumbered}
+# Analyze time-to-event outcomes {.unnumbered}
+# Explain predictive models {.unnumbered}
+# Finish and deliver the result {.unnumbered}
+```
+
+After a short familiar CORR question, each file must contain this decision-table
+heading and columns:
+
+```markdown
+## Choose the next recipe
+
+| Your question | Recipe | Why this one |
+|---|---|---|
+```
+
+Populate every row with real chapters from the new outline; do not leave generic labels.
+
+- [ ] **Step 3: Replace `_quarto.yml` chapter order**
+
+Use this exact part structure:
+
+```yaml
+chapters:
+  - index.qmd
+  - intro.qmd
+  - part: gettingstarted.qmd
+    chapters:
+      - packages.qmd
+      - usingR.qmd
+      - data_governance.qmd
+  - part: describe.qmd
+    chapters:
+      - data_tables.qmd
+      - qt_tables.qmd
+      - hv_tables.qmd
+      - histograms.qmd
+      - density.qmd
+      - boxplots.qmd
+      - bar.qmd
+      - scatter.qmd
+      - spaghetti.qmd
+      - postagestamp.qmd
+      - consort.qmd
+      - upset.qmd
+      - sankey.qmd
+      - balance.qmd
+  - part: timetoevent.qmd
+    chapters:
+      - survival.qmd
+      - hazard.qmd
+      - nnt.qmd
+      - temporal_fit.qmd
+      - temporal_prediction.qmd
+      - temporal_diagnostics.qmd
+      - temporal_migration.qmd
+  - part: randomforests.qmd
+    chapters:
+      - rf_error.qmd
+      - rf_predicted.qmd
+      - rf_vimp.qmd
+      - rf_shap.qmd
+      - rf_dependence.qmd
+      - rf_roc.qmd
+      - varpro.qmd
+      - varpro_partial.qmd
+      - rf_rhf.qmd
+  - part: publications.qmd
+    chapters:
+      - themes.qmd
+      - colors.qmd
+      - annotation.qmd
+      - legends.qmd
+      - combination.qmd
+      - figure_tables.qmd
+      - manuscripts.qmd
+      - researchday.qmd
+      - presentations.qmd
+  - function_map.qmd
+  - summary.qmd
+  - references.qmd
+```
+
+- [ ] **Step 4: Create substantive introductions for the new future recipe pages**
+
+Create the seven files so the new navigation renders before their executable
+workstreams are added. Use these exact titles and opening sentences:
+
+```markdown
+# Fit additive hazard models
+
+Postoperative risk rarely stays constant. We begin with the empirical curve,
+then use TemporalHazard to decide whether an early, constant, or late phase is
+needed to describe how risk changes with time.
+```
+
+```markdown
+# Predict from a hazard model
+
+A fitted hazard model becomes useful when it answers a patient-profile question.
+This recipe turns the fit into survival, cumulative-hazard, instantaneous-hazard,
+and phase-specific curves on a time grid we choose.
+```
+
+```markdown
+# Check a hazard model
+
+A smooth curve is not evidence of a faithful model. We compare the parametric
+fit with the observed data, check calibration, assess selection uncertainty,
+and examine competing outcomes before reporting it.
+```
+
+```markdown
+# Move a legacy HAZARD analysis into R
+
+The destination is a maintained R analysis. TemporalHazard can translate the
+structure of a legacy `PROC HAZARD` job, after which the R code, model object,
+diagnostics, and predictions become the source we keep.
+```
+
+```markdown
+# Random Hazard Forests
+
+When predictors and risk both change with time, one row per patient is no longer
+enough. This recipe uses ggRandomForests to inspect a Random Hazard Forest grown
+from start-stop data with time-varying covariates.
+```
+
+```markdown
+# Function-to-recipe map
+
+Use this map when you know the function name but not the recipe. Workflow-level
+functions link to a worked chapter; lower-level and compatibility helpers link
+to the package reference that owns their contract.
+```
+
+The seventh file, `describe.qmd`, is already created as the complete part
+decision guide in Step 2.
+
+- [ ] **Step 5: Remove retired thin part pages**
+
+Run:
+
+```bash
+git rm formatting.qmd distributions.qmd relationships.qmd specialty.qmd tables.qmd
+```
+
+Expected: only the five named chunk-free files are staged for deletion.
+
+- [ ] **Step 6: Render and inspect navigation**
+
+Run:
+
+```bash
+quarto render --to html
+```
+
+Expected: exit 0. Open `_book/index.html`; click every part and the first/last chapter in each part. Confirm the sidebar order, previous/next links, and decision tables work. No executable source changed in this task, so investigate any `_freeze/` diff before committing.
+
+- [ ] **Step 7: Commit the navigation**
+
+```bash
+git add _quarto.yml index.qmd intro.qmd gettingstarted.qmd describe.qmd timetoevent.qmd randomforests.qmd publications.qmd temporal_fit.qmd temporal_prediction.qmd temporal_diagnostics.qmd temporal_migration.qmd rf_rhf.qmd function_map.qmd
+git commit -m "docs: organize recipes around reader questions"
+```
+
+### Task 3: Teach the hvtiR installation and provenance lifecycle
+
+**Files:**
+- Modify: `packages.qmd`, `usingR.qmd`, `data_governance.qmd`, `index.qmd`
+- Render: `_freeze/packages/`, `_freeze/data_governance/`
+
+**Interfaces:**
+- Consumes: hvtiR `install()`, `status()`, `update()`, and `doctor()`.
+- Produces: the shared setup/provenance instructions linked from every recipe.
+
+- [ ] **Step 1: Replace the install section with four explicit states**
+
+Use these executable-as-text commands in `packages.qmd`:
+
+```r
+install.packages("pak")
+pak::pak("ehrlinger/hvtiR")
+hvtiR::install()       # fresh machine
+hvtiR::status()        # compare installed packages with GitHub main
+hvtiR::update()        # install only missing or stale family members
+hvtiR::doctor()        # diagnose R, pak, GitHub, and member status
+```
+
+Explain fresh-session use, loaded-namespace protection, commit-aware status, GitHub-main release order, and the CRAN downgrade risk from `update.packages()`.
+
+- [ ] **Step 2: Update the package roles and build record**
+
+Add hvtiR and hvtiRtables to the opening role list. Keep `sibling-versions.json` generated by the existing chunk, and extend its package vector to include `hvtiR` while retaining all family packages used by executable chapters.
+
+- [ ] **Step 3: Make the R-first and no-PHI contract explicit**
+
+In `usingR.qmd`, teach the shared constructor -> `plot()` -> `+` pattern. In `data_governance.qmd`, retain the dictionary/labels/manifest sequence and add one direct sentence: real patient extracts never belong in the recipe repository or its freeze cache.
+
+- [ ] **Step 4: Run the source checks before rendering**
+
+Run:
+
+```bash
+rg -n 'hvtiR::(install|status|update|doctor)\(' packages.qmd
+rg -n 'constructor|plot\(\)|synthetic|public|PHI' usingR.qmd data_governance.qmd
+```
+
+Expected: all four lifecycle calls are present; the R pattern and data rule are findable.
+
+- [ ] **Step 5: Render, inspect, and commit with freeze**
+
+Run `quarto render --to html`. Inspect `_book/packages.html` and `_book/data-governance-and-reproducibility.html` (use the generated filename Quarto reports if it differs). Verify the install code is readable, the provenance table carries exact versions, and no call is accidentally evaluated.
+
+```bash
+git add index.qmd packages.qmd usingR.qmd data_governance.qmd sibling-versions.json _freeze/packages/ _freeze/data_governance/
+git commit -m "docs: teach the hvtiR package lifecycle"
+```
+
+### Task 4: Align dataset and manuscript-table recipes
+
+**Files:**
+- Modify: `data_tables.qmd`, `qt_tables.qmd`, `hv_tables.qmd`
+- Render: `_freeze/data_tables/`, `_freeze/qt_tables/`, `_freeze/hv_tables/`
+
+**Interfaces:**
+- Consumes: hvtiRutilities dataset helpers, `gt`, and all eight hvtiRtables exports.
+- Produces: one clear path from data inspection to validated CORR/JTCVS Word output.
+
+- [ ] **Step 1: Normalize the three chapter openings and decisions**
+
+Make the choices explicit:
+
+- `data_tables.qmd`: inspect data and build a dictionary before analysis.
+- `qt_tables.qmd`: use `gt` for HTML/book-native tables.
+- `hv_tables.qmd`: use hvtiRtables for CORR or JTCVS manuscript Word tables.
+
+- [ ] **Step 2: Build the complete hvtiRtables path in `hv_tables.qmd`**
+
+The main example must execute this sequence with the existing synthetic/public data:
+
+```r
+tbl <- hv_tbl_summary(
+  dta,
+  by = "sex",
+  groups = list(
+    "Demographics" = c("age", "bmi"),
+    "Comorbidity" = c("gfr_bs", "diabetes")
+  ),
+  continuous = c("age", "bmi", "gfr_bs"),
+  categorical = "diabetes",
+  compare = "pvalue"
+)
+ft <- hv_man_table_jtcvs(
+  tbl,
+  groups = c(
+    stat_1 = sprintf("Female (n=%d)", table(dta$sex)[["Female"]]),
+    stat_2 = sprintf("Male (n=%d)", table(dta$sex)[["Male"]])
+  ),
+  trailing = attr(tbl, "hv_trailing"),
+  stat_label = attr(tbl, "hv_stat_label")
+)
+out <- tempfile(fileext = ".docx")
+fn <- hv_test_footnotes_jtcvs(tbl)
+hv_man_table_save_jtcvs(
+  ft,
+  file = out,
+  caption = "Table 1. Baseline Characteristics",
+  footnotes = fn
+)
+hv_check_docx(out)
+```
+
+Keep the existing flat CORR path based on `gtsummary::tbl_summary()`,
+`hv_man_table()`, `hv_man_footnotes()`, and `hv_man_table_save()`. Use the code
+above for the JTCVS variation and add `hv_test_footnotes_jtcvs()` to its
+lettered-footnote example.
+
+- [ ] **Step 3: Add inspect/read/deliver language**
+
+Show what `hv_tbl_summary()` returns, explain the clinical meaning of the displayed denominators and comparisons, and explain what `hv_check_docx()` verifies after the file is written.
+
+- [ ] **Step 4: Verify export coverage**
+
+Run:
+
+```bash
+for fn in hv_tbl_summary hv_man_table hv_man_footnotes hv_man_table_save hv_check_docx hv_man_table_jtcvs hv_test_footnotes_jtcvs hv_man_table_save_jtcvs; do
+  rg -q "${fn}\\(" hv_tables.qmd || echo "MISSING $fn"
+done
+```
+
+Expected: no output.
+
+- [ ] **Step 5: Render, inspect, and commit with freeze**
+
+Run `quarto render --to html`. Inspect all three HTML chapters and the generated `.docx` example: headings, denominators, footnotes, abbreviations, column widths, and validation output.
+
+```bash
+git add data_tables.qmd qt_tables.qmd hv_tables.qmd _freeze/data_tables/ _freeze/qt_tables/ _freeze/hv_tables/
+git commit -m "docs: align cohort and manuscript table workflows"
+```
+
+### Task 5: Align distribution and relationship recipes
+
+**Files:**
+- Modify: `histograms.qmd`, `density.qmd`, `boxplots.qmd`, `bar.qmd`, `scatter.qmd`, `spaghetti.qmd`, `postagestamp.qmd`
+- Render: `_freeze/histograms/`, `_freeze/density/`, `_freeze/boxplots/`, `_freeze/bar/`, `_freeze/scatter/`, `_freeze/spaghetti/`, `_freeze/postagestamp/`
+
+**Interfaces:**
+- Consumes: hvtiPlotR 2.7.10 constructors and house themes.
+- Produces: independently runnable cohort-description recipes following the common contract.
+
+- [ ] **Step 1: Audit constructors before prose edits**
+
+Run:
+
+```bash
+rg -n '\b(hv_eda|hv_mirror_hist|hv_stacked|hv_spaghetti|hv_trends|hv_longitudinal)\(' histograms.qmd density.qmd boxplots.qmd bar.qmd scatter.qmd spaghetti.qmd postagestamp.qmd
+```
+
+For density and box plots, retain direct ggplot2 because hvtiPlotR has no dedicated constructor. State that choice once in each chapter.
+
+- [ ] **Step 2: Apply the recipe contract**
+
+Each chapter must contain the applicable elements: question, when to use, data, build, inspect, read, adapt, deliver link, and pitfalls. Add an object inspection (`str()`, `summary()`, or named component display) before the first `plot()` where a constructor returns an S3 object.
+
+- [ ] **Step 3: Tighten interpretation**
+
+For every main figure, add a short reading guide naming axes, comparison, denominator or smoother, and the claim the figure cannot support. Do not imply causal effects from descriptive plots.
+
+- [ ] **Step 4: Render and visually inspect all seven chapters**
+
+Run `quarto render --to html`. Check binning, density normalization, box definitions, denominators, smoother behavior, overplotting, facet order, captions, legends, and color/shape redundancy.
+
+- [ ] **Step 5: Commit source and matching freeze**
+
+```bash
+git add histograms.qmd density.qmd boxplots.qmd bar.qmd scatter.qmd spaghetti.qmd postagestamp.qmd _freeze/histograms/ _freeze/density/ _freeze/boxplots/ _freeze/bar/ _freeze/scatter/ _freeze/spaghetti/ _freeze/postagestamp/
+git commit -m "docs: align distribution and relationship recipes"
+```
+
+### Task 6: Align cohort flow, overlap, balance, and follow-up recipes
+
+**Files:**
+- Modify: `consort.qmd`, `upset.qmd`, `sankey.qmd`, `balance.qmd`
+- Render: `_freeze/consort/`, `_freeze/upset/`, `_freeze/sankey/`, `_freeze/balance/`
+
+**Interfaces:**
+- Consumes: current hvtiPlotR tracker, set, flow, balance, and follow-up constructors.
+- Produces: decision-led specialty recipes under “Describe the cohort.”
+
+- [ ] **Step 1: Separate the decisions inside multi-workflow chapters**
+
+Keep `upset.qmd` explicit about Venn for two or three sets versus UpSet for larger intersections. Keep `sankey.qmd` explicit about alluvial counts versus cluster-stability flow. Keep `balance.qmd` explicit about covariate balance versus goodness of follow-up.
+
+- [ ] **Step 2: Add object inspection and audit guidance**
+
+Show the patient tracker or tidy data returned before plotting. In `consort.qmd`, preserve `hv_consort_patients()` as the audit path back to IDs but use synthetic IDs only.
+
+- [ ] **Step 3: Verify current API names and deprecated-name absence**
+
+Run:
+
+```bash
+rg -n '\b(hv_consort|hv_venn|hv_upset|hv_alluvial|hv_sankey|hv_balance|hv_followup)\(' consort.qmd upset.qmd sankey.qmd balance.qmd
+rg -n 'base_annotations|cluster_sankey_plot|goodness_of_followup_plot' consort.qmd upset.qmd sankey.qmd balance.qmd
+```
+
+Expected: current constructors found; the second command returns no matches.
+
+- [ ] **Step 4: Render, inspect, and commit with freeze**
+
+Run `quarto render --to html`. Inspect node order, set counts, intersection labels, CONSORT arithmetic, balance thresholds, follow-up event classification, axes, and legends.
+
+```bash
+git add consort.qmd upset.qmd sankey.qmd balance.qmd _freeze/consort/ _freeze/upset/ _freeze/sankey/ _freeze/balance/
+git commit -m "docs: align cohort flow and balance recipes"
+```
+
+### Task 7: Align nonparametric time-to-event recipes
+
+**Files:**
+- Modify: `survival.qmd`, `hazard.qmd`, `nnt.qmd`, `figure_tables.qmd`
+- Render: `_freeze/survival/`, `_freeze/hazard/`, `_freeze/nnt/`, `_freeze/figure_tables/`
+
+**Interfaces:**
+- Consumes: `hv_survival()`, `hv_hazard()`, `hv_nonparametric()`, `hv_ordinal()`, `hv_nnt()`, `hv_survival_difference()`, `hv_atrisk()`, and `hv_atrisk_compose()`.
+- Produces: the nonparametric decision path that precedes TemporalHazard modeling.
+
+- [ ] **Step 1: Make neighboring choices explicit**
+
+Teach survival probability, cumulative hazard, hazard rate, absolute survival difference, NNT, and at-risk denominators as different questions. Keep the primary survival chapter as the house-voice exemplar.
+
+- [ ] **Step 2: Replace parallel-SAS language**
+
+Use one-way mappings such as “If the old program used `%kaplan`, `hv_survival()` is the maintained R workflow.” Remove language that presents macros as a current alternative.
+
+- [ ] **Step 3: Verify current constructors and two-step use**
+
+Run:
+
+```bash
+rg -n '\b(hv_survival|hv_hazard|hv_nonparametric|hv_ordinal|hv_nnt|hv_survival_difference|hv_atrisk|hv_atrisk_compose)\(' survival.qmd hazard.qmd nnt.qmd figure_tables.qmd
+rg -n '\b(hazard_plot|survival_difference_plot|nnt_plot)\(' survival.qmd hazard.qmd nnt.qmd figure_tables.qmd
+```
+
+Expected: first command finds the workflow; second command returns no matches.
+
+- [ ] **Step 4: Render and visually inspect**
+
+Run `quarto render --to html`. Inspect censor marks, confidence bands, risk-table alignment, report times, hazard units, group labels, ordinal levels, difference signs, NNT direction, and captions.
+
+- [ ] **Step 5: Commit source and matching freeze**
+
+```bash
+git add survival.qmd hazard.qmd nnt.qmd figure_tables.qmd _freeze/survival/ _freeze/hazard/ _freeze/nnt/ _freeze/figure_tables/
+git commit -m "docs: align nonparametric time-to-event recipes"
+```
+
+### Task 8: Split and rebuild TemporalHazard fitting and prediction
+
+**Files:**
+- Modify: `temporal_fit.qmd`, `temporal_prediction.qmd`
+- Read: `temporal_hazard.qmd`, `../TemporalHazard/vignettes/fitting-hazard-models.qmd`, `../TemporalHazard/vignettes/prediction-visualization.qmd`
+- Render: `_freeze/temporal_fit/`, `_freeze/temporal_prediction/`
+
+**Interfaces:**
+- Consumes: `hazard()`, `hzr_phase()`, `hzr_kaplan()`, `hzr_nelson()`, `predict.hazard()`, `hzr_phase_hazard()`, and `hzr_phase_cumhaz()`.
+- Produces: fitted `hazard` objects and prediction data frames used conceptually by diagnostics, while keeping each chapter independently runnable.
+
+- [ ] **Step 1: Build `temporal_fit.qmd` around empirical-first modeling**
+
+Use `cabgkul` and this sequence:
+
+```r
+data(cabgkul, package = "TemporalHazard")
+km <- hzr_kaplan(cabgkul$int_dead, cabgkul$dead)
+na <- hzr_nelson(cabgkul$int_dead, cabgkul$dead)
+
+fit <- hazard(
+  time = cabgkul$int_dead,
+  status = cabgkul$dead,
+  theta = c(0.01, 1),
+  dist = "weibull",
+  fit = TRUE
+)
+summary(fit)
+```
+
+Then add a documented multiphase fit using the exact current `hzr_phase()` specification from the TemporalHazard vignette. Do not invent starting values; copy a known-running package example and cite its dataset.
+
+Use this reviewed specification:
+
+```r
+data(avc, package = "TemporalHazard")
+avc <- na.omit(avc)
+fit_multiphase <- hazard(
+  survival::Surv(int_dead, dead) ~ 1,
+  data = avc,
+  dist = "multiphase",
+  phases = list(
+    early = hzr_phase("cdf", t_half = 0.5, nu = 1, m = 1,
+      fixed = "shapes"),
+    constant = hzr_phase("constant")
+  ),
+  fit = TRUE,
+  control = list(n_starts = 3, maxit = 500)
+)
+summary(fit_multiphase)
+```
+
+- [ ] **Step 2: Build `temporal_prediction.qmd` from the current prediction API**
+
+Refit the model in its own setup and show:
+
+```r
+grid <- data.frame(time = seq(0.5, max(cabgkul$int_dead), length.out = 120))
+survival <- predict(fit, newdata = grid, type = "survival")
+cumhaz <- predict(fit, newdata = grid, type = "cumulative_hazard")
+```
+
+For multiphase fits, use `predict(..., type = "hazard")` and the current phase-decomposition helpers. Do not retain the old blanket claim that instantaneous hazard must be obtained by differencing cumulative hazard; verify behavior against TemporalHazard 1.2.6 for the fitted model type.
+
+- [ ] **Step 3: Apply the recipe contract and R-replacement policy**
+
+Open from early/constant/late postoperative risk, explain the fitted object before plotting, read each phase clinically, and describe the R model as the maintained replacement. Claim numerical parity only where the package documentation names the verified comparison.
+
+- [ ] **Step 4: Render and inspect the two new chapters**
+
+Run `quarto render --to html`. Inspect empirical overlays, phase curves, time units, confidence limits, legends, and whether hazard/cumulative-hazard interpretations match the plotted scale.
+
+- [ ] **Step 5: Commit source and new freeze**
+
+```bash
+git add temporal_fit.qmd temporal_prediction.qmd _freeze/temporal_fit/ _freeze/temporal_prediction/
+git commit -m "docs: split TemporalHazard fitting and prediction"
+```
+
+### Task 9: Add TemporalHazard diagnostics and one-way SAS migration
+
+**Files:**
+- Modify: `temporal_diagnostics.qmd`, `temporal_migration.qmd`
+- Delete: `temporal_hazard.qmd`, `_freeze/temporal_hazard/`
+- Read: `../TemporalHazard/vignettes/inference-diagnostics.qmd`, `../TemporalHazard/vignettes/clinical-analysis-walkthrough.qmd`, `../TemporalHazard/vignettes/sas-to-r-migration.qmd`
+- Render: `_freeze/temporal_diagnostics/`, `_freeze/temporal_migration/`
+
+**Interfaces:**
+- Consumes: `hzr_gof()`, `hzr_calibrate()`, `hzr_deciles()`, `hzr_stepwise()`, `stepwise_trace()`, `hzr_bootstrap()`, `hzr_competing_risks()`, `hzr_translate_sas()`, `hzr_argument_mapping()`, and `hzr_read_outhaz()`.
+- Produces: model-checking and legacy-migration recipes plus complete migration away from `temporal_hazard.qmd`.
+
+- [ ] **Step 1: Build `temporal_diagnostics.qmd` as a decision sequence**
+
+Use a known-running package example for each block:
+
+```r
+data(avc, package = "TemporalHazard")
+avc <- na.omit(avc)
+fit <- hazard(
+  survival::Surv(int_dead, dead) ~ age + status + mal + com_iv,
+  data = avc,
+  dist = "weibull",
+  theta = c(mu = 0.20, nu = 1.0, rep(0, 4)),
+  fit = TRUE,
+  control = list(maxit = 500)
+)
+gof <- hzr_gof(fit)
+cal <- hzr_calibrate(avc$age, avc$dead, groups = 10, link = "logit")
+dec <- hzr_deciles(fit, time = 120, groups = 10)
+
+base_mp <- hazard(
+  survival::Surv(int_dead, dead) ~ 1,
+  data = avc,
+  dist = "multiphase",
+  phases = list(
+    early = hzr_phase("cdf", t_half = 0.5, nu = 1, m = 1,
+      fixed = "shapes"),
+    constant = hzr_phase("constant")
+  ),
+  fit = TRUE,
+  control = list(n_starts = 3, maxit = 500)
+)
+selected <- hzr_stepwise(
+  base_mp,
+  scope = list(
+    early = ~ age + status + mal + com_iv,
+    constant = ~ age + status + mal + com_iv
+  ),
+  data = avc,
+  direction = "both",
+  criterion = "wald",
+  trace = FALSE,
+  control = list(n_starts = 2, maxit = 500)
+)
+trace <- stepwise_trace(selected)
+boot <- hzr_bootstrap(fit, n_boot = 30, seed = 20260828)
+
+data(omc, package = "TemporalHazard")
+event <- with(omc, ifelse(te1 == 1 | te2 == 1 | te3 == 1, 1L,
+  ifelse(dead == 1, 2L, 0L)))
+cr <- hzr_competing_risks(omc$int_dead, event)
+```
+
+Thirty bootstrap replicates keep the book render bounded while executing a
+real, reproducible resample; say that a study analysis requires a larger run.
+
+- [ ] **Step 2: Build `temporal_migration.qmd` as a one-way bridge**
+
+Show a short public/synthetic `PROC HAZARD` text input passed to `hzr_translate_sas()`, inspect `hzr_argument_mapping()`, and show the resulting R call. Use `hzr_read_outhaz()` only as a validation/import step for a legacy artifact, never as a continuing dependency.
+
+- [ ] **Step 3: Retire the old combined chapter and cache**
+
+After every live chunk and useful paragraph has a destination, run:
+
+```bash
+git rm temporal_hazard.qmd
+git rm -r _freeze/temporal_hazard/
+```
+
+- [ ] **Step 4: Verify workflow coverage and SAS stance**
+
+Run:
+
+```bash
+for fn in hzr_gof hzr_calibrate hzr_deciles hzr_stepwise stepwise_trace hzr_bootstrap hzr_competing_risks hzr_translate_sas hzr_argument_mapping hzr_read_outhaz; do
+  rg -q "${fn}\\(" temporal_diagnostics.qmd temporal_migration.qmd || echo "MISSING $fn"
+done
+rg -n 'alternative to SAS|either SAS or R|continue to use SAS|SAS license required' temporal_*.qmd
+```
+
+Expected: no missing function output; the SAS-policy search returns no matches.
+
+- [ ] **Step 5: Render, inspect, and commit with freeze**
+
+Run `quarto render --to html`. Inspect fit overlays, calibration axes, stepwise trace, bootstrap summary, competing-risk denominators, translated R call, and all previous/next links.
+
+```bash
+git add temporal_diagnostics.qmd temporal_migration.qmd _freeze/temporal_diagnostics/ _freeze/temporal_migration/
+git commit -m "docs: add TemporalHazard diagnostics and migration"
+```
+
+### Task 10: Align core random-forest checking and prediction
+
+**Files:**
+- Modify: `rf_error.qmd`, `rf_predicted.qmd`, `rf_vimp.qmd`, `rf_roc.qmd`
+- Render: `_freeze/rf_error/`, `_freeze/rf_predicted/`, `_freeze/rf_vimp/`, `_freeze/rf_roc/`
+
+**Interfaces:**
+- Consumes: ggRandomForests 4.0.0 `gg_error()`, `gg_rfsrc()`, `gg_survival()`, `gg_vimp()`, `gg_roc()`, and `gg_brier()`.
+- Produces: the model-checking, prediction, importance, and performance foundation for later interpretation chapters.
+
+- [ ] **Step 1: Reframe chapters by model question**
+
+Distinguish convergence, predicted outcome, global permutation importance, discrimination, and time-resolved prediction error. State that these diagnose or explain a fitted model; they do not estimate a causal treatment effect.
+
+- [ ] **Step 2: Verify 4.0 signatures against source help**
+
+Run:
+
+```bash
+Rscript -e 'for (f in c("gg_error", "gg_rfsrc", "gg_survival", "gg_vimp", "gg_roc", "gg_brier")) { cat("\n", f, "\n"); print(args(getExportedValue("ggRandomForests", f))) }'
+```
+
+Update argument names, especially `labels` in place of deprecated `lbls`, and keep explicit `ntree` values in model fits.
+
+- [ ] **Step 3: Apply inspect/read/adapt/pitfall sections**
+
+For each constructor, print or summarize the returned `gg_*` object before `plot()`. Explain axes, reference lines, class/outcome selection, and the limits of apparent importance or discrimination.
+
+- [ ] **Step 4: Render and inspect**
+
+Run `quarto render --to html`. Inspect convergence trajectories, survival scales, VIMP ordering, multi-class labels, ROC direction, chance lines, and Brier-time axes.
+
+- [ ] **Step 5: Commit source and matching freeze**
+
+```bash
+git add rf_error.qmd rf_predicted.qmd rf_vimp.qmd rf_roc.qmd _freeze/rf_error/ _freeze/rf_predicted/ _freeze/rf_vimp/ _freeze/rf_roc/
+git commit -m "docs: align forest checking and prediction recipes"
+```
+
+### Task 11: Align forest interpretation, SHAP, and varPro
+
+**Files:**
+- Modify: `rf_shap.qmd`, `rf_dependence.qmd`, `varpro.qmd`, `varpro_partial.qmd`
+- Render: `_freeze/rf_shap/`, `_freeze/rf_dependence/`, `_freeze/varpro/`, `_freeze/varpro_partial/`
+
+**Interfaces:**
+- Consumes: `gg_shap()`, SHAP render helpers, `gg_variable()`, `gg_partial_rfsrc()`, and the full varPro visualization family.
+- Produces: a coherent choice among local attribution, dependence, priority, and partial dependence.
+
+- [ ] **Step 1: Add an explicit interpretation chooser**
+
+Use these distinctions consistently:
+
+- VIMP: overall predictive contribution.
+- SHAP: local attribution aggregated or inspected by variable.
+- Variable/partial dependence: model response across a predictor range.
+- varPro: rule-based variable priority and its refinements.
+
+- [ ] **Step 2: Audit ggRandomForests 4.0 behavior changes**
+
+Confirm `gg_partial_varpro(nvars = ...)` selects the top variables by importance, `scale = "auto"` resolves from model context, missing-data rules are stated, and deprecated aliases are not the primary interface.
+
+- [ ] **Step 3: Verify workflow-level calls**
+
+Run:
+
+```bash
+for fn in gg_shap shap_importance shap_beeswarm shap_dependence gg_variable gg_partial_rfsrc gg_varpro gg_beta_varpro gg_ivarpro gg_isopro gg_beta_uvarpro gg_udependent gg_sdependent gg_partial_varpro; do
+  rg -q "${fn}\\(" rf_shap.qmd rf_dependence.qmd varpro.qmd varpro_partial.qmd || echo "MISSING $fn"
+done
+```
+
+Expected: no output.
+
+- [ ] **Step 4: Render and inspect**
+
+Run `quarto render --to html`. Inspect ranking direction, variable labels, class/outcome scales, beeswarm color, dependence trends, partial-response units, RMST `tau`, and missing-data warnings.
+
+- [ ] **Step 5: Commit source and matching freeze**
+
+```bash
+git add rf_shap.qmd rf_dependence.qmd varpro.qmd varpro_partial.qmd _freeze/rf_shap/ _freeze/rf_dependence/ _freeze/varpro/ _freeze/varpro_partial/
+git commit -m "docs: align forest interpretation and varPro recipes"
+```
+
+### Task 12: Add the Random Hazard Forest recipe
+
+**Files:**
+- Modify: `rf_rhf.qmd`
+- Create: `data/rhf_precomputed.rds`
+- Read: `../ggRandomForests/vignettes/rhf.qmd`, `../ggRandomForests/vignettes/rhf_precomputed.rds`
+- Render: `_freeze/rf_rhf/`
+
+**Interfaces:**
+- Consumes: randomForestRHF 2.0.0 objects and ggRandomForests `gg_rhf()`, `gg_auct()`, `gg_rhf_importance()`, and `gg_tune_rhf()`.
+- Produces: one independently runnable longitudinal-hazard interpretation chapter.
+
+- [ ] **Step 1: Establish the counting-process question and data contract**
+
+Explain subject-interval rows, start/stop time, event status, time-varying covariates, and why this differs from one-row-per-subject survival data.
+
+- [ ] **Step 2: Copy and verify the package's reviewed fitted-object source**
+
+Run:
+
+```bash
+mkdir -p data
+cp ../ggRandomForests/vignettes/rhf_precomputed.rds data/rhf_precomputed.rds
+shasum -a 256 data/rhf_precomputed.rds
+```
+
+Expected SHA-256:
+`899a57188b1536fd92c887b70d04efab1abde6f0f5c06aca4da59a87cc5b8df1`.
+Load `data/rhf_precomputed.rds` as the default render path and assert its
+provenance before plotting:
+
+```r
+bundle <- readRDS("data/rhf_precomputed.rds")
+stopifnot(
+  identical(unname(bundle$versions[["ggRandomForests"]]), "4.0.0"),
+  identical(unname(bundle$versions[["randomForestRHF"]]), "2.0.0")
+)
+```
+
+Show the exact `randomForestRHF::rhf()` call that produced it in an `eval: false`
+provenance chunk because the fit and upstream tuning searches are too expensive
+for a routine book render. All four ggRandomForests extractors and plots execute
+against the reviewed bundle.
+
+- [ ] **Step 3: Teach the four decisions with executable code**
+
+```r
+rhf_curves <- gg_rhf(bundle$fit)
+plot(rhf_curves)
+
+auc <- gg_auct(
+  bundle$fit, marker = "haz", method = "incident",
+  auct_fit = bundle$auct_incident
+)
+plot(auc)
+
+importance <- gg_rhf_importance(bundle$fit, importance_fit = bundle$importance)
+plot(importance)
+
+tuning <- gg_tune_rhf(bundle$tune_risk)
+plot(tuning)
+```
+
+Use the exact bundle component names in the precomputed object. **Corrected 2026-08-29:** this step previously read `gg_rhf_importance(bundle$importance)`, which errors. `gg_rhf_importance` dispatches only on class `rhf`, and `bundle$importance` is an `importance.rhf`, so the fit is the object and the saved result goes in `importance_fit=`. Verified by running both forms. Add the cumulative-hazard, tuning-by-iAUC, and returned-object variations documented in the source vignette.
+
+- [ ] **Step 4: Explain upstream boundaries honestly**
+
+Name behavior that belongs to randomForestRHF rather than ggRandomForests: pointwise hazard support, time grid, AUC definition, importance calculation, and tuning search. Do not present an upstream limitation as a plotting defect.
+
+- [ ] **Step 5: Render, inspect, and commit with freeze**
+
+Run `quarto render --to html`. Inspect hazard versus cumulative-hazard facets, curve stopping times, AUC reference line, time-varying importance, tuning order, labels, and captions.
+
+```bash
+git add rf_rhf.qmd data/rhf_precomputed.rds _freeze/rf_rhf/
+git commit -m "docs: add Random Hazard Forest recipes"
+```
+
+### Task 13: Align figure finishing and delivery
+
+**Files:**
+- Modify: `themes.qmd`, `colors.qmd`, `annotation.qmd`, `legends.qmd`, `combination.qmd`, `manuscripts.qmd`, `researchday.qmd`, `presentations.qmd`
+- Render: `_freeze/themes/`, `_freeze/colors/`, `_freeze/annotation/`, `_freeze/legends/`, `_freeze/combination/`, `_freeze/manuscripts/`, `_freeze/researchday/`, `_freeze/presentations/`
+
+**Interfaces:**
+- Consumes: hvtiPlotR theme, legend, sizing, manuscript, and PowerPoint helpers plus patchwork.
+- Produces: output-target guidance shared by all analytical recipes.
+
+- [ ] **Step 1: Reorder each chapter from output target to mechanics**
+
+Lead with manuscript, poster, or slide constraints. Then show the relevant theme/decorator/export arguments. Keep theme selection separate from color/shape encoding and from file geometry.
+
+- [ ] **Step 2: Update the current hvtiPlotR behavior**
+
+Document that `theme_hv_poster()` suppresses legends by default; use `hv_ppt_series()` for matching color and shape; use `hv_legend_inside()` only when the panel has a safe empty corner; and use `save_manuscript()`, `hv_ggsave_dims()`, `hv_ph_location()`, and `save_ppt()` for their current output roles.
+
+- [ ] **Step 3: Preserve clinician-facing output checks**
+
+Every principal figure must have self-contained labels, a readable legend or direct series labels, color/shape redundancy where groups matter, and dimensions appropriate to the stated destination.
+
+- [ ] **Step 4: Verify current interfaces and deprecated-name absence**
+
+Run:
+
+```bash
+rg -n '\b(theme_hv_manuscript|theme_hv_poster|theme_hv_ppt_light|theme_hv_ppt_dark|hv_ppt_series|hv_legend_inside|save_manuscript|hv_ggsave_dims|hv_ph_location|save_ppt)\(' themes.qmd colors.qmd annotation.qmd legends.qmd combination.qmd manuscripts.qmd researchday.qmd presentations.qmd
+rg -n '\b(hv_theme_|theme_man\(|theme_poster\(|theme_ppt\()' themes.qmd colors.qmd annotation.qmd legends.qmd combination.qmd manuscripts.qmd researchday.qmd presentations.qmd
+```
+
+Expected: current interfaces found; the deprecated-name search returns no matches.
+
+- [ ] **Step 5: Render and inspect all output chapters**
+
+Run `quarto render --to html`. Inspect theme defaults, font fallback, legend suppression/placement, palette order, direct labels, panel dimensions, combination alignment, PDF export examples, and editable PowerPoint output.
+
+- [ ] **Step 6: Commit source and matching freeze**
+
+```bash
+git add themes.qmd colors.qmd annotation.qmd legends.qmd combination.qmd manuscripts.qmd researchday.qmd presentations.qmd _freeze/themes/ _freeze/colors/ _freeze/annotation/ _freeze/legends/ _freeze/combination/ _freeze/manuscripts/ _freeze/researchday/ _freeze/presentations/
+git commit -m "docs: align figure finishing and delivery"
+```
+
+### Task 14: Add the function-to-recipe map and close the narrative
+
+**Files:**
+- Modify: `function_map.qmd`
+- Modify: `summary.qmd`, `packages.bib`, `references.bib`
+- Render: `_freeze/function_map/` if the chapter contains an executable inventory chunk
+
+**Interfaces:**
+- Consumes: package exports and final chapter anchors.
+- Produces: a searchable coverage contract and final reader handoff.
+
+- [ ] **Step 1: Build the map from explicit package export vectors**
+
+Create a data frame with columns `Package`, `Function`, `Role`, `Recipe`, and `Coverage`. Include all workflow-level exports named in the design and mark each as `Worked recipe` or `Package reference`. Render it as a searchable HTML table or a compact Quarto table without requiring a new dependency.
+
+- [ ] **Step 2: Add automatic coverage assertions inside the chunk**
+
+Use explicit expected vectors and stop on omissions:
+
+```r
+expected <- list(
+  hvtiR = c("install", "status", "update", "doctor"),
+  hvtiPlotR = c(
+    "hv_alluvial", "hv_atrisk", "hv_atrisk_compose", "hv_balance",
+    "hv_consort", "hv_consort_exclude", "hv_consort_patients",
+    "hv_consort_start", "hv_consort_summary", "hv_eda", "hv_followup",
+    "hv_ggsave_dims", "hv_hazard", "hv_legend_inside", "hv_longitudinal",
+    "hv_mirror_hist", "hv_nnt", "hv_nonparametric", "hv_ordinal",
+    "hv_ph_location", "hv_ppt_palette", "hv_ppt_series", "hv_sankey",
+    "hv_spaghetti", "hv_stacked", "hv_survival",
+    "hv_survival_difference", "hv_trends", "hv_upset", "hv_venn",
+    "save_manuscript", "save_ppt", "theme_hv_manuscript",
+    "theme_hv_poster", "theme_hv_ppt_dark", "theme_hv_ppt_light"
+  ),
+  hvtiRtables = c("hv_tbl_summary", "hv_man_table", "hv_man_footnotes",
+    "hv_man_table_save", "hv_check_docx", "hv_man_table_jtcvs",
+    "hv_test_footnotes_jtcvs", "hv_man_table_save_jtcvs"),
+  ggRandomForests = c("gg_error", "gg_rfsrc", "gg_survival", "gg_vimp",
+    "gg_shap", "gg_variable", "gg_partial_rfsrc", "gg_roc", "gg_brier",
+    "gg_varpro", "gg_beta_varpro", "gg_ivarpro", "gg_isopro",
+    "gg_beta_uvarpro", "gg_udependent", "gg_sdependent",
+    "gg_partial_varpro", "gg_rhf", "gg_auct", "gg_rhf_importance",
+    "gg_tune_rhf"),
+  TemporalHazard = c(
+    "hazard", "hzr_argument_mapping", "hzr_bootstrap", "hzr_calibrate",
+    "hzr_competing_risks", "hzr_deciles", "hzr_gof", "hzr_kaplan",
+    "hzr_nelson", "hzr_phase", "hzr_phase_cumhaz", "hzr_phase_hazard",
+    "hzr_read_outhaz", "hzr_stepwise", "hzr_translate_sas",
+    "stepwise_trace"
+  )
+)
+stopifnot(all(unlist(expected) %in% unlist(lapply(names(expected), getNamespaceExports))))
+```
+
+- [ ] **Step 3: Rewrite `summary.qmd` as the next-analysis handoff**
+
+Recap the R workflow: frame the question, choose the recipe, inspect the object, read the result, deliver it, and record provenance. Link hvtiRtemplates only as future companion material, without teaching its API.
+
+- [ ] **Step 4: Reconcile citations**
+
+Add only references cited by the new TemporalHazard or RHF chapters. Run:
+
+```bash
+rg -o '@[A-Za-z0-9:_-]+' --glob '*.qmd' | sed 's/.*@//' | sort -u > /tmp/hvti-cited.txt
+rg -o '^@[A-Za-z]+\{[^,]+' references.bib packages.bib | sed 's/.*{//' | sort -u > /tmp/hvti-bib.txt
+comm -23 /tmp/hvti-cited.txt /tmp/hvti-bib.txt
+```
+
+Expected: no missing citation keys.
+
+- [ ] **Step 5: Render, inspect, and commit**
+
+Run `quarto render --to html`. Inspect the map links, column wrapping, searchability/readability, summary links, and references. Commit `function_map.qmd`, `summary.qmd`, bibliography changes, and `_freeze/function_map/` if generated.
+
+```bash
+git add function_map.qmd summary.qmd packages.bib references.bib _freeze/function_map/
+git commit -m "docs: add workflow coverage map"
+```
+
+### Task 15: Run the full voice, API, and policy sweep
+
+**Files:**
+- Modify: any `.qmd` still failing the approved editorial or API contract
+- Render: the same-basename `_freeze/` directory for every executable chapter changed
+
+**Interfaces:**
+- Consumes: all revised chapters.
+- Produces: consistent full-book prose and no known stale interfaces before the expensive clean rebuild.
+
+- [ ] **Step 1: Audit the recipe contract**
+
+Run a chapter inventory that prints headings and chunk counts:
+
+```bash
+for f in *.qmd; do
+  printf '\n%s\n' "$f"
+  rg '^## ' "$f" || true
+done
+```
+
+Review each worked chapter manually against question, use, data, build, inspect, read, adapt, deliver, and pitfalls. Combined headings are acceptable only when the content remains findable.
+
+- [ ] **Step 2: Audit voice and R-replaces-SAS language**
+
+Run:
+
+```bash
+rg -n -i 'in order to|it is important to note|leverage|utilize|seamless|powerful|comprehensive|alternative to SAS|either SAS or R|continue to use SAS' --glob '*.qmd'
+rg -n '—' --glob '*.qmd'
+```
+
+Review every match in context. Remove AI tells and parallel-SAS language. Leave technical terms or citations only when the match is legitimate. Draft no em dashes.
+
+- [ ] **Step 3: Audit superseded APIs**
+
+Run:
+
+```bash
+rg -n '\b(hazard_plot|survival_difference_plot|nnt_plot|hv_theme_|theme_man\(|theme_poster\(|theme_ppt\(|lbls\s*=|base_annotations\s*=|surv_partial\.rfsrc)\b' --glob '*.qmd'
+```
+
+Expected: no executable uses. A coverage-map entry may name a deprecated alias only to route readers away from it.
+
+- [ ] **Step 4: Audit data safety and reproducibility**
+
+Confirm all simulation has an explicit seed, all file examples write only generated artifacts, and no example reads an untracked clinical extract. Run `git grep -n -i 'mrn\|patient_name\|medical.record\|phi' -- '*.qmd'` and review every match.
+
+- [ ] **Step 5: Render any corrected executable chapters and commit**
+
+Run `quarto render --to html`, inspect each corrected chapter, and stage only
+those sources and their same-basename `_freeze/` directories:
+
+```bash
+git diff --name-only -- '*.qmd' | while IFS= read -r f; do
+  git add "$f" "_freeze/${f%.qmd}/"
+done
+```
+
+```bash
+git commit -m "docs: complete the full-book voice and API sweep"
+```
+
+### Task 16: Force one clean integration rebuild
+
+**Files:**
+- Replace: `_freeze/`
+- Regenerate but do not commit: `.quarto/`, `_book/`, `*_files/`, `HVTI-Recipes.pdf`, `.tex`
+- Modify through render: `sibling-versions.json`
+
+**Interfaces:**
+- Consumes: all final sources and the verified package baseline.
+- Produces: one coherent freeze cache and reviewable HTML/PDF preview.
+
+- [ ] **Step 1: Confirm a clean source worktree and capture the pre-rebuild cache list**
+
+Run:
+
+```bash
+git status --short
+find _freeze -type f | sort > /tmp/hvti-freeze-before.txt
+```
+
+Expected: no source changes. Stop if the worktree contains uncommitted user work.
+
+- [ ] **Step 2: Re-verify installed versions**
+
+Run the exact version assertion from Task 1 Step 4. Expected: exit 0.
+
+- [ ] **Step 3: Remove every local cache layer and render HTML**
+
+Run only after Step 1 confirms the targets contain no uncommitted user work:
+
+```bash
+rm -rf _freeze .quarto _book *_files
+quarto render --to html
+```
+
+Expected: all executable chapters run, HTML render exits 0, and `_freeze/` is rebuilt from live chunks rather than shadow cache.
+
+- [ ] **Step 4: Render the local PDF**
+
+Run:
+
+```bash
+quarto render --to pdf
+```
+
+Expected: exit 0 on macOS using `quartz_pdf`; `HVTI-Recipes.pdf` and `.tex` remain ignored.
+
+- [ ] **Step 5: Validate cache and provenance**
+
+Run:
+
+```bash
+cat sibling-versions.json
+git status --short
+git check-ignore _book HVTI-Recipes.pdf
+```
+
+Expected: the JSON records hvtiR 1.0.13, hvtiPlotR 2.7.11, ggRandomForests 4.0.0, TemporalHazard 1.2.6, and hvtiRtables 1.0.0; `_book` and the PDF are ignored; source files are unchanged.
+
+- [ ] **Step 6: Review orphan deletions before staging**
+
+For every deleted freeze basename, search with a preceding slash in `_book/` and freeze JSON results. Confirm it is no longer live. Do not use an unanchored substring test because `poster-1.png` can match `fig-themes-poster-1.png`.
+
+- [ ] **Step 7: Commit the coherent freeze cache**
+
+```bash
+git add _freeze sibling-versions.json
+git commit -m "build: rebuild recipes against current family mains"
+```
+
+### Task 17: Complete visual QA and prepare the private preview
+
+**Files:**
+- Read: every `_book/*.html`, `_book/HVTI-Recipes.pdf` or the generated root PDF
+- Modify: only chapters with visual or editorial defects, plus matching freeze output
+- Create: no tracked QA artifact unless the user asks for one
+
+**Interfaces:**
+- Consumes: the clean integration build.
+- Produces: evidence that the rendered figures and tables are correct enough for user preview.
+
+- [ ] **Step 1: Inventory rendered pages and figures**
+
+Run:
+
+```bash
+find _book -maxdepth 1 -name '*.html' | sort
+find _book -type f \( -name '*.png' -o -name '*.svg' -o -name '*.pdf' \) | sort
+```
+
+Compare page count with `_quarto.yml` and confirm every configured chapter has HTML output.
+
+- [ ] **Step 2: Inspect every HTML chapter**
+
+Use the in-app browser control skill at execution time. For each page check sidebar position, headings, code wrapping, figure/table presence, labels, legends, captions, cross-references, previous/next links, and overflow. For analytical chapters also verify the reading guide matches the rendered result.
+
+- [ ] **Step 3: Inspect the full PDF**
+
+Render the PDF to page images using the PDF skill at execution time. Check table width, figure cropping, Unicode glyphs (`τ`, `α`, `•`, `≥`), page breaks, captions, and internal links/bookmarks.
+
+- [ ] **Step 4: Correct and re-render any defects**
+
+For each source correction, run `quarto render --to html`, inspect the corrected
+HTML, rerun `quarto render --to pdf` when layout is affected, and stage every
+changed source beside its same-basename freeze directory:
+
+```bash
+git diff --name-only -- '*.qmd' | while IFS= read -r f; do
+  git add "$f" "_freeze/${f%.qmd}/"
+done
+git commit -m "fix: correct rendered recipe review findings"
+```
+
+- [ ] **Step 5: Run final automated gates**
+
+Run:
+
+```bash
+git diff --check main...HEAD
+quarto render --to html
+git status --short
+```
+
+Expected: no whitespace errors, render exit 0, and no uncommitted tracked changes. If the final render changes `_freeze/`, inspect and commit it before continuing.
+
+- [ ] **Step 6: Prepare the user handoff without publishing**
+
+Provide clickable local links to `_book/index.html` and the generated PDF, the exact branch and commit, the package baseline, a chapter-by-chapter change summary, and any known limitations. Do not push, publish, open a PR, or trigger `publish.yml` until the user approves the preview.
+
+## Final Acceptance Checklist
+
+- [ ] The navigation follows analytical questions and contains all configured chapters.
+- [ ] hvtiR install/status/update/doctor patterns are current and reader-facing.
+- [ ] hvtiPlotR recipes use current constructors, the two-step pattern, and current themes/export helpers.
+- [ ] TemporalHazard recipes cover fitting, prediction, diagnostics, selection/bootstrap, competing risks, and one-way SAS migration.
+- [ ] ggRandomForests recipes cover forest checks, prediction, VIMP, SHAP, dependence, ROC/Brier, varPro, and RHF.
+- [ ] hvtiRtables recipes cover all eight exports and validated CORR/JTCVS Word output.
+- [ ] hvtiRtemplates is deferred to a future book with only a brief handoff.
+- [ ] Every substantive result has a CORR-biostatistician reading guide and careful statistical language.
+- [ ] All examples use synthetic or public data and no PHI.
+- [ ] `quarto render --to html` and the local PDF render both succeed from a clean cache.
+- [ ] Every rendered chapter and the full PDF have been visually inspected.
+- [ ] `sibling-versions.json` records the approved package versions.
+- [ ] `_freeze/` is committed; `_book/`, PDF, TeX, and intermediates are not.
+- [ ] The private preview is ready for user review and nothing has been released.

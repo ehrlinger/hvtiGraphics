@@ -1,5 +1,9 @@
 # Bar chart plots
 
+How many observations fall in each category, and which denominator makes the
+comparison honest? Bar charts answer the count question directly and switch to
+proportions when cohort size would otherwise dominate the story.
+
 ```{r}
 #| label: setup
 #| include: false
@@ -16,7 +20,7 @@ CABG this year? What fraction arrived in NYHA class III or IV? How did the size
 of each annual cohort change over the study period? Whenever the thing you want
 to show is a count or a proportion of a category, and you want it broken out
 across a second axis (usually time), the bar chart is the plain, honest display
-to reach for. Nobody misreads a bar.
+to reach for. The geometry is familiar, but the denominator still needs saying.
 
 There are two related jobs in this chapter, and the package splits them across
 two functions. `hv_eda()` [@R-hvtiPlotR] is the exploratory workhorse you point
@@ -56,11 +60,11 @@ one row per time-window by series combination, with a count column. You do not
 hand it raw patient records. `sample_longitudinal_counts_data()` derives that
 shape from a simulated 300-patient registry so the recipe runs end to end.
 
-## Build it
+## Inspect it
 
-Start from the bare panel for `hv_longitudinal()` so you can see what the
-constructor produced before any styling. Build the S3 object once and reuse it
-across both panels below.
+Build the `hv_longitudinal` S3 object once and inspect its class and metadata
+before plotting. The metadata records the count, interval, and series columns
+that the plot method will use.
 
 ```{r}
 #| label: lc_data
@@ -69,7 +73,15 @@ lc_dat
 
 # Build the S3 object once; use for both panels
 lc <- hv_longitudinal(lc_dat)
+class(lc)
+lc$meta
 ```
+
+## Build it
+
+Start from the bare panel for `hv_longitudinal()` so you can see what the
+constructor produced before any styling. Reuse the inspected object across both
+panels below.
 
 ```{r}
 #| label: lc_bare
@@ -80,7 +92,7 @@ That is the raw grouped bar chart: paired bars at each follow-up window, no fill
 colours, no axis range, no theme. Now layer on the house style. We give the two
 series distinct fills, expand the y-axis with `coord_cartesian()` so the tallest
 bar has headroom, and let `hv_legend_inside()` drop the legend into the empty
-upper-right corner where the bars are short.
+upper-left corner where the short early-window bars leave room.
 
 ```{r}
 #| label: fig-bar
@@ -91,35 +103,39 @@ p_lc_bar <- plot(lc) +
     name   = NULL
   ) +
   ggplot2::scale_y_continuous(
-    breaks = seq(0, 2000, 500),
+    breaks = seq(0, 700, 100),
     expand = c(0, 0)
   ) +
-  ggplot2::coord_cartesian(ylim = c(0, 2200)) +
+  ggplot2::coord_cartesian(ylim = c(0, 700)) +
   ggplot2::labs(x = NULL, y = "Count (n)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 hv_legend_inside(p_lc_bar)
 ```
 
 ## Read it
 
-A grouped count bar chart is read one window at a time. A few things to look
-for:
+A grouped count bar chart is read one window at a time. Follow-up window is on
+the x-axis and raw count is on the y-axis. Within each window, compare unique
+patients with all measurements contributed by those patients; these are two
+different denominators, not percentages of a shared total. The bars describe
+data availability and cannot establish why follow-up thinned or whether an
+outcome changed. A few things to look for:
 
-- **Patients should always be at least Measurements.** Each patient contributes
-  one or more measurements, never the other way round, so the Patients bar
-  should never sit below the Measurements bar in the same window. If it does,
-  the `series_col` mapping is pointing at the wrong column and the two series are
-  swapped.
-- **The shape of the decline.** Both bars fall as you move right across follow-up
-  windows, because patients drop out of the registry over time. A gentle taper is
-  expected; a cliff between two windows is a data-availability artefact worth
-  chasing down before you trust the curves built on those windows.
-- **The gap between the two bars.** A wide gap in a window means many patients
-  there are contributing only a single measurement, which tells you how much you
-  can lean on within-patient change in that window.
+- **Measurements should always be at least Patients.** Each patient contributes
+  one or more measurements, so the Measurements bar should never sit below the
+  Patients bar in the same window. If it does, either the series are swapped or
+  the count construction needs checking.
+- **The shape across windows.** These are disjoint follow-up intervals, not a
+  cumulative at-risk count, so the bars do not have to decline from left to
+  right. A thin interval identifies a part of follow-up with little information;
+  check its counts before trusting a curve there.
+- **The gap between the two bars.** A wide gap means some patients contributed
+  more than one measurement within that interval. A narrow gap means most
+  represented patients contributed one measurement.
 
-## Variations
+## Adapt it
 
 The remaining variants come from `hv_eda()`, which draws the single-variable
 exploratory bars.
@@ -134,8 +150,12 @@ of the raw column name. Here, sex by surgery year.
 ```{r}
 #| label: fig-bar-binary-count
 #| fig-cap: "Count bars of a binary categorical variable by surgery year, with missing values kept as an explicit level"
-plot(hv_eda(dta_eda, x_col = "year", y_col = "male",
-            y_label = "Sex")) +
+eda_male <- hv_eda(dta_eda, x_col = "year", y_col = "male",
+                   y_label = "Sex")
+class(eda_male)
+eda_male$meta
+
+plot(eda_male) +
   scale_fill_manual(
     values = c("0" = "steelblue", "1" = "firebrick", "(Missing)" = "grey80"),
     labels = c("0" = "Female", "1" = "Male", "(Missing)" = "Missing"),
@@ -143,8 +163,15 @@ plot(hv_eda(dta_eda, x_col = "year", y_col = "male",
   ) +
   scale_x_discrete(breaks = seq(2005, 2020, 5)) +
   labs(x = "Surgery Year", y = "Count") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "right")
 ```
+
+The x-axis is surgery year and the y-axis is the number of records in that
+year. Each bar is partitioned into female, male, and missing records, so the
+annual record count is the denominator behind the comparison. Differences in
+the bars describe case mix and volume; they do not show that calendar time
+caused the mix to change.
 
 ### Binary categorical: percentage bars
 
@@ -167,8 +194,14 @@ plot(hv_eda(dta_eda, x_col = "year", y_col = "cabg",
   scale_x_discrete(breaks = seq(2005, 2020, 5)) +
   scale_y_continuous(labels = scales::percent) +
   labs(x = "Surgery Year", y = "Proportion") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "right")
 ```
+
+Here each year's full bar is the denominator and the segments sum to 100%.
+Compare shares rather than heights, and remember that equal-height bars can sit
+on very different numbers of patients. The display does not estimate a CABG
+effect or explain why practice changed.
 
 ### Ordinal and multi-level categorical
 
@@ -191,7 +224,8 @@ plot(hv_eda(dta_eda, x_col = "year", y_col = "nyha",
   ) +
   scale_x_discrete(breaks = seq(2005, 2020, 5)) +
   labs(x = "Surgery Year", y = "Count") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "right")
 ```
 
 ### Character categorical
@@ -215,7 +249,8 @@ plot(hv_eda(dta_eda, x_col = "year", y_col = "valve_morph",
   ) +
   scale_x_discrete(breaks = seq(2005, 2020, 5)) +
   labs(x = "Surgery Year", y = "Count") +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  theme(legend.position = "right")
 ```
 
 ### Longitudinal: the numeric table panel
@@ -231,7 +266,13 @@ p_lc_tbl <- plot(lc, type = "table") +
     values = c(Patients = "steelblue", Measurements = "firebrick"),
     guide  = "none"
   ) +
-  theme_hv_manuscript()
+  theme_hv_manuscript() +
+  labs(x = NULL, y = NULL) +
+  theme(
+    axis.text.x  = element_blank(),
+    axis.ticks.x = element_blank(),
+    axis.title   = element_blank()
+  )
 
 p_lc_tbl
 ```
@@ -250,6 +291,13 @@ table gives the reader the exact counts.
 p_lc_bar / p_lc_tbl +
   patchwork::plot_layout(heights = c(3, 1))
 ```
+
+## Deliver it
+
+Use [Finish and deliver the result](publications.qmd) once the caption names
+whether the bars show counts or within-year percentages. For the longitudinal
+display, keep the count table attached to the bars so the clinical reader can
+see the exact patient and measurement totals.
 
 ## Pitfalls
 

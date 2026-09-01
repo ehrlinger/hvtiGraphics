@@ -1,13 +1,15 @@
 # Using R for figures
 
 If you have written any `ggplot2` [@R-ggplot2], the hvtiPlotR [@R-hvtiPlotR] figures will feel familiar --
-you are still building a plot in layers with `+`. The difference is where you
-start. Rather than mapping raw columns to a geom yourself, you hand the data to a
-constructor that knows what the figure needs, and it returns a plot you finish.
+you are still building a plot in layers with `+`. R is the working language in
+this book, replacing the old SAS figure-macro workflow with a shared pattern:
+constructor, then `plot()`, then `+`. Rather than mapping raw columns to a geom
+yourself, you hand the data to a constructor that knows what the figure needs,
+and it returns a plot you finish.
 
 ## The two-step pattern
 
-Every hvtiPlotR figure is built the same way:
+Every hvtiPlotR figure is built the same way: constructor -> `plot()` -> `+`.
 
 ```r
 # 1. Construct: validate the data and compute what the figure needs.
@@ -20,13 +22,14 @@ plot(obj) +
   theme_hv_manuscript()
 ```
 
-The constructor (`hv_*()`) does the analysis -- fitting the survival curve,
+The constructor (`hv_*()`) does the analysis, fitting the survival curve,
 computing standardized differences, aggregating annual counts. `plot()` returns
 a ggplot with the data drawn but nothing styled: no colour scale, no axis
-labels, no theme. That split is deliberate. The figure's content is decided once,
-in the constructor, and how it looks is decided later, with layers you can swap
-without touching the analysis. The same object becomes a manuscript figure or a
-poster panel by changing only the theme.
+labels, no theme. Then `+` is ordinary ggplot2: add the labels, scale, and house
+theme that make the figure ready for its reader. That split is deliberate. The
+figure's content is decided once, in the constructor, and how it looks is
+decided later, with layers you can swap without touching the analysis. The same
+object becomes a manuscript figure or a poster panel by changing only the theme.
 
 ## Reproducible by default
 

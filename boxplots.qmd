@@ -1,5 +1,9 @@
 # Box plots
 
+How do the centre and spread of a continuous measurement compare across
+clinical groups? A box plot makes that comparison compact, provided we remember
+what its summary leaves out.
+
 ```{r}
 #| label: setup
 #| include: false
@@ -29,22 +33,33 @@ rest of the book. As with the other bare-ggplot recipes, you write the
 ## The data it needs
 
 A box plot needs a categorical column for the x-axis and a continuous column for
-the y-axis. We use `hvtiPlotR::sample_eda_data()` and detect a numeric column and
-a categorical grouping column programmatically. The first numeric column here is
-`year` (the surgery year) and the first categorical is `valve_morph` (valve
-morphology: Bicuspid, Tricuspid, or Unicuspid).
+the y-axis. We use `hvtiPlotR::sample_eda_data()` with `valve_morph` (valve
+morphology: Bicuspid, Tricuspid, or Unicuspid) as the group and `ef` (ejection
+fraction) as the measurement. Naming both columns directly keeps the example
+tied to one clinical question.
 
 ```{r}
 #| label: data
 dat <- sample_eda_data()
-num <- names(dat)[vapply(dat, is.numeric, logical(1))][1]
-grp <- names(dat)[vapply(dat, function(x) is.factor(x) || is.character(x), logical(1))][1]
+num <- "ef"
+grp <- "valve_morph"
 c(numeric = num, group = grp)
 ```
 
 The `.data[[grp]]` idiom is how ggplot2 reads a column whose name lives in a
-variable, so the same recipe runs against whatever columns the detection step
-selected.
+variable, so the same recipe runs after you replace `grp` or `num` with another
+column name.
+
+## Inspect it
+
+Because this recipe creates a ggplot directly, inspect the group counts and
+numeric summary before collapsing the observations into boxes.
+
+```{r}
+#| label: boxplots_inspect
+table(dat[[grp]], useNA = "ifany")
+summary(dat[[num]])
+```
 
 ## Build it
 
@@ -58,8 +73,8 @@ ggplot(dat, aes(x = .data[[grp]], y = .data[[num]])) +
   geom_boxplot() +
   labs(
     title = "Numeric distribution by group",
-    x = grp,
-    y = num
+    x = "Valve morphology",
+    y = "Ejection fraction (%)"
   ) +
   theme_hv_manuscript()
 ```
@@ -72,7 +87,11 @@ anything past the whiskers is drawn as an individual outlier point.
 
 ## Read it
 
-Read a box plot one box at a time, then across.
+Read a box plot one box at a time, then across. Valve morphology is on the
+x-axis and ejection fraction is on the y-axis. Each box summarizes the
+nonmissing values in its group, with no weighting or model adjustment. Compare
+medians and IQRs, but do not read their separation as a causal morphology effect
+or as a formal test of a group difference.
 
 - **The median line.** This is the typical value for the group, and comparing
   median lines across boxes is the first thing your eye should do. A box that
@@ -92,7 +111,7 @@ What a box plot does not show is the shape inside the box. Two groups can have
 identical boxes while one is a single clump and the other is two separated
 clusters. That blind spot is the reason for the next variation.
 
-## Variations
+## Adapt it
 
 ### Box plot with jittered points
 
@@ -110,8 +129,8 @@ ggplot(dat, aes(x = .data[[grp]], y = .data[[num]])) +
   geom_jitter(width = 0.15, alpha = 0.3, size = 0.7) +
   labs(
     title = "Box plot with jittered observations",
-    x = grp,
-    y = num
+    x = "Valve morphology",
+    y = "Ejection fraction (%)"
   ) +
   theme_hv_manuscript()
 ```
@@ -134,8 +153,8 @@ ggplot(dat, aes(x = .data[[grp]], y = .data[[num]])) +
   geom_boxplot(varwidth = TRUE) +
   labs(
     title = "Box width scaled to group size",
-    x = grp,
-    y = num
+    x = "Valve morphology",
+    y = "Ejection fraction (%)"
   ) +
   theme_hv_manuscript()
 ```
@@ -156,15 +175,22 @@ ggplot(dat, aes(x = .data[[grp]], y = .data[[num]], fill = .data[[grp]])) +
   scale_fill_brewer(palette = "Set1", guide = "none") +
   labs(
     title = "Numeric distribution by group, filled",
-    x = grp,
-    y = num
+    x = "Valve morphology",
+    y = "Ejection fraction (%)"
   ) +
   theme_hv_manuscript()
 ```
 
-When the fill encodes a *second* variable the boxes are dodged by — not the
-x-axis group — the legend earns its place; keep it then, placed inside the panel
+When the fill encodes a *second* variable the boxes are dodged by, not the
+x-axis group, the legend earns its place; keep it then, placed inside the panel
 so it does not crowd the boxes.
+
+## Deliver it
+
+When the group definition and box rule are clear in the caption, continue to
+[Finish and deliver the result](publications.qmd) for the manuscript, poster, or
+slide export path. If sample size affects the interpretation, deliver the
+jittered or variable-width version rather than the bare box alone.
 
 ## Pitfalls
 

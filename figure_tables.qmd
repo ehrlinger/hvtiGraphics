@@ -14,7 +14,7 @@ Many manuscript figures are paired with a small numeric table: a
 numbers-at-risk strip below a Kaplan-Meier curve, or the count panel
 beneath a longitudinal participation bar chart. The `hvtiPlotR` plot
 objects carry these companion tables alongside the plot data, so we can
-pull the numbers straight out and render them with `gt` [@R-gt] — the
+pull the numbers straight out and render them with `gt` [@R-gt], the
 right tool, as in the [publication tables](qt_tables.qmd) chapter, when a
 table's destination is this book or another HTML document.
 [Manuscript tables](hv_tables.qmd) headed for a Word file go through
@@ -32,6 +32,14 @@ reader to read that tail with caution. Reach for a companion table whenever the
 figure invites a question the plot cannot answer on its own ("based on how
 many?") and you want the answer on the same page rather than buried in the text.
 
+The at-risk count is a denominator, not a second estimate. At time $t$ it counts
+patients who are still observed and event-free immediately before $t$. An event
+changes the survival curve and removes that patient from later risk sets;
+censoring removes a patient from later risk sets without creating a survival
+step. Thus the count tells you how much information supports $S(t)$ and its
+confidence interval, but it does not tell you the survival probability by
+itself.
+
 We work through two cases the package already supports: the at-risk strip that a
 survival curve needs beside it, and the participation counts that sit beneath a
 longitudinal bar chart. In both, the numbers already live on the plot object, so
@@ -45,9 +53,12 @@ strata × report-time) and the per-time-point summary in `$tables$report`.
 
 ```{r}
 #| label: km_build
-km <- hv_survival(sample_survival_data(n = 500, seed = 42))
+km <- hv_survival(
+  sample_survival_data(n = 500, seed = 42),
+  report_times = seq(0, 20, 5)
+)
 names(km$tables)
-str(km$tables$risk)
+km$tables$risk
 ```
 
 We render the at-risk table directly with `gt`, relabelling the columns
@@ -69,8 +80,8 @@ km$tables$risk |>
 ```
 
 The companion report table carries the survival estimates and confidence
-limits at the same report times — useful as the figure caption's numeric
-backing.
+limits at the same report times. It lets you quote a 5- or 10-year estimate
+together with the denominator that supports it.
 
 ```{r}
 #| label: km_report_gt
@@ -87,6 +98,30 @@ km$tables$report |>
     n.event     = "Events"
   ) |>
   fmt_number(columns = c(surv, lower, upper), decimals = 3)
+```
+
+For the figure itself, build the curve and the risk panel from that same `km`
+object. `hv_atrisk_compose()` reads the finished curve's x-range and applies it
+to the table, so the 0-, 5-, 10-, 15-, and 20-year counts sit directly beneath
+their curve positions. This is why the report times and axis breaks are set to
+the same sequence.
+
+```{r}
+#| label: fig-tables-atrisk
+#| fig-cap: "Kaplan-Meier survival with the supporting at-risk denominator aligned at 0, 5, 10, 15, and 20 years"
+#| fig-height: 5
+km_curve <- plot(km) +
+  scale_color_manual(values = c(All = "steelblue"), guide = "none") +
+  scale_fill_manual(values = c(All = "steelblue"), guide = "none") +
+  scale_x_continuous(breaks = seq(0, 20, 5)) +
+  scale_y_continuous(breaks = seq(0, 100, 20),
+                     labels = function(x) paste0(x, "%")) +
+  coord_cartesian(xlim = c(0, 20), ylim = c(0, 100)) +
+  labs(x = "Years after operation", y = "Freedom from death (%)") +
+  theme_hv_manuscript()
+
+km_risk <- hv_atrisk(km)
+hv_atrisk_compose(km_curve, km_risk)
 ```
 
 ## Longitudinal count table
@@ -159,11 +194,9 @@ p_bar / p_tbl + plot_layout(heights = c(3, 1))
   useful if its columns sit under the same time points the curve uses. If the
   plot runs 0 to 20 years on a five-year grid, the at-risk table needs the same
   grid, or the reader cannot line a count up with the part of the curve it
-  describes. Because `$tables$risk` is computed by the same constructor that
-  drew the curve, the report times already agree; the trap appears when you
-  hand-edit one axis or crop the plot with `coord_cartesian()` and forget the
-  table still shows the full range. Change the axis in one place and check the
-  other followed.
+  describes. Set `report_times` explicitly when you build `km`, use those times
+  as the curve's breaks, and let `hv_atrisk_compose()` align the finished
+  panels. If you later crop the curve, inspect the table again.
 - **Keeping the table and figure in sync.** The reason we pull numbers off the
   plot object rather than recomputing them is to keep a single source of truth.
   The moment you summarise the cohort separately for the table, the two can

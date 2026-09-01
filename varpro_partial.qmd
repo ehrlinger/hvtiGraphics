@@ -29,6 +29,15 @@ classification, and survival probability, restricted mean survival time, or
 ensemble mortality for a survival fit. That choice is the difference between a
 figure a clinician reads at a glance and one only the modeller understands.
 
+The default is `scale = "auto"`, which reads the family off the fit: a
+classification forest resolves to probability, a survival forest to survival
+probability, and a regression forest to a generic scale. Generic still plots the
+response in its own units, but it labels the axis "Partial Effect" rather than
+naming the response, so a regression figure headed for a manuscript needs its
+own `labs(y = ...)`. Auto needs the fitted `object` to read a family at all.
+Hand it precomputed partial-dependence data and no fit and it warns, then falls
+back to that same generic axis.
+
 ## The data it needs
 
 `gg_partial_varpro()` reads a fitted `varpro` object, so we build one of each
@@ -50,8 +59,15 @@ c(regression = o_reg$family, classification = o_cls$family, survival = o_surv$fa
 
 Across all three the call is the same; only the `scale` (and, for survival, an
 optional `time`) changes. With wide data we pass `nvars` so `partialpro` only
-computes the top-ranked handful — it is the expensive step, and on a survival
-fit it is expensive enough to matter.
+computes the top-ranked handful, because it is the expensive step, and on a
+survival fit it is expensive enough to matter.
+
+`nvars` selects by importance, not by list position. The variables are reordered
+by their rank in `varPro::get.topvars()` first, and only then does `nvars` keep
+the top few, so `nvars = 6` returns the six varPro ranked highest rather than the
+six that happened to come back first. The panels arrive sorted the same way, by
+importance rather than alphabetically, so the top-left panel is the strongest
+variable and you can read the grid in rank order.
 
 ## Regression: the response scale
 
@@ -66,11 +82,18 @@ plot(gg_partial_varpro(object = o_reg, nvars = 6, method = "rnd")) & theme_hv_ma
 
 `plot()` returns a `patchwork` panel, so we theme it with `&`. A rising curve is
 a variable that pushes the prediction up over its range; a flat one is a variable
-the forest barely leans on once the others are fixed.
+the forest barely leans on once the others are fixed. The panels arrive in varPro
+importance order, so `Gr.Liv.Area` leading the grid is a statement about rank and
+not about the alphabet.
+
+Note the y-axis label. The values are dollars, but a regression fit resolves to
+the generic scale and prints "Partial Effect", which is the one place this
+chapter's figures need a manual `labs(y = "Sale price (USD)")` before they go
+into a manuscript.
 
 ## Classification: probability or log-odds
 
-A classification fit defaults to **probability** — `P(Y = the target class)`,
+A classification fit defaults to **probability**, `P(Y = the target class)`,
 bounded 0 to 1 and the scale a clinician expects.
 
 ```{r}
@@ -122,7 +145,7 @@ plot(gg_partial_varpro(object = o_surv, nvars = 4, scale = "rmst", method = "rnd
 ```
 
 The third option, `scale = "mortality"`, is the unbounded ensemble-mortality
-score — higher is worse, the opposite direction from the two bounded scales above.
+score, where higher is worse, the opposite direction from the two bounded scales above.
 It is the right choice only when you are comparing against other random-forest
 mortality outputs; for a figure a reviewer reads, prefer `surv` or `rmst`.
 
@@ -131,10 +154,19 @@ mortality outputs; for a figure a reviewer reads, prefer `surv` or `rmst`.
 - **`partialpro` is the expensive step.** It recomputes for every variable you
   ask for and, on a survival fit, for the whole time grid. Always cap it with
   `nvars`; under Quarto's `freeze` the result is cached after the first render.
-- **The y-axis depends on `scale`, and the default depends on the family.**
-  Regression is response units, classification defaults to probability, survival
-  defaults to survival probability. State the scale in the caption so a reader
-  knows whether higher is better (`surv`, `rmst`) or worse (`mortality`).
+- **The y-axis depends on `scale`, and the default reads the family off the
+  fit.** `scale = "auto"` gives probability for classification and survival
+  probability for survival, both of which name themselves on the axis. A
+  regression fit resolves to the generic scale instead: the values are still
+  response units, but the axis says "Partial Effect", so add your own
+  `labs(y = ...)` before anyone reads it as unitless. Without a fitted `object`
+  auto cannot resolve at all; it warns and uses the same generic axis. State the
+  scale in the caption either way, so a reader knows whether higher is better
+  (`surv`, `rmst`) or worse (`mortality`).
+- **`nvars` ranks before it slices.** It keeps the top n by varPro importance,
+  not the first n in the list it was handed, and the returned panels sort by
+  importance rather than alphabetically. Raising `nvars` therefore extends the
+  grid downward in rank; it does not reshuffle the panels you already had.
 - **`tau` must be in the fit's time units.** For `surv`/`rmst`, a `time` beyond
   the largest event time truncates to the full restricted mean; omit `time` to
   let it default to the median follow-up.
@@ -145,6 +177,6 @@ mortality outputs; for a figure a reviewer reads, prefer `surv` or `rmst`.
   forwards straight to `varPro::partialpro()`, which grows its own isolation
   forest for the partial-dependence draws; leave `method` unset and that forest
   defaults to `unsupv`, handing `randomForestSRC` a zero-length `yvar.wt`
-  pointer. Nothing breaks in practice — the pointer is formed, never
-  dereferenced — but the real fix belongs upstream. Set it anyway: every call
+  pointer. Nothing breaks in practice, since the pointer is formed and never
+  dereferenced, but the real fix belongs upstream. Set it anyway: every call
   in this chapter does, because these are the chunks readers copy.

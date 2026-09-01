@@ -1,5 +1,9 @@
 # Scatter plots
 
+Do two continuous measurements move together, and is their relationship straight
+or curved? A scatter plot keeps every observation visible while a smoother gives
+the cloud a direction.
+
 ```{r}
 #| label: setup
 #| include: false
@@ -58,6 +62,32 @@ so you can confirm the plot type before you build it.
 sapply(dta_eda[c("op_years", "ef")], eda_classify_var)
 ```
 
+Build the S3 object once so the bare, styled, and sensitivity views all use the
+same prepared data.
+
+```{r}
+#| label: eda_object
+eda_scatter <- hv_eda(
+  dta_eda,
+  x_col = "op_years",
+  y_col = "ef",
+  y_label = "Ejection Fraction (%)"
+)
+```
+
+## Inspect it
+
+The class selects `plot.hv_eda()`. Its metadata confirms the continuous display
+and the observation count, while `rug_data` holds the missing-EF observations
+that will appear as ticks.
+
+```{r}
+#| label: eda_inspect
+class(eda_scatter)
+eda_scatter$meta
+head(eda_scatter$tables$rug_data)
+```
+
 ## Build it
 
 Start from the bare panel so you can see what the constructor produced before
@@ -66,22 +96,20 @@ the axis and legend text in place of the raw column name.
 
 ```{r}
 #| label: eda_bare
-plot(hv_eda(dta_eda, x_col = "op_years", y_col = "ef",
-            y_label = "Ejection Fraction (%)"))
+p_scatter <- plot(eda_scatter)
+p_scatter
 ```
 
 That is the raw material: the scatter cloud, the LOESS smooth through it, and
 the rug of missing-EF observations along the bottom. Now layer on the house
-style. We set a single fill colour (one variable, one colour), constrain the
-axes to a sensible range, and add a caption that tells the reader what the
-x-axis ticks mean.
+style, constrain the axes to a sensible range, and add a caption that tells the
+reader what the x-axis ticks mean. There is no grouping aesthetic, so the panel
+needs no legend.
 
 ```{r}
 #| label: fig-scatter
 #| fig-cap: "Ejection fraction against years from first surgery, with a LOESS smoother and a rug of observations missing EF"
-plot(hv_eda(dta_eda, x_col = "op_years", y_col = "ef",
-            y_label = "Ejection Fraction (%)")) +
-  scale_colour_manual(values = c("firebrick"), guide = "none") +
+p_scatter +
   scale_x_continuous(breaks = seq(0, 15, 5)) +
   scale_y_continuous(limits = c(20, 80), breaks = seq(20, 80, 20)) +
   labs(x = "Years from First Surgery Year",
@@ -94,8 +122,11 @@ arm's-length reading.
 
 ## Read it
 
-A scatter plot with a LOESS smooth gives you two things to read at once. Look
-for:
+A scatter plot with a LOESS smooth gives you two things to read at once. Years
+from first surgery are on the x-axis and ejection fraction is on the y-axis.
+The default LOESS fit uses nearby observations to summarize the descriptive
+association; it is not a patient-specific trajectory and does not show that time
+since surgery caused EF to change. Look for:
 
 - **The trend, not the points.** The smoother is the signal. Is the curve flat
   (the measurement is stable across the cohort), sloping (a drift you may need
@@ -110,7 +141,7 @@ for:
   not at random, and the trend in that region rests on fewer points than the
   cloud suggests.
 
-## Variations
+## Adapt it
 
 ### Tuning the LOESS smoother
 
@@ -123,16 +154,19 @@ whether a bump is real, compare two spans before you commit to a story.
 ```{r}
 #| label: fig-scatter-span
 #| fig-cap: "The same scatter with a narrower LOESS span (0.5), which follows local structure more closely than the default"
-plot(hv_eda(dta_eda, x_col = "op_years", y_col = "ef",
-            y_label = "Ejection Fraction (%)"),
-     smooth_method = "loess", smooth_span = 0.5) +
-  scale_colour_manual(values = c("steelblue"), guide = "none") +
+plot(eda_scatter, smooth_method = "loess", smooth_span = 0.5) +
   scale_x_continuous(breaks = seq(0, 15, 5)) +
   scale_y_continuous(limits = c(20, 80), breaks = seq(20, 80, 20)) +
   labs(x = "Years from First Surgery Year",
        y = "Ejection Fraction (%)") +
   theme_hv_manuscript()
 ```
+
+## Deliver it
+
+Move the final panel to [Finish and deliver the result](publications.qmd) for
+manuscript, poster, or slide output. Keep the smoother method, span, and meaning
+of the rug in the caption so the exported figure can stand on its own.
 
 ## Pitfalls
 

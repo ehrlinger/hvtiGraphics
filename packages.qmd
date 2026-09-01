@@ -18,6 +18,10 @@ library(patchwork)        # compose multi-panel figures
 
 What each one is for:
 
+- **hvtiR** [@R-hvtiR]: the family installer and health check. It puts the
+  related packages on the same GitHub-main release path, tells you whether an
+  installed member has moved, updates only the members that need it, and
+  diagnoses an R or GitHub setup that cannot get that far.
 - **hvtiPlotR** [@R-hvtiPlotR]: the core of the book. It wraps the figures we
   publish into a two-step API: an `hv_*()` constructor validates the data and
   returns an object, and `plot()` turns that object into a bare ggplot. It also
@@ -54,7 +58,7 @@ What each one is for:
   shared labels and panel tags.
 - **survival** [@R-survival; @survival-book]: the `Surv()` objects and
   Kaplan-Meier machinery underneath the survival figures.
-- **mlbench** [@R-mlbench]: example data only — the ROC chapter borrows its Pima
+- **mlbench** [@R-mlbench]: example data only: the ROC chapter borrows its Pima
   Indians diabetes set for a classification forest that discriminates well enough
   to draw a ROC curve worth reading. Loaded just in that chapter.
 
@@ -66,19 +70,33 @@ uses in its first chunk.
 Install the family from GitHub. Two of these packages, `ggRandomForests` and
 `TemporalHazard`, are on CRAN as well, but the GitHub release comes first and
 CRAN follows it, so GitHub is where the whole family stays in step. `hvtiR`
-[@R-hvtiR] is there so you do not have to name eleven repositories one at a
-time:
+[@R-hvtiR] is the small control panel for that lifecycle. Use the command that
+matches the state you are in:
 
 ```r
 install.packages("pak")
 pak::pak("ehrlinger/hvtiR")
-hvtiR::install()
+hvtiR::install()       # fresh machine
+hvtiR::status()        # compare installed packages with GitHub main
+hvtiR::update()        # install only missing or stale family members
+hvtiR::doctor()        # diagnose R, pak, GitHub, and member status
 ```
 
-Run that in a fresh session, before anything attaches a family package.
-`install()` stops rather than replacing a package that is already loaded, so
-calling it after the `library()` chunk above fails with `already loaded in this
-session`. Restart R and it goes through.
+On a fresh machine, run the first three lines in a fresh R session, before
+anything attaches a family package. `install()` stops rather than replacing a
+loaded namespace, so calling it after the `library()` chunk above fails with
+`already loaded in this session`. Restart R before installing or updating, then
+use `status()` to check a working installation. It compares installed versions
+with GitHub `main` and, when `pak` recorded the source commit, catches a new
+commit even when the package version did not change.
+
+When `status()` marks a member stale or missing, restart R and run `update()`.
+It installs only those family members, still following the GitHub-main release
+order. If the setup itself is puzzling, `doctor()` checks the R version, `pak`,
+GitHub access, and each member's status in one report. Avoid
+`update.packages()` for this family: it can replace a GitHub install with an
+older CRAN release, leaving a family member out of step. Run `status()` and
+then `update()` instead.
 
 That call installs the eleven family packages, and their dependencies bring in
 most of the rest of the stack with them: `ggplot2`, `patchwork`, `survival` and
@@ -91,7 +109,7 @@ pak::pak(c("gt", "kernelshap", "mlbench", "ehrlinger/ggsankey"))
 ```
 
 Expect that second list to get shorter. It holds only what no family package
-depends on yet, so a package the family absorbs drops out of it — `gt` is the
+depends on yet, so a package the family absorbs drops out of it. `gt` is the
 likely next one to go, as table work consolidates into `hvtiRtables`.
 
 Later, to find out whether an installed package has fallen behind GitHub `main`:
@@ -117,7 +135,7 @@ what the current cache was built against.
 #| message: false
 #| tbl-cap: "Family package versions this build was rendered against."
 siblings <- c(
-  "hvtiPlotR", "hvtiRutilities", "hvtiRtables",
+  "hvtiR", "hvtiPlotR", "hvtiRutilities", "hvtiRtables",
   "TemporalHazard", "ggRandomForests", "ggsankey"
 )
 versions <- vapply(
