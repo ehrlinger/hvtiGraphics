@@ -46,8 +46,11 @@ smooth curve is meant to track). Using the same cohort size for both keeps the
 overlay aligned with the curve.
 
 A third helper, `sample_hazard_cohort()`, returns the subject-level records the
-overlay was computed from: one row per patient with a `time` and a `status`,
-rather than a curve. Called with the same arguments it describes the same
+overlay was computed from: one row per patient with a `time` and a `status`
+(`1` = event, `0` = censored, the same coding as the
+[survival chapter](survival.qmd)), rather than a curve. `hv_atrisk()` reads that
+indicator to decide who leaves the risk set, so a cohort coded the other way
+round silently counts censoring as events. Called with the same arguments it describes the same
 cohort, which is what lets the next section put an honest numbers-at-risk table
 under the figure.
 
