@@ -75,6 +75,54 @@ reoperation follow-up time. It exists only for the 33 patients who had a
 reoperation. Missingness with a reason is structure; missingness you cannot
 account for is a question for whoever built the extract.
 
+### The machine-readable version: `dataset_schema()`
+
+`proc_contents()` prints for a person. `dataset_schema()` returns the same
+inventory as a data frame you can act on: one row per variable with its
+position, class, SAS-style type, format, and label.
+
+```{r}
+#| label: schema
+schema <- dataset_schema(dta)
+head(schema, 8)
+```
+
+Use it when the inventory is an input rather than an output. Selecting every
+numeric column for a `proc_means()` call, checking that every variable carries a
+label before a dictionary goes out, or diffing this quarter's extract against
+last quarter's are all a line or two against this frame and awkward against
+printed output.
+
+The `label` column is the one worth checking early. A variable with no label
+reaches a manuscript table as a raw column name, and that is discovered at the
+worst possible moment. The check is one line, and on this dataset it passes.
+
+```{r}
+#| label: schema-unlabelled
+unlabelled <- function(x) {
+  sch <- dataset_schema(x)
+  sch[is.na(sch$label) | sch$label == "", c("num", "variable", "class")]
+}
+
+nrow(unlabelled(dta))   # 0 is the answer you want
+```
+
+Zero is worth confirming rather than assuming, because a passing check and a
+check that cannot fail look identical. Add a column the generator never labelled
+and the same line finds it:
+
+```{r}
+#| label: schema-unlabelled-demo
+set.seed(20260828)
+dta_extra <- dta
+dta_extra$new_lab_value <- rnorm(nrow(dta_extra))
+
+unlabelled(dta_extra)
+```
+
+On a real extract this is rarely zero. Run it before the dictionary goes out,
+not after a co-author asks what `lvmsi_b` means.
+
 ### What the numbers look like: `proc_means()`
 
 `proc_means()` summarises the numeric columns you name, defaulting to SAS's own

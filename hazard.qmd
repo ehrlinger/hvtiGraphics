@@ -45,10 +45,20 @@ builds the binned Kaplan-Meier overlay (the discrete empirical estimate the
 smooth curve is meant to track). Using the same cohort size for both keeps the
 overlay aligned with the curve.
 
+A third helper, `sample_hazard_cohort()`, returns the subject-level records the
+overlay was computed from: one row per patient with a `time` and a `status`
+(`1` = event, `0` = censored, the same coding as the
+[survival chapter](survival.qmd)), rather than a curve. `hv_atrisk()` reads that
+indicator to decide who leaves the risk set, so a cohort coded the other way
+round silently counts censoring as events. Called with the same arguments it describes the same
+cohort, which is what lets the next section put an honest numbers-at-risk table
+under the figure.
+
 ```{r}
 #| label: hazard_data
 dat_hp <- sample_hazard_data(n = 500, time_max = 10)
 emp_hp <- sample_hazard_empirical(n = 500, time_max = 10, n_bins = 6)
+coh_hp <- sample_hazard_cohort(n = 500, time_max = 10)
 
 haz_surv <- hv_hazard(
   dat_hp,
@@ -100,6 +110,47 @@ discrete points. Look for:
 - **The curve shape itself.** A survival curve falls and flattens; a hazard
   curve often peaks early then settles; a cumulative hazard only rises. A shape
   that contradicts the biology is a signal to check the model before the figure.
+
+## Numbers at risk under the curve
+
+A survival figure without a risk table asks the reader to take the right-hand
+tail on trust. `hv_atrisk()` counts the risk set at times you choose and
+`hv_atrisk_compose()` stacks it under the curve on a matched axis.
+
+The table needs subject-level records, which is why `coh_hp` exists: a curve
+cannot tell you how many patients stood behind each part of it.
+
+```{r}
+#| label: fig-hazard-atrisk
+#| fig-cap: "The parametric survival curve and its Kaplan-Meier overlay with an aligned numbers-at-risk table, counted from the subject-level cohort the overlay was computed from"
+#| fig-height: 5
+curve_hp <- plot(haz_surv) +
+  scale_colour_manual(values = c("steelblue"), guide = "none") +
+  scale_fill_manual(values = c("steelblue"), guide = "none") +
+  scale_x_continuous(limits = c(0, 10), breaks = seq(0, 10, 2)) +
+  scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
+                     labels = function(x) paste0(x, "%")) +
+  labs(x = "Years", y = "Survival (%)") +
+  theme_hv_manuscript()
+
+risk_hp <- hv_atrisk(coh_hp, time = "time", status = "status",
+                     report_times = seq(0, 10, 2))
+
+hv_atrisk_compose(curve_hp, risk_hp)
+```
+
+Be precise about what the counts describe, because two things are drawn here and
+they are not the same object. The counts and the Kaplan-Meier points both come
+from `coh_hp`: refit a Kaplan-Meier to that cohort and you recover the overlay
+exactly. The smooth curve is the parametric model, and it sits up to about two
+percentage points away from those points across this range. So the table
+describes the observed cohort, which is the relationship you want. A risk table
+always counts patients, never model.
+
+That matters more than it sounds. The counts have to come from the data the
+figure is about; a table generated from some other cohort of the same size would
+look entirely plausible and be meaningless. If your own curve comes from a fitted
+model, take the risk table from the records you fitted it to.
 
 ## Variations
 
