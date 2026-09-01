@@ -73,7 +73,7 @@ dictionaries, manifests, and the synthetic cohorts the examples run on, and
 tables. Alongside them,
 [ggRandomForests](https://github.com/ehrlinger/ggRandomForests) covers forest and
 varPro graphics and
-[TemporalHazard](https://github.com/ehrlinger/temporal_hazard) the
+[TemporalHazard](https://github.com/ehrlinger/TemporalHazard) the
 additive-hazard models, with `ggplot2` underneath. Where a package gives you a
 helper we use it; where it does not (a plain density or box plot), we fall back
 to bare `ggplot2` and style it to match.
