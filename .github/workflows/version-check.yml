@@ -49,11 +49,14 @@ jobs:
             exit 0
           fi
 
-          # package -> repo. Two names differ from their repository.
+          # package -> repo. No name differs any more: the 2026-08 renames aligned
+          # every sibling. The mapping is kept rather than derived so that a future
+          # divergence has somewhere to land, and so this list stays the one place
+          # the set of checked siblings is written down.
           repos="hvtiPlotR:hvtiPlotR
           hvtiRutilities:hvtiRutilities
           hvtiRtables:hvtiRtables
-          TemporalHazard:temporal_hazard
+          TemporalHazard:TemporalHazard
           ggRandomForests:ggRandomForests
           ggsankey:ggsankey"
 
