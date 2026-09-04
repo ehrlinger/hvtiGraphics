@@ -107,7 +107,7 @@ then `update()` instead.
 That call installs the eleven family packages, and their dependencies bring in
 most of the rest of the stack with them: `ggplot2`, `patchwork`, `survival` and
 `ggalluvial` arrive with `hvtiPlotR`, `gtsummary` and `flextable` with
-`hvtiRtables`, `randomForestSRC` and `varPro` with `ggRandomForests`. Four
+`hvtiRtables`, `randomForestSRC` and `varPro` with `ggRandomForests`. Five
 packages the book uses are not reachable that way, and install on their own:
 
 ```r
