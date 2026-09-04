@@ -77,11 +77,19 @@ gt(dd) |>
 
 ### Step 2: variable labels in one place
 
-`label_map()` returns the current variable-to-label mapping as a two-column
-(`key`, `label`) data frame. Holding labels in one place is what keeps an axis
-title in a figure and a column header in a table reading the same way. Change a
-label here and it propagates everywhere the map is read, so you never hand-edit
-"Ejection Fraction" in five places and miss the sixth.
+`label_map()` returns the current variable-to-label mapping as a data frame:
+`key` and `label`, plus `label_full` and `truncated`. Holding labels in one
+place is what keeps an axis title in a figure and a column header in a table
+reading the same way. Change a label here and it propagates everywhere the map
+is read, so you never hand-edit "Ejection Fraction" in five places and miss the
+sixth.
+
+The `label` column is trimmed to 40 characters, because a long descriptive
+label has nowhere to go on an axis or in a column header. Nothing is lost: the
+source text stays in `label_full`, and `truncated` marks the rows that were
+cut. So `subset(lm, truncated)` tells you which labels a figure is going to
+abbreviate, before a reviewer asks you about one. Pass `label_max` if you want
+a different width, or `Inf` to leave every label whole.
 
 ```{r}
 #| label: labels
