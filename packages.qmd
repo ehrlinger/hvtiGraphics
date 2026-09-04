@@ -58,9 +58,11 @@ What each one is for:
   shared labels and panel tags.
 - **survival** [@R-survival; @survival-book]: the `Surv()` objects and
   Kaplan-Meier machinery underneath the survival figures.
-- **mlbench** [@R-mlbench]: example data only: the ROC chapter borrows its Pima
-  Indians diabetes set for a classification forest that discriminates well enough
-  to draw a ROC curve worth reading. Loaded just in that chapter.
+- **mlbench** [@R-mlbench]: example data only: the ROC chapter borrows its
+  `SynthDiabetes` set for a classification forest that discriminates well enough
+  to draw a ROC curve worth reading. Loaded just in that chapter. Version 2.1-11
+  or newer, which is where that synthetic set replaced the withdrawn Pima Indians
+  data. On an older `mlbench` the chapter stops at `object not found`.
 
 You do not need all of these for any single figure. Each chapter loads what it
 uses in its first chunk.
