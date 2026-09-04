@@ -54,6 +54,10 @@ What each one is for:
 - **kernelshap** [@R-kernelshap]: the SHAP engine behind `gg_shap()`. It loads
   in the SHAP attribution chapter, and it is the one dependency in the book
   whose cost you feel, so that chapter says what the two size arguments buy you.
+- **ggraph** [@R-ggraph]: draws the one dependency graph in the book, the
+  unsupervised variable network in the VarPro chapter. It is a `Suggests` of
+  `ggRandomForests` rather than an import, so installing the family does not
+  bring it along and `plot(gg_udependent(...))` stops to ask for it.
 - **patchwork** [@R-patchwork]: composes several plots into one figure with
   shared labels and panel tags.
 - **survival** [@R-survival; @survival-book]: the `Surv()` objects and
@@ -107,7 +111,7 @@ most of the rest of the stack with them: `ggplot2`, `patchwork`, `survival` and
 packages the book uses are not reachable that way, and install on their own:
 
 ```r
-pak::pak(c("gt", "kernelshap", "mlbench", "ehrlinger/ggsankey"))
+pak::pak(c("gt", "ggraph", "kernelshap", "mlbench", "ehrlinger/ggsankey"))
 ```
 
 Expect that second list to get shorter. It holds only what no family package
