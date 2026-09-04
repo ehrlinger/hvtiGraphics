@@ -4,9 +4,9 @@
   "packages": {
     "hvtiR": "1.1.2",
     "hvtiPlotR": "2.7.13",
-    "hvtiRutilities": "1.1.9",
+    "hvtiRutilities": "1.1.10",
     "hvtiRtables": "1.0.0",
-    "TemporalHazard": "1.2.7",
+    "TemporalHazard": "1.2.9",
     "ggRandomForests": "4.0.0",
     "ggsankey": "0.0.99999"
   }

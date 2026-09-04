@@ -2,7 +2,7 @@
 
 [![Publish](https://github.com/ehrlinger/hvtiGraphics/actions/workflows/publish.yml/badge.svg)](https://github.com/ehrlinger/hvtiGraphics/actions/workflows/publish.yml)
 [![Site](https://img.shields.io/badge/read-ehrlinger.github.io%2FhvtiGraphics-1f6feb)](https://ehrlinger.github.io/hvtiGraphics/)
-[![Version](https://img.shields.io/badge/edition-3.1.0-blue)](https://github.com/ehrlinger/hvtiGraphics/releases)
+[![Version](https://img.shields.io/badge/edition-3.1.1-blue)](https://github.com/ehrlinger/hvtiGraphics/releases)
 [![License: CC BY 4.0](https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey)](https://creativecommons.org/licenses/by/4.0/)
 
 A working catalog of the figures and tables we build for CORR manuscripts and
@@ -14,7 +14,7 @@ script.
 
 **Read it here:** <https://ehrlinger.github.io/hvtiGraphics/>
 
-This is the **3.1.0** edition, and it is organized around the question you
+This is the **3.1.1** edition, and it is organized around the question you
 arrived with rather than the kind of picture you end up drawing. The 3.0.0 book
 sorted its chapters by figure type, which works if you already know you want a
 box plot. It does not help when the question is "how do I describe this cohort"
