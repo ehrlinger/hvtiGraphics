@@ -25,19 +25,23 @@ treatment effect. They assess predictions from a fitted model.
 
 ## Discrimination for a binary outcome
 
-We fit a classification forest to the public Pima diabetes data. The factor
-levels are printed before we choose the positive class, because
-`which_outcome = 2` means the second level, `pos`, in this fit.
+We fit a classification forest to `SynthDiabetes`, the synthetic diabetes set
+that `mlbench` ships. It stands in for the Pima Indians data the package and the
+UCI repository both withdrew, once it emerged that the original records had been
+shared without the community's consent. The replacement keeps the same 768 rows,
+the same nine columns and the same `neg`/`pos` outcome, so nothing below had to
+change. The factor levels are printed before we choose the positive class,
+because `which_outcome = 2` means the second level, `pos`, in this fit.
 
 ```{r}
 #| label: rf-classification-fit
-data(PimaIndiansDiabetes, package = "mlbench")
-levels(PimaIndiansDiabetes$diabetes)
+data(SynthDiabetes, package = "mlbench")
+levels(SynthDiabetes$diabetes)
 
 set.seed(20260828)
 rf_class <- rfsrc(
   diabetes ~ .,
-  data = PimaIndiansDiabetes,
+  data = SynthDiabetes,
   ntree = 300
 )
 rf_class
@@ -60,7 +64,7 @@ roc_dta
 head(as.data.frame(roc_dta), 4)
 
 roc_check <- data.frame(
-  positive_class = levels(PimaIndiansDiabetes$diabetes)[2],
+  positive_class = levels(SynthDiabetes$diabetes)[2],
   auc = calc_auc(roc_dta),
   min_fpr = min(1 - roc_dta$spec),
   max_fpr = max(1 - roc_dta$spec),
