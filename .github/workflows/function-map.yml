@@ -1,0 +1,65 @@
+name: Function map freshness
+
+# `function_map.qmd` is the one chapter whose content depends on OTHER chapters.
+# While its table was computed by chunks inside the chapter, `freeze: auto` only
+# re-executed it when its own source changed, so an edit anywhere else in the
+# book silently invalidated the map and nothing failed. That is the repo's
+# headline failure -- a stale freeze publishing a lie -- in the exact shape
+# `pr-check.yml` cannot see, because that gate compares a chapter against its own
+# source and this chapter declared none of the 51 it actually read.
+#
+# The map now comes from `dev/build-function-map.R`, which writes the fragment
+# the chapter includes plus a manifest of the sources it read. This job rebuilds
+# the manifest and fails when it no longer matches, which turns an undetectable
+# staleness into a red build.
+#
+# Deliberately no R. It hashes files, so it runs in the same R-less environment
+# as `publish.yml` and costs a few seconds.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  manifest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Rebuild the manifest and compare
+        run: |
+          set -euo pipefail
+
+          if [ ! -f _generated/function-map.manifest ]; then
+            echo "::error::_generated/function-map.manifest is missing."
+            echo "Run: Rscript dev/build-function-map.R"
+            exit 1
+          fi
+
+          # The same set the builder scans: every chapter except this one.
+          # Sorted on both sides so locale ordering cannot cause a false failure.
+          find . -maxdepth 1 -name '*.qmd' ! -name 'function_map.qmd' \
+            -printf '%P\n' | LC_ALL=C sort | xargs md5sum \
+            | LC_ALL=C sort > /tmp/actual.manifest
+
+          LC_ALL=C sort _generated/function-map.manifest > /tmp/committed.manifest
+
+          if ! diff -u /tmp/committed.manifest /tmp/actual.manifest > /tmp/manifest.diff; then
+            echo "::error::The function map is stale: a chapter changed since it was last built."
+            echo
+            echo "Committed manifest vs the sources actually in the tree:"
+            cat /tmp/manifest.diff
+            echo
+            echo "Fix with:"
+            echo "  Rscript dev/build-function-map.R"
+            echo "  git add _generated/ && git commit"
+            exit 1
+          fi
+
+          echo "Function map manifest matches all $(wc -l < /tmp/actual.manifest) scanned chapters."
