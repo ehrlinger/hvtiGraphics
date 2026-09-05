@@ -1,0 +1,1356 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>34&nbsp; What if a predictor changes during follow-up? – HVTI Recipes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./publications.html" rel="next">
+<link href="./varpro_partial.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-f815791d8ae4ce63213271c49438a130.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b52abe616cc2e35bbb5f05103ec4018f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-f815791d8ae4ce63213271c49438a130.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./randomforests.html">Explain predictive models</a></li><li class="breadcrumb-item"><a href="./rf_rhf.html"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">What if a predictor changes during follow-up?</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">HVTI Recipes</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./gettingstarted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Start a reproducible analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Packages</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./usingR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using R for figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_governance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data governance and reproducibility</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./describe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Describe the cohort</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Describing a dataset</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./qt_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Publication tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hv_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Manuscript tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./histograms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Histogram plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./density.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Density plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boxplots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Box plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bar.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Bar chart plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./scatter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Scatter plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./spaghetti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Spaghetti plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./postagestamp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Postage stamp plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./consort.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">CONSORT patient-flow diagrams</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./upset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Venn diagrams and UpSet plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sankey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Alluvial and Sankey plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./balance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Covariate balance and follow-up</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./timetoevent.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyze time-to-event outcomes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./survival.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Survival plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hazard.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Hazard and nonparametric curves</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./nnt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Number needed to treat and survival difference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Fit additive hazard models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_prediction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Predict from a hazard model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Check a hazard model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_migration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Move a legacy HAZARD analysis into R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./randomforests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Explain predictive models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_error.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Did the forest stabilize?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_predicted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">What does the forest predict?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_vimp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Which variables contribute to prediction?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_shap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">SHAP attribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_dependence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Variable and partial dependence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_roc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">How well does the forest predict?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./varpro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Variable priority with varPro</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./varpro_partial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">varPro partial dependence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_rhf.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">What if a predictor changes during follow-up?</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./publications.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Finish and deliver the result</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./themes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Themes for consistency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./colors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Color templates for consistency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./annotation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Annotating figures and formatting axes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./legends.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Using legends</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./combination.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Combination figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./figure_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Tables that accompany figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./manuscripts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Preparing figures for manuscripts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./researchday.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Posters and research day</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./presentations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Slides and presentations</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./function_map.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Function-to-recipe map</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#when-to-use-it" id="toc-when-to-use-it" class="nav-link active" data-scroll-target="#when-to-use-it"><span class="header-section-number">34.1</span> When to use it</a></li>
+  <li><a href="#the-data-it-needs" id="toc-the-data-it-needs" class="nav-link" data-scroll-target="#the-data-it-needs"><span class="header-section-number">34.2</span> The data it needs</a></li>
+  <li><a href="#where-these-fitted-objects-came-from" id="toc-where-these-fitted-objects-came-from" class="nav-link" data-scroll-target="#where-these-fitted-objects-came-from"><span class="header-section-number">34.3</span> Where these fitted objects came from</a></li>
+  <li><a href="#read-the-hazard-over-time" id="toc-read-the-hazard-over-time" class="nav-link" data-scroll-target="#read-the-hazard-over-time"><span class="header-section-number">34.4</span> Read the hazard over time</a>
+  <ul class="collapse">
+  <li><a href="#cumulative-hazard-accumulates-the-local-rates" id="toc-cumulative-hazard-accumulates-the-local-rates" class="nav-link" data-scroll-target="#cumulative-hazard-accumulates-the-local-rates"><span class="header-section-number">34.4.1</span> Cumulative hazard accumulates the local rates</a></li>
+  </ul></li>
+  <li><a href="#does-discrimination-hold-up-over-time" id="toc-does-discrimination-hold-up-over-time" class="nav-link" data-scroll-target="#does-discrimination-hold-up-over-time"><span class="header-section-number">34.5</span> Does discrimination hold up over time?</a></li>
+  <li><a href="#which-variables-matter-and-when" id="toc-which-variables-matter-and-when" class="nav-link" data-scroll-target="#which-variables-matter-and-when"><span class="header-section-number">34.6</span> Which variables matter, and when?</a></li>
+  <li><a href="#which-tree-size-did-the-search-pick" id="toc-which-tree-size-did-the-search-pick" class="nav-link" data-scroll-target="#which-tree-size-did-the-search-pick"><span class="header-section-number">34.7</span> Which tree size did the search pick?</a>
+  <ul class="collapse">
+  <li><a href="#tuning-by-integrated-auc-instead" id="toc-tuning-by-integrated-auc-instead" class="nav-link" data-scroll-target="#tuning-by-integrated-auc-instead"><span class="header-section-number">34.7.1</span> Tuning by integrated AUC instead</a></li>
+  </ul></li>
+  <li><a href="#what-each-extractor-returns" id="toc-what-each-extractor-returns" class="nav-link" data-scroll-target="#what-each-extractor-returns"><span class="header-section-number">34.8</span> What each extractor returns</a></li>
+  <li><a href="#where-ggrandomforests-ends-and-randomforestrhf-begins" id="toc-where-ggrandomforests-ends-and-randomforestrhf-begins" class="nav-link" data-scroll-target="#where-ggrandomforests-ends-and-randomforestrhf-begins"><span class="header-section-number">34.9</span> Where ggRandomForests ends and randomForestRHF begins</a></li>
+  <li><a href="#pitfalls" id="toc-pitfalls" class="nav-link" data-scroll-target="#pitfalls"><span class="header-section-number">34.10</span> Pitfalls</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./randomforests.html">Explain predictive models</a></li><li class="breadcrumb-item"><a href="./rf_rhf.html"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">What if a predictor changes during follow-up?</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">What if a predictor changes during follow-up?</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="when-to-use-it" class="level2" data-number="34.1">
+<h2 data-number="34.1" class="anchored" data-anchor-id="when-to-use-it"><span class="header-section-number">34.1</span> When to use it</h2>
+<p>Every survival recipe so far has assumed one row per patient. Baseline creatinine, baseline ejection fraction, the covariate values as they stood on day zero, and a single follow-up time. That assumption is usually a simplification we accept, and sometimes it is the thing that ruins the analysis. A patient on temporary mechanical support has a risk profile that changes week by week. Freezing them at their admission values throws away the part of the record that was doing the work.</p>
+<p>A Random Hazard Forest takes the counting-process form instead: several rows per patient, each covering an interval of follow-up, with covariates allowed to change between intervals. The forest sees what changed and when, so its predictions can be read on the same clinical timeline as the measurements.</p>
+<p>Reach for this when the exposure is time-varying and the timing matters, not just its presence. Support escalation, a therapy that starts partway through admission, a lab that drifts. If your predictors are genuinely fixed at baseline, the <a href="./survival.html">survival</a> and <a href="./rf_predicted.html">forest prediction</a> recipes are the simpler and better fit, and nothing here improves on them for that case.</p>
+<p>This chapter reads a fitted forest. Growing one is the job of <code>randomForestRHF</code> <span class="citation" data-cites="R-randomForestRHF">(<a href="references.html#ref-R-randomForestRHF" role="doc-biblioref">Ishwaran and Kogalur 2026</a>)</span>; the reading is done by <code>ggRandomForests</code> <span class="citation" data-cites="R-ggRandomForests">(<a href="references.html#ref-R-ggRandomForests" role="doc-biblioref">Ehrlinger 2026</a>)</span>. The boundary between the two is worth keeping straight, so it has its own section near the end.</p>
+</section>
+<section id="the-data-it-needs" class="level2" data-number="34.2">
+<h2 data-number="34.2" class="anchored" data-anchor-id="the-data-it-needs"><span class="header-section-number">34.2</span> The data it needs</h2>
+<p>The counting-process layout gives each patient one row per interval <code>(start, stop]</code>, and <code>event</code> records whether the event happened at that interval’s right endpoint. We work from the reviewed bundle that ships with the <code>ggRandomForests</code> article, so the chapter renders without refitting.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>bundle <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="st">"data/rhf_precomputed.rds"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">stopifnot</span>(</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">identical</span>(<span class="fu">unname</span>(bundle<span class="sc">$</span>versions[[<span class="st">"ggRandomForests"</span>]]), <span class="st">"4.0.0"</span>),</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">identical</span>(<span class="fu">unname</span>(bundle<span class="sc">$</span>versions[[<span class="st">"randomForestRHF"</span>]]), <span class="st">"2.0.0"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>rhf_data <span class="ot">&lt;-</span> bundle<span class="sc">$</span>data</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>one_subject <span class="ot">&lt;-</span> rhf_data[rhf_data<span class="sc">$</span>id <span class="sc">==</span> rhf_data<span class="sc">$</span>id[<span class="dv">1</span>L],</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>                        <span class="fu">c</span>(<span class="st">"id"</span>, <span class="st">"start"</span>, <span class="st">"stop"</span>, <span class="st">"event"</span>, <span class="st">"xtd"</span>)]</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(one_subject, <span class="at">digits =</span> <span class="dv">3</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>             <span class="at">caption =</span> <span class="st">"One simulated subject's counting-process records"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<caption>One simulated subject’s counting-process records</caption>
+<thead>
+<tr class="header">
+<th style="text-align: right;">id</th>
+<th style="text-align: right;">start</th>
+<th style="text-align: right;">stop</th>
+<th style="text-align: right;">event</th>
+<th style="text-align: right;">xtd</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.082</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.054</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.082</td>
+<td style="text-align: right;">0.121</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.080</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.121</td>
+<td style="text-align: right;">0.185</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0.122</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.185</td>
+<td style="text-align: right;">0.313</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0.207</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Read down the <code>xtd</code> column, then consider <code>x.1</code>, which is not shown because it never moves. That is the whole distinction: <code>xtd</code> is the time-varying covariate and the <code>x.1</code> through <code>x.10</code> columns are fixed at baseline. A counting-process frame carries both, and the forest treats them differently only because the data says they behave differently.</p>
+<p>The rule that makes this legitimate is <strong>predictability</strong>: the value used at time <code>t</code> must be known just before the event decision at <code>t</code>. A lab drawn after an interval ends cannot be copied backward into it. In this simulation <code>xtd</code> is a continuous function of <code>stop</code> and the subject’s own fixed covariates, so its value at <code>stop</code> is also its left-hand limit there, and it is available for the interval ending at that time.</p>
+<p>That is not a technicality. Copying a later measurement backward is how a model learns to predict an event from evidence produced by the event, and it is the most common way a time-varying analysis flatters itself. The no-lookahead routing is enforced by <code>randomForestRHF::rhf()</code> when the forest is grown, not by anything in this chapter.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>records_per_subject <span class="ot">&lt;-</span> <span class="fu">as.integer</span>(<span class="fu">table</span>(rhf_data<span class="sc">$</span>id))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>events_by_subject   <span class="ot">&lt;-</span> <span class="fu">tapply</span>(rhf_data<span class="sc">$</span>event, rhf_data<span class="sc">$</span>id, max)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">measure =</span> <span class="fu">c</span>(<span class="st">"Subjects"</span>, <span class="st">"Counting-process records"</span>, <span class="st">"Records per subject"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>              <span class="st">"Subjects with an event"</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">value =</span> <span class="fu">c</span>(<span class="fu">length</span>(<span class="fu">unique</span>(rhf_data<span class="sc">$</span>id)),</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>            <span class="fu">nrow</span>(rhf_data),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>            <span class="fu">sprintf</span>(<span class="st">"%d to %d (median %g)"</span>, <span class="fu">min</span>(records_per_subject),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">max</span>(records_per_subject), stats<span class="sc">::</span><span class="fu">median</span>(records_per_subject)),</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>            <span class="fu">sum</span>(events_by_subject))</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Measure"</span>, <span class="st">"Value"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Measure</th>
+<th style="text-align: left;">Value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Subjects</td>
+<td style="text-align: left;">500</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Counting-process records</td>
+<td style="text-align: left;">2598</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Records per subject</td>
+<td style="text-align: left;">2 to 7 (median 5)</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Subjects with an event</td>
+<td style="text-align: left;">427</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</section>
+<section id="where-these-fitted-objects-came-from" class="level2" data-number="34.3">
+<h2 data-number="34.3" class="anchored" data-anchor-id="where-these-fitted-objects-came-from"><span class="header-section-number">34.3</span> Where these fitted objects came from</h2>
+<p>The bundle holds the fit and three upstream results that are far too slow to recompute on every render. The calls that produced it are shown but not run.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(bundle<span class="sc">$</span>seed)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> randomForestRHF<span class="sc">::</span><span class="fu">rhf</span>(<span class="fu">Surv</span>(start, stop, event) <span class="sc">~</span> ., <span class="at">data =</span> rhf_data)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>auct_incident <span class="ot">&lt;-</span> randomForestRHF<span class="sc">::</span><span class="fu">auct.rhf</span>(fit, <span class="at">marker =</span> <span class="st">"hazard"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>importance    <span class="ot">&lt;-</span> randomForestRHF<span class="sc">::</span><span class="fu">importance.rhf</span>(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  randomForestRHF<span class="sc">::</span><span class="fu">varpro.cache.rhf</span>(fit)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>tune_risk     <span class="ot">&lt;-</span> randomForestRHF<span class="sc">::</span><span class="fu">tune.treesize.rhf</span>(rhf_data, <span class="at">metric =</span> <span class="st">"risk"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>tune_iauc     <span class="ot">&lt;-</span> randomForestRHF<span class="sc">::</span><span class="fu">tune.treesize.rhf</span>(rhf_data, <span class="at">metric =</span> <span class="st">"iauc"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Supplying the saved results to the extractors is the pattern to copy for any analysis you expect to revisit. Each <code>gg_*</code> function below will compute its own input when you do not hand it one, which is convenient once and expensive every time after that.</p>
+</section>
+<section id="read-the-hazard-over-time" class="level2" data-number="34.4">
+<h2 data-number="34.4" class="anchored" data-anchor-id="read-the-hazard-over-time"><span class="header-section-number">34.4</span> Read the hazard over time</h2>
+<p><code>gg_rhf()</code> pulls both the pointwise hazard and the cumulative hazard into one tidy frame, one row per subject per point on the forest’s working time grid.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>case_ids   <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">11</span>, <span class="dv">14</span>, <span class="dv">22</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>rhf_curves <span class="ot">&lt;-</span> <span class="fu">gg_rhf</span>(bundle<span class="sc">$</span>fit)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>p_hazard <span class="ot">&lt;-</span> <span class="fu">plot</span>(rhf_curves, <span class="at">idx =</span> case_ids) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="fu">hv_legend_inside</span>(p_hazard)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-rhf-hazard" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rhf-hazard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="rf_rhf_files/figure-html/fig-rhf-hazard-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rhf-hazard-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;34.1: Out-of-bag pointwise hazard for five of six requested subjects, each curve ending where that subject’s follow-up ends; subject 22 has no grid point inside its records and so draws nothing
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>All four house themes set <code>legend.position = "none"</code> on purpose: a CORR figure carries no legend, and groups get named on the panel instead, which is the recipe in <a href="annotation.html#sec-annotation-series" class="quarto-xref"><span>Section 37.4</span></a>. This figure is the documented exception rather than a departure from it. The six lines are simulated subject identifiers, not clinical groups, so there is nothing meaningful to annotate beside each curve, and <a href="./legends.html">legends</a> is explicit that you want a key whenever the grouping is not already named on the panel. <code>hv_legend_inside()</code> is how you add one without giving up panel width: apply it after the theme so its position wins, and it anchors the key in whichever corner the data leave emptiest.</p>
+<p>Hazard here is a local event rate: a high point says events are occurring at a high instantaneous rate among the subjects still at risk around that time. It is not the probability that this subject has the event then, and neither its height nor its scale should be reported as a percentage. We plot six subjects because the extracted object holds all of them and the panel becomes unreadable well before that.</p>
+<p>The curves stop at different places, and that is deliberate rather than missing data. From version 2.0.0, <code>randomForestRHF::rhf()</code> returns a hazard only where a grid point falls inside one of that subject’s supplied <code>(start, stop]</code> records, and <code>NA</code> in the gaps and after the final stop. Each line therefore covers the range the forest was actually asked about.</p>
+<p>Count the legend and you get five, though we asked for six. Subject 22 has <strong>no</strong> grid point inside any of its records, so every one of its hazard values is <code>NA</code> and it draws nothing at all. That is the masking rule taken to its limit rather than a plotting failure, and it is worth knowing that a requested subject can disappear from this panel entirely. It comes back in the next one.</p>
+<section id="cumulative-hazard-accumulates-the-local-rates" class="level3" data-number="34.4.1">
+<h3 data-number="34.4.1" class="anchored" data-anchor-id="cumulative-hazard-accumulates-the-local-rates"><span class="header-section-number">34.4.1</span> Cumulative hazard accumulates the local rates</h3>
+<p>The same object carries the cumulative hazard. Set <code>hazard.only = FALSE</code> to draw it.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>p_cumhaz <span class="ot">&lt;-</span> <span class="fu">plot</span>(rhf_curves, <span class="at">idx =</span> case_ids, <span class="at">hazard.only =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_hv_manuscript</span>()</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">hv_legend_inside</span>(p_cumhaz)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-rhf-cumhaz" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rhf-cumhaz-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="rf_rhf_files/figure-html/fig-rhf-cumhaz-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rhf-cumhaz-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;34.2: Cumulative hazard for the same six subjects, all present this time, drawn across the whole grid because it accumulates interval overlap rather than being masked outside the records
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Cumulative hazard is not masked the way the pointwise hazard is. It accumulates the exact overlap between the working grid and the supplied records, so it stays flat through a gap instead of going missing, and every grid point is drawn. Subject 22 is back, as a flat line just above zero: it accumulated almost no hazard, which is a different statement from having none to report.</p>
+<p>The practical consequence is small and easy to trip over: if you summarise the <code>hazard</code> column yourself, pass <code>na.rm = TRUE</code>. Counting subjects off a hazard panel will also undercount them.</p>
+</section>
+</section>
+<section id="does-discrimination-hold-up-over-time" class="level2" data-number="34.5">
+<h2 data-number="34.5" class="anchored" data-anchor-id="does-discrimination-hold-up-over-time"><span class="header-section-number">34.5</span> Does discrimination hold up over time?</h2>
+<p>A single concordance number for the whole of follow-up hides the thing you usually want to know, which is whether the model still separates patients late as well as it did early. Time-varying AUC answers that, and which AUC you want depends on the question.</p>
+<p><code>gg_auct()</code> with <code>marker = "haz"</code> gives the <strong>incident/dynamic</strong> definition: does a subject who has the event near time <code>t</code> rank above a subject in the risk set at <code>t</code>? That is a question about local failures, so it uses the local hazard marker.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>auct_incident <span class="ot">&lt;-</span> <span class="fu">gg_auct</span>(bundle<span class="sc">$</span>fit, <span class="at">marker =</span> <span class="st">"haz"</span>, <span class="at">method =</span> <span class="st">"incident"</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">auct_fit =</span> bundle<span class="sc">$</span>auct_incident)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(auct_incident) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-rhf-auct" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rhf-auct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="rf_rhf_files/figure-html/fig-rhf-auct-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rhf-auct-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;34.3: Incident/dynamic time-varying AUC from the saved calculation, with the 0.5 chance line for reference
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The saved curve has a Uno integrated AUC of 0.531, and its finite values run from 0.244 to 0.867. AUC is a ranking probability on a 0 to 1 scale, so 0.5 is the chance reference drawn on the panel. This calculation was not bootstrapped, so there is no confidence ribbon; supply a bootstrapped <code>auct_fit</code> and one appears.</p>
+<p>The companion definition, <strong>cumulative/dynamic</strong>, asks whether a subject who has had the event by a horizon ranks above one still event-free at that horizon, and its matching marker is cumulative hazard. It targets a different quantity rather than a better version of the same one. On in-sample data of this shape it is currently awkward to read, because holding the cumulative hazard flat after follow-up ends makes it track observation length as well as risk. Reach for it on genuinely out-of-sample predictions, and read the incident/dynamic curve here.</p>
+</section>
+<section id="which-variables-matter-and-when" class="level2" data-number="34.6">
+<h2 data-number="34.6" class="anchored" data-anchor-id="which-variables-matter-and-when"><span class="header-section-number">34.6</span> Which variables matter, and when?</h2>
+<p>Ordinary variable importance gives one number per predictor for the whole study. With time-varying data that is the wrong shape: a covariate can dominate early and stop mattering entirely once patients are past the risky window.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>rhf_priority <span class="ot">&lt;-</span> <span class="fu">gg_rhf_importance</span>(bundle<span class="sc">$</span>fit, <span class="at">importance_fit =</span> bundle<span class="sc">$</span>importance)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>windows <span class="ot">&lt;-</span> <span class="fu">unique</span>(<span class="fu">as.data.frame</span>(rhf_priority)[, <span class="fu">c</span>(<span class="st">"time_window"</span>, <span class="st">"start"</span>, <span class="st">"stop"</span>)])</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>windows <span class="ot">&lt;-</span> windows[<span class="fu">order</span>(windows<span class="sc">$</span>start), ]</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>window_labels <span class="ot">&lt;-</span> <span class="fu">setNames</span>(<span class="fu">sprintf</span>(<span class="st">"%.2f to %.2f"</span>, windows<span class="sc">$</span>start, windows<span class="sc">$</span>stop),</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>                          windows<span class="sc">$</span>time_window)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(rhf_priority) <span class="sc">+</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_discrete</span>(<span class="at">labels =</span> window_labels) <span class="sc">+</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_hv_manuscript</span>() <span class="sc">+</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>, <span class="at">plot.margin =</span> <span class="fu">margin</span>(<span class="at">l =</span> <span class="dv">80</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-rhf-importance" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rhf-importance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="rf_rhf_files/figure-html/fig-rhf-importance-1.png" class="img-fluid figure-img" width="1200">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rhf-importance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;34.4: Time-localized variable priority across five time windows, with point size and colour showing the same priority value
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Two adjustments earn their place here. The window labels arrive as full-precision interval strings such as <code>(0.00000000, 0.01055113]</code>, and five of those overlap into an unreadable band along the axis, so we rebuild them from the <code>start</code> and <code>stop</code> columns at two decimals. And the legend goes back on the outside rather than inside: point size and colour both encode priority, so the key is a continuous scale rather than a short list of series, and dropping it into the panel would sit on top of the matrix it explains.</p>
+<p>RHF priority is a time-local rule-release contrast. Within a window it compares the fitted working response for a rule against its near-miss set, and asks how much that response moves when rules involving a variable are released. Larger nonnegative values mean a larger contrast.</p>
+<p>Read that sentence again before reporting anything from this figure, because of what it does <strong>not</strong> say. Priority does not tell you the direction of an effect, so it never licenses “higher <code>xtd</code> raises hazard”. It is not a z-score, not a p-value, and carries no selection threshold. It ranks, and that is all.</p>
+<p>In this simulation <code>xtd</code> carries the largest early-window value while <code>x.1</code> leads several later windows, which is exactly the pattern a single whole-study importance number would have averaged away. Note also that the number at risk falls from 779 to 32 across the five windows, so the late-window comparisons rest on much less information than the early ones. Any window-to-window story should be told with that in view.</p>
+</section>
+<section id="which-tree-size-did-the-search-pick" class="level2" data-number="34.7">
+<h2 data-number="34.7" class="anchored" data-anchor-id="which-tree-size-did-the-search-pick"><span class="header-section-number">34.7</span> Which tree size did the search pick?</h2>
+<p><code>gg_tune_rhf()</code> reads a completed tuning path. It never reruns the search, and it preserves the upstream evaluation order, so the connecting line follows the order candidates were actually tried rather than a tidied-up sort.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>risk_tuning <span class="ot">&lt;-</span> <span class="fu">gg_tune_rhf</span>(bundle<span class="sc">$</span>tune_risk)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(risk_tuning) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-rhf-tune-risk" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rhf-tune-risk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="rf_rhf_files/figure-html/fig-rhf-tune-risk-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rhf-tune-risk-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;34.5: Out-of-bag risk tuning path, with the emphasized point marking the size the upstream search selected
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The risk search evaluated sizes 2, 3, 4, 5 and selected 4, where mean out-of-bag risk was smallest. The saved risk path carries no standard-error field, and <code>gg_tune_rhf()</code> sets <code>se</code> to missing rather than inventing uncertainty, so this plot has no ribbon.</p>
+<section id="tuning-by-integrated-auc-instead" class="level3" data-number="34.7.1">
+<h3 data-number="34.7.1" class="anchored" data-anchor-id="tuning-by-integrated-auc-instead"><span class="header-section-number">34.7.1</span> Tuning by integrated AUC instead</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>iauc_tuning <span class="ot">&lt;-</span> <span class="fu">gg_tune_rhf</span>(bundle<span class="sc">$</span>tune_iauc)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(iauc_tuning) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-rhf-tune-iauc" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-rhf-tune-iauc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="rf_rhf_files/figure-html/fig-rhf-tune-iauc-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-rhf-tune-iauc-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;34.6: The same tuning display for the integrated-AUC search, which selected a different tree size than the risk search did
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This search evaluated 2, 4, 5, 6 and selected 6, where out-of-bag iAUC was largest. The two searches choose differently, which is the useful part: risk and discrimination are not the same objective, and a tree size that minimises one need not maximise the other. Say which criterion you tuned on when you report a size. This path has 0 finite standard errors, so again no ribbon.</p>
+</section>
+</section>
+<section id="what-each-extractor-returns" class="level2" data-number="34.8">
+<h2 data-number="34.8" class="anchored" data-anchor-id="what-each-extractor-returns"><span class="header-section-number">34.8</span> What each extractor returns</h2>
+<p>Each <code>gg_*</code> function returns a data frame you can work with directly, which matters when a figure is not the deliverable.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Function</th>
+<th>One row per</th>
+<th>Key columns</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>gg_rhf()</code></td>
+<td>subject and grid time</td>
+<td><code>id</code>, <code>time</code>, <code>hazard</code>, <code>chf</code>, <code>source</code></td>
+</tr>
+<tr class="even">
+<td><code>gg_auct()</code></td>
+<td>grid time</td>
+<td><code>time</code>, <code>auc</code>, <code>se</code>, <code>lower</code>, <code>upper</code>, <code>marker</code>, plus an <code>iauc</code> attribute</td>
+</tr>
+<tr class="odd">
+<td><code>gg_rhf_importance()</code></td>
+<td>variable and time window</td>
+<td><code>variable</code>, <code>time_window</code>, <code>time</code>, <code>n_risk</code>, <code>n_rules</code>, <code>priority</code></td>
+</tr>
+<tr class="even">
+<td><code>gg_tune_rhf()</code></td>
+<td>candidate tree size</td>
+<td><code>treesize</code>, <code>metric</code>, <code>value</code>, <code>se</code>, <code>selected</code></td>
+</tr>
+</tbody>
+</table>
+<p>The <code>iauc</code> attribute on <code>gg_auct()</code> is the one people miss. It carries the Uno and standardized integrated AUC, and <code>attr(x, "iauc")</code> is how you reach it for a table.</p>
+</section>
+<section id="where-ggrandomforests-ends-and-randomforestrhf-begins" class="level2" data-number="34.9">
+<h2 data-number="34.9" class="anchored" data-anchor-id="where-ggrandomforests-ends-and-randomforestrhf-begins"><span class="header-section-number">34.9</span> Where ggRandomForests ends and randomForestRHF begins</h2>
+<p>This chapter draws pictures of decisions made elsewhere, and it is worth being precise about which package owns what, so that an upstream modelling choice is not read as a plotting defect.</p>
+<p><code>randomForestRHF</code> owns the model. It sets the working time grid, applies the no-lookahead routing, decides that the pointwise hazard exists only inside supplied records, computes the AUC under its chosen definition, evaluates variable priority, and runs the tuning search. From 2.0.0 it also defaults to adaptive hazard aggregation, which shifts fitted values relative to earlier versions.</p>
+<p><code>ggRandomForests</code> reads those results and tidies them. It passes the <code>NA</code> mask through unchanged, drops those points at draw time so a curve ends with its subject’s follow-up, preserves the upstream tuning order, and declines to fabricate standard errors the upstream object does not carry.</p>
+<p>So a hazard curve that stops early, a missing late-window priority point, and a tuning plot with no ribbon are all faithful reports of the fitted object. If you want different behaviour there, the change belongs upstream.</p>
+</section>
+<section id="pitfalls" class="level2" data-number="34.10">
+<h2 data-number="34.10" class="anchored" data-anchor-id="pitfalls"><span class="header-section-number">34.10</span> Pitfalls</h2>
+<ul>
+<li><strong>A counting-process frame is not a wide longitudinal frame.</strong> One row per interval, with <code>(start, stop]</code> half-open so consecutive intervals do not double-count the boundary. Reshaping one repeated-measures column per visit into <code>start</code>/<code>stop</code> rows is the step most likely to go wrong, and it goes wrong silently.</li>
+<li><strong>Predictability is the assumption that carries the analysis.</strong> A value used at time <code>t</code> must be knowable just before <code>t</code>. Carrying a later lab backward into an earlier interval produces a model that predicts events from their own consequences, and reports excellent discrimination while doing it.</li>
+<li><strong>A subject can vanish from a hazard panel.</strong> If no grid point falls inside any of its records, every hazard value is <code>NA</code> and the line is not drawn. The subject is still in the extracted frame and still appears in the cumulative-hazard panel. Never read the number of lines on a hazard figure as the number of subjects you asked for.</li>
+<li><strong>Hazard is a rate, not a probability.</strong> Do not report a hazard height as a percentage, and do not compare hazard heights across figures drawn on different grids.</li>
+<li><strong>Priority ranks; it does not direct.</strong> <code>gg_rhf_importance()</code> says a variable mattered in a window, never which way it pushed. Pair it with a dependence view before writing a direction into a manuscript.</li>
+<li><strong>Say which criterion you tuned on.</strong> The risk and iAUC searches selected different tree sizes on the same data. A reported tree size is uninterpretable without its objective.</li>
+<li><strong>Supply the saved upstream objects.</strong> <code>gg_auct()</code>, <code>gg_rhf_importance()</code> and <code>gg_tune_rhf()</code> will each compute their input when you omit it. That is fine once and painful in a document you re-render, which is why this chapter passes <code>auct_fit</code>, <code>importance_fit</code>, and a completed tuning path.</li>
+<li><strong>The house themes suppress legends deliberately, so add one deliberately.</strong> All four <code>theme_hv_*()</code> functions set <code>legend.position = "none"</code> because a CORR figure names its groups on the panel rather than in a margin key. When the grouping genuinely cannot be named that way, restore the key after the theme: <code>hv_legend_inside()</code> for a handful of series, an explicit <code>legend.position</code> for a continuous scale that would occlude the data if placed inside.</li>
+<li><strong>Late windows rest on fewer patients.</strong> The number at risk falls sharply across the importance windows here. Read late-window contrasts with that in mind rather than as equals of the early ones.</li>
+</ul>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-R-ggRandomForests" class="csl-entry" role="listitem">
+Ehrlinger, John. 2026. <em>ggRandomForests: Visually Exploring Random Forests</em>. <a href="https://github.com/ehrlinger/ggRandomForests">https://github.com/ehrlinger/ggRandomForests</a>.
+</div>
+<div id="ref-R-randomForestRHF" class="csl-entry" role="listitem">
+Ishwaran, Hemant, and Udaya B. Kogalur. 2026. <em>randomForestRHF: Random Hazard Forests</em>. <a href="https://www.randomforestsrc.org/">https://www.randomforestsrc.org/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./varpro_partial.html" class="pagination-link" aria-label="varPro partial dependence">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">varPro partial dependence</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./publications.html" class="pagination-link" aria-label="Finish and deliver the result">
+        <span class="nav-page-text">Finish and deliver the result</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2025, John Ehrlinger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ehrlinger/hvtiGraphics">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
