@@ -75,7 +75,7 @@ jobs:
           ))
 
           # What the chapters load that no family package depends on.
-          pak::pak(c("gt", "kernelshap", "mlbench", "jsonlite", "knitr", "rmarkdown"))
+          pak::pak(c("gt", "ggraph", "kernelshap", "mlbench", "jsonlite", "knitr", "rmarkdown"))
         shell: Rscript {0}
 
       - name: Record what was actually installed
