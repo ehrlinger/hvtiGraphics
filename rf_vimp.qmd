@@ -68,16 +68,32 @@ Run this chapter on your own machine and the VIMP values will not match the
 ones printed here. That is not a seeding mistake, and it is worth knowing
 before you quote a number from a forest into a manuscript.
 
-`set.seed()` does fix the forest. The survival forest in
-[What does the forest predict?](rf_predicted.qmd) reproduces exactly, to the
-last decimal, between a Mac and a Linux runner on the same seed. This chapter
-does not. Rebuilding it on Linux moved petal width's global score from 0.619 to
-0.633 and reordered the rows beneath it, with the same seed, the same
-`randomForestSRC` version and the same R. The likely reason is that permutation
-importance draws its own shuffles on top of the fitted forest, so it carries a
-source of randomness the trees themselves do not.
+`set.seed()` fixes the forest for a given machine, and it holds. What it does
+not survive is a change of platform. Rebuilding the book on a Linux runner
+moved petal width's global score from 0.619 to 0.633 and reordered the rows
+beneath it, with the same seed, the same `randomForestSRC` version and the same
+R.
 
-The size of that shift is the useful part. Petal length and petal width sit far
+What moves is the forest, not the importance calculation. The plainest evidence
+is [Did the forest stabilize?](rf_error.qmd), which grows the same iris
+forest on the same seed and never asks for importance at all, and whose
+out-of-bag error still shifts in the third decimal across the same two
+machines. Nor is this a property of classification forests, since the
+classification forest in [How well does the forest predict?](rf_roc.qmd)
+reproduces exactly.
+
+Past that we are describing an association rather than a cause. When the whole
+book was rebuilt on Linux and each chapter's output compared against the cache
+this Mac had produced, the only forest chapters that moved were the two that
+fit on `iris`. The six other chapters that fit forests, between them using
+`pbc`, `veteran`, `SynthDiabetes`, `breast` and `housing`, came back unchanged.
+That is a comparison of chapter output rather than an audit of every forest a
+chapter grows, and several of them grow more than one. `iris` is measured to
+the nearest millimetre, so its 150 rows carry a great many exactly tied values
+and a split has to break those ties somehow. That is where we would look
+first.
+
+The size of the shift is the useful part. Petal length and petal width sit far
 above both sepal measurements in every run we have looked at, and that
 separation is what @fig-rf_vimp is for. The order *within* a close pair is not,
 at 300 trees. So read the grouping rather than the ranking. If an analysis
