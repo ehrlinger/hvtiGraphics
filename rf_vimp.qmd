@@ -82,12 +82,16 @@ machines. Nor is this a property of classification forests, since the
 classification forest in [How well does the forest predict?](rf_roc.qmd)
 reproduces exactly.
 
-It is this dataset. Of the eight forests in the book, the two grown on `iris`
-both move across platforms and the other six, on `pbc`, `veteran`,
-`SynthDiabetes`, `breast`, `housing` and a simulated cohort, all reproduce to
-the last decimal. `iris` is measured to the nearest millimetre, so its 150 rows
-carry a great many exactly tied values, and a split has to break those ties
-somehow. That is where we would look first, though we have not proved it.
+Past that we are describing an association rather than a cause. When the whole
+book was rebuilt on Linux and each chapter's output compared against the cache
+this Mac had produced, the only forest chapters that moved were the two that
+fit on `iris`. The six other chapters that fit forests, between them using
+`pbc`, `veteran`, `SynthDiabetes`, `breast` and `housing`, came back unchanged.
+That is a comparison of chapter output rather than an audit of every forest a
+chapter grows, and several of them grow more than one. `iris` is measured to
+the nearest millimetre, so its 150 rows carry a great many exactly tied values
+and a split has to break those ties somehow. That is where we would look
+first.
 
 The size of the shift is the useful part. Petal length and petal width sit far
 above both sepal measurements in every run we have looked at, and that
