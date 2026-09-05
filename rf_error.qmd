@@ -107,6 +107,15 @@ If the right edge still has a sustained trend, refit with a larger explicit
 tail rather than declaring that every local rise means the forest has started
 to fail.
 
+One more reason to summarize the tail rather than read a single value. These
+error rates are not stable across machines. Rebuilding the book on a Linux
+runner moved the overall rate from 0.053 to 0.054 and versicolor's from 0.060
+to 0.062, on the same seed and the same `randomForestSRC` version. The two
+chapters grown on `iris` both do this and the book's six other forests do not,
+so it looks like a property of a dataset measured to the nearest millimetre,
+where many values tie exactly and a split has to break those ties somehow.
+Quote the level the trajectory settles at, not the third decimal.
+
 ## Pitfalls
 
 - **Calling a noisy curve proof of convergence.** We are checking practical
