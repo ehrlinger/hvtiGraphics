@@ -104,7 +104,7 @@ GitHub access, and each member's status in one report. Avoid
 older CRAN release, leaving a family member out of step. Run `status()` and
 then `update()` instead.
 
-That call installs the eleven family packages, and their dependencies bring in
+That call installs the twelve family packages, and their dependencies bring in
 most of the rest of the stack with them: `ggplot2`, `patchwork`, `survival` and
 `ggalluvial` arrive with `hvtiPlotR`, `gtsummary` and `flextable` with
 `hvtiRtables`, `randomForestSRC` and `varPro` with `ggRandomForests`. Five
