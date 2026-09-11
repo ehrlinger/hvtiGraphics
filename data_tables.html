@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>5&nbsp; Describing a dataset – HVTI Recipes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./qt_tables.html" rel="next">
+<link href="./describe.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-f815791d8ae4ce63213271c49438a130.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b52abe616cc2e35bbb5f05103ec4018f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-f815791d8ae4ce63213271c49438a130.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./describe.html">Describe the cohort</a></li><li class="breadcrumb-item"><a href="./data_tables.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Describing a dataset</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">HVTI Recipes</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./gettingstarted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Start a reproducible analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Packages</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./usingR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using R for figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_governance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data governance and reproducibility</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./describe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Describe the cohort</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_tables.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Describing a dataset</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./qt_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Publication tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hv_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Manuscript tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./histograms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Histogram plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./density.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Density plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boxplots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Box plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bar.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Bar chart plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./scatter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Scatter plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./spaghetti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Spaghetti plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./postagestamp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Postage stamp plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./consort.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">CONSORT patient-flow diagrams</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./upset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Venn diagrams and UpSet plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sankey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Alluvial and Sankey plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./balance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Covariate balance and follow-up</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./timetoevent.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyze time-to-event outcomes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./survival.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Survival plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hazard.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Hazard and nonparametric curves</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./nnt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Number needed to treat and survival difference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Fit additive hazard models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_prediction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Predict from a hazard model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Check a hazard model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_migration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Move a legacy HAZARD analysis into R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./randomforests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Explain predictive models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_error.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Did the forest stabilize?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_predicted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">What does the forest predict?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_vimp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Which variables contribute to prediction?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_shap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">SHAP attribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_dependence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Variable and partial dependence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_roc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">How well does the forest predict?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./varpro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Variable priority with varPro</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./varpro_partial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">varPro partial dependence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_rhf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">What if a predictor changes during follow-up?</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./publications.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Finish and deliver the result</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./themes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Themes for consistency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./colors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Color templates for consistency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./annotation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Annotating figures and formatting axes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./legends.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Using legends</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./combination.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Combination figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./figure_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Tables that accompany figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./manuscripts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Preparing figures for manuscripts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./researchday.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Posters and research day</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./presentations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Slides and presentations</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./function_map.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Function-to-recipe map</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#when-to-use-it" id="toc-when-to-use-it" class="nav-link active" data-scroll-target="#when-to-use-it"><span class="header-section-number">5.1</span> When to use it</a></li>
+  <li><a href="#the-data-it-needs" id="toc-the-data-it-needs" class="nav-link" data-scroll-target="#the-data-it-needs"><span class="header-section-number">5.2</span> The data it needs</a></li>
+  <li><a href="#build-it" id="toc-build-it" class="nav-link" data-scroll-target="#build-it"><span class="header-section-number">5.3</span> Build it</a>
+  <ul class="collapse">
+  <li><a href="#what-is-in-this-dataset-proc_contents" id="toc-what-is-in-this-dataset-proc_contents" class="nav-link" data-scroll-target="#what-is-in-this-dataset-proc_contents"><span class="header-section-number">5.3.1</span> What is in this dataset: <code>proc_contents()</code></a></li>
+  <li><a href="#the-machine-readable-version-dataset_schema" id="toc-the-machine-readable-version-dataset_schema" class="nav-link" data-scroll-target="#the-machine-readable-version-dataset_schema"><span class="header-section-number">5.3.2</span> The machine-readable version: <code>dataset_schema()</code></a></li>
+  <li><a href="#what-the-numbers-look-like-proc_means" id="toc-what-the-numbers-look-like-proc_means" class="nav-link" data-scroll-target="#what-the-numbers-look-like-proc_means"><span class="header-section-number">5.3.3</span> What the numbers look like: <code>proc_means()</code></a></li>
+  <li><a href="#stratified-by-a-class-variable" id="toc-stratified-by-a-class-variable" class="nav-link" data-scroll-target="#stratified-by-a-class-variable"><span class="header-section-number">5.3.4</span> Stratified by a class variable</a></li>
+  <li><a href="#the-whole-dictionary-data_dictionary" id="toc-the-whole-dictionary-data_dictionary" class="nav-link" data-scroll-target="#the-whole-dictionary-data_dictionary"><span class="header-section-number">5.3.5</span> The whole dictionary: <code>data_dictionary()</code></a></li>
+  </ul></li>
+  <li><a href="#read-it" id="toc-read-it" class="nav-link" data-scroll-target="#read-it"><span class="header-section-number">5.4</span> Read it</a></li>
+  <li><a href="#pitfalls" id="toc-pitfalls" class="nav-link" data-scroll-target="#pitfalls"><span class="header-section-number">5.5</span> Pitfalls</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./describe.html">Describe the cohort</a></li><li class="breadcrumb-item"><a href="./data_tables.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Describing a dataset</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Describing a dataset</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="when-to-use-it" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="when-to-use-it"><span class="header-section-number">5.1</span> When to use it</h2>
+<p>Use this chapter before analysis: inspect the data, question what you find, and build the dictionary that records the cohort you actually received. This is dataset reconnaissance, not the publication table itself.</p>
+<p>Start with <code>proc_contents()</code> to inventory the variables and their missingness, then use <code>proc_means()</code> to inspect the numeric distributions. <code>data_dictionary()</code> turns that inventory into the one-page artifact you hand a collaborator. These are R-side checks, and none produces a table anybody will publish. You run them because you cannot decide what belongs in Table 1 until you know what you are holding: which variables are there, what type each one came in as, and how much of each is actually populated.</p>
+<p>For readers moving an older workflow to R, the first two names are migration landmarks for the retired <code>PROC CONTENTS</code> and <code>PROC MEANS</code> steps. That is this recipe: the <em>pre-analysis</em> table, the one that runs before the Table 1 in the <a href="./qt_tables.html">publication tables</a> chapter has a shape.</p>
+<p>Reach for it whenever a dataset is new to you, has just been re-extracted, or arrives with someone telling you it is “the same as last time.” Ten seconds of <code>proc_contents()</code> catches the variable that came back as character this quarter, or the one that is four-fifths missing, while it is still cheap to ask about.</p>
+</section>
+<section id="the-data-it-needs" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="the-data-it-needs"><span class="header-section-number">5.2</span> The data it needs</h2>
+<p>Any data frame. Labels, when the columns carry them, are picked up and reported; unlabelled columns fall back to the variable name. We use <code>generate_survival_data()</code>, the same simulated cohort the <a href="./qt_tables.html">publication tables</a> chapter builds its Table 1 from, so you can read the two chapters against one dataset.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dta <span class="ot">&lt;-</span> hvtiRutilities<span class="sc">::</span><span class="fu">generate_survival_data</span>(<span class="at">n =</span> <span class="dv">200</span>, <span class="at">seed =</span> <span class="dv">42</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(dta)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 200  24</code></pre>
+</div>
+</div>
+</section>
+<section id="build-it" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="build-it"><span class="header-section-number">5.3</span> Build it</h2>
+<section id="what-is-in-this-dataset-proc_contents" class="level3" data-number="5.3.1">
+<h3 data-number="5.3.1" class="anchored" data-anchor-id="what-is-in-this-dataset-proc_contents"><span class="header-section-number">5.3.1</span> What is in this dataset: <code>proc_contents()</code></h3>
+<p><code>proc_contents()</code> prints what SAS prints: a header carrying the observation and variable counts, then one row per variable with its creation position, name, SAS type, format, and label. Next to those it adds three columns you would otherwise go looking for separately: <code>class</code>, the R type sitting behind the SAS one; <code>n_unique</code>, how many distinct values the column holds; and <code>pct_missing</code>, how much of it is empty.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">proc_contents</span>(dta)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Observations: 200
+Variables:    24
+
+   num     variable type format                                          label
+1    8          age  Num   &lt;NA&gt;                         Age at surgery (years)
+2   10          bmi  Num   &lt;NA&gt;                        Body mass index (kg/m2)
+3   20  bypass_time  Num   &lt;NA&gt;              Cardiopulmonary bypass time (min)
+4    1        ccfid Char   &lt;NA&gt;                                     Patient ID
+5    5         dead  Num   &lt;NA&gt;           Death indicator (1=dead, 0=censored)
+6   23     diabetes Char   &lt;NA&gt;                              Diabetes mellitus
+7   14       gfr_bs  Num   &lt;NA&gt;                  Baseline eGFR (mL/min/1.73m2)
+8   11       hgb_bs  Num   &lt;NA&gt;                     Baseline hemoglobin (g/dL)
+9   24 hypertension Char   &lt;NA&gt;                                   Hypertension
+10   4      iv_dead  Num   &lt;NA&gt;                Follow-up time to death (years)
+11   3     iv_opyrs  Num   &lt;NA&gt; Observation interval (years) since origin_year
+12   7      iv_reop  Num   &lt;NA&gt;          Follow-up time to reoperation (years)
+13  15     lvefvs_b  Num   &lt;NA&gt;              Baseline LV ejection fraction (%)
+14  16     lvmass_b  Num   &lt;NA&gt;                           Baseline LV mass (g)
+15  17      lvmsi_b  Num   &lt;NA&gt;                  Baseline LV mass index (g/m2)
+16  22   nyha_class Char   &lt;NA&gt;                          NYHA functional class
+17   2  origin_year  Num   &lt;NA&gt;                 Calendar year for iv_opyrs = 0
+18  13     plate_bs  Num   &lt;NA&gt;                 Baseline platelet count (K/uL)
+19   6         reop  Num   &lt;NA&gt;                      Reoperation (1=yes, 0=no)
+20   9          sex Char   &lt;NA&gt;                                            Sex
+21  19     stvold_b  Num   &lt;NA&gt;          Baseline SV index - diastolic (mL/m2)
+22  18     stvoli_b  Num   &lt;NA&gt;           Baseline SV index - systolic (mL/m2)
+23  12       wbc_bs  Num   &lt;NA&gt;                      Baseline WBC count (K/uL)
+24  21  xclamp_time  Num   &lt;NA&gt;                  Aortic cross-clamp time (min)
+       class n_unique pct_missing
+1    numeric      165         0.0
+2    numeric      123         0.0
+3    numeric      100         0.0
+4  character      200         0.0
+5    integer        2         0.0
+6     factor        2         0.0
+7    numeric      174         0.0
+8    numeric       66         0.0
+9     factor        2         0.0
+10   numeric      184         0.0
+11   numeric      183         0.0
+12   numeric       31        83.5
+13   numeric      149         0.0
+14   numeric      191         0.0
+15   numeric        1         0.0
+16   ordered        4         0.0
+17   integer       21         0.0
+18   numeric      135         0.0
+19   integer        2         0.0
+20    factor        2         0.0
+21   numeric      171         0.0
+22   numeric      168         0.0
+23   numeric      172         0.0
+24   numeric       75         0.0</code></pre>
+</div>
+</div>
+<p>Variables come back sorted alphabetically, matching SAS’s <em>Alphabetic List of Variables and Attributes</em>. Pass <code>order = "varnum"</code> for creation order instead. The <code>num</code> column reports creation position either way, so the original order is always recoverable by eye.</p>
+<p>Two columns repay a slow read. <code>type</code> is deliberately two-valued, <code>Char</code> or <code>Num</code>, because that is all SAS storage offers: <code>sex</code> is a factor in R and reports <code>Char</code> here, while <code>class</code> keeps the R truth alongside it. Then <code>pct_missing</code>, which is where the surprises live. Here 23 of the 24 variables are complete and <code>iv_reop</code> is 83.5% missing, which is exactly right for a reoperation follow-up time. It exists only for the 33 patients who had a reoperation. Missingness with a reason is structure; missingness you cannot account for is a question for whoever built the extract.</p>
+</section>
+<section id="the-machine-readable-version-dataset_schema" class="level3" data-number="5.3.2">
+<h3 data-number="5.3.2" class="anchored" data-anchor-id="the-machine-readable-version-dataset_schema"><span class="header-section-number">5.3.2</span> The machine-readable version: <code>dataset_schema()</code></h3>
+<p><code>proc_contents()</code> prints for a person. <code>dataset_schema()</code> returns the same inventory as a data frame you can act on: one row per variable with its position, class, SAS-style type, format, and label.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>schema <span class="ot">&lt;-</span> <span class="fu">dataset_schema</span>(dta)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(schema, <span class="dv">8</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  num    variable     class type format
+1   1       ccfid character Char   &lt;NA&gt;
+2   2 origin_year   integer  Num   &lt;NA&gt;
+3   3    iv_opyrs   numeric  Num   &lt;NA&gt;
+4   4     iv_dead   numeric  Num   &lt;NA&gt;
+5   5        dead   integer  Num   &lt;NA&gt;
+6   6        reop   integer  Num   &lt;NA&gt;
+7   7     iv_reop   numeric  Num   &lt;NA&gt;
+8   8         age   numeric  Num   &lt;NA&gt;
+                                           label
+1                                     Patient ID
+2                 Calendar year for iv_opyrs = 0
+3 Observation interval (years) since origin_year
+4                Follow-up time to death (years)
+5           Death indicator (1=dead, 0=censored)
+6                      Reoperation (1=yes, 0=no)
+7          Follow-up time to reoperation (years)
+8                         Age at surgery (years)</code></pre>
+</div>
+</div>
+<p>Use it when the inventory is an input rather than an output. Selecting every numeric column for a <code>proc_means()</code> call, checking that every variable carries a label before a dictionary goes out, or diffing this quarter’s extract against last quarter’s are all a line or two against this frame and awkward against printed output.</p>
+<p>The <code>label</code> column is the one worth checking early. A variable with no label reaches a manuscript table as a raw column name, and that is discovered at the worst possible moment. The check is one line, and on this dataset it passes.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>unlabelled <span class="ot">&lt;-</span> <span class="cf">function</span>(x) {</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  sch <span class="ot">&lt;-</span> <span class="fu">dataset_schema</span>(x)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  sch[<span class="fu">is.na</span>(sch<span class="sc">$</span>label) <span class="sc">|</span> sch<span class="sc">$</span>label <span class="sc">==</span> <span class="st">""</span>, <span class="fu">c</span>(<span class="st">"num"</span>, <span class="st">"variable"</span>, <span class="st">"class"</span>)]</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(<span class="fu">unlabelled</span>(dta))   <span class="co"># 0 is the answer you want</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+</div>
+<p>Zero is worth confirming rather than assuming, because a passing check and a check that cannot fail look identical. Add a column the generator never labelled and the same line finds it:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">20260828</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>dta_extra <span class="ot">&lt;-</span> dta</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>dta_extra<span class="sc">$</span>new_lab_value <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fu">nrow</span>(dta_extra))</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="fu">unlabelled</span>(dta_extra)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   num      variable   class
+25  25 new_lab_value numeric</code></pre>
+</div>
+</div>
+<p>On a real extract this is rarely zero. Run it before the dictionary goes out, not after a co-author asks what <code>lvmsi_b</code> means.</p>
+</section>
+<section id="what-the-numbers-look-like-proc_means" class="level3" data-number="5.3.3">
+<h3 data-number="5.3.3" class="anchored" data-anchor-id="what-the-numbers-look-like-proc_means"><span class="header-section-number">5.3.3</span> What the numbers look like: <code>proc_means()</code></h3>
+<p><code>proc_means()</code> summarises the numeric columns you name, defaulting to SAS’s own default five statistics.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">proc_means</span>(dta, <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"bmi"</span>, <span class="st">"gfr_bs"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>  variable                         label   n    mean       std  min   max
+1      age        Age at surgery (years) 200 44.5890 14.595538  1.0  85.0
+2      bmi       Body mass index (kg/m2) 200 26.7885  4.750479 15.0  41.8
+3   gfr_bs Baseline eGFR (mL/min/1.73m2) 200 76.1505 19.392901 25.9 120.0</code></pre>
+</div>
+</div>
+<p>Omit <code>vars</code> and every numeric column is analysed, the way <code>PROC MEANS</code> behaves with no <code>VAR</code> statement. <code>stats =</code> takes the SAS keywords you already know, including <code>"median"</code>, <code>"q1"</code>, <code>"q3"</code>, <code>"nmiss"</code>, <code>"stderr"</code>, and any <code>"pNN"</code> percentile.</p>
+<p>Quantiles are worth one note. They use <code>stats::quantile(type = 2)</code>, which is the R equivalent of SAS’s <code>QNTLDEF=5</code>, not R’s own <code>type = 7</code> default. On a large sample the two agree. On the small, even-numbered subgroups a clinical stratification hands you, they do not: for <code>c(1, 2, 3, 4)</code> the first quartile is 1.5 in SAS and 1.75 under R’s default. The median agrees, which is how the disagreement stays hidden.</p>
+</section>
+<section id="stratified-by-a-class-variable" class="level3" data-number="5.3.4">
+<h3 data-number="5.3.4" class="anchored" data-anchor-id="stratified-by-a-class-variable"><span class="header-section-number">5.3.4</span> Stratified by a class variable</h3>
+<p>Give it <code>class =</code> and you get the same table once per group, the <code>CLASS</code> statement by another name.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">proc_means</span>(dta, <span class="at">vars =</span> <span class="fu">c</span>(<span class="st">"age"</span>, <span class="st">"bmi"</span>), <span class="at">class =</span> <span class="st">"sex"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>     sex variable                   label   n     mean       std  min  max
+1 Female      age  Age at surgery (years)  77 45.07143 14.800443  1.0 79.3
+2   Male      age  Age at surgery (years) 123 44.28699 14.518428  8.4 85.0
+3 Female      bmi Body mass index (kg/m2)  77 27.05325  4.889747 17.4 41.8
+4   Male      bmi Body mass index (kg/m2) 123 26.62276  4.673729 15.0 39.1</code></pre>
+</div>
+</div>
+<p>Rows sort by analysis variable first, then by class level, so you read a variable’s groups down the page rather than hunting across. A factor class variable orders by its declared levels rather than alphabetically, matching SAS’s <code>ORDER=INTERNAL</code>, which is what keeps an ordered clinical scale in clinical sequence.</p>
+<p>Check the <code>n</code> column against your cohort size. Rows with a missing value in any class variable are dropped, again matching SAS, so a total that comes up short tells you how many patients had no group to sit in. Here 77 and 123 add to 200, and nothing was dropped.</p>
+</section>
+<section id="the-whole-dictionary-data_dictionary" class="level3" data-number="5.3.5">
+<h3 data-number="5.3.5" class="anchored" data-anchor-id="the-whole-dictionary-data_dictionary"><span class="header-section-number">5.3.5</span> The whole dictionary: <code>data_dictionary()</code></h3>
+<p><code>data_dictionary()</code> is <code>proc_contents()</code> in creation order with the SAS-storage columns dropped and a summary put in their place. Out go <code>num</code>, <code>type</code>, and <code>format</code>, which describe how a value is stored rather than what it is. In comes a compact <code>summary</code> giving min, median, and max for a numeric variable, the levels for a factor, the TRUE percentage for a logical. That leaves six columns: <code>variable</code>, <code>label</code>, <code>class</code>, <code>n_unique</code>, <code>pct_missing</code>, and <code>summary</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data_dictionary</span>(dta)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                 variable                                          label
+ccfid               ccfid                                     Patient ID
+origin_year   origin_year                 Calendar year for iv_opyrs = 0
+iv_opyrs         iv_opyrs Observation interval (years) since origin_year
+iv_dead           iv_dead                Follow-up time to death (years)
+dead                 dead           Death indicator (1=dead, 0=censored)
+reop                 reop                      Reoperation (1=yes, 0=no)
+iv_reop           iv_reop          Follow-up time to reoperation (years)
+age                   age                         Age at surgery (years)
+sex                   sex                                            Sex
+bmi                   bmi                        Body mass index (kg/m2)
+hgb_bs             hgb_bs                     Baseline hemoglobin (g/dL)
+wbc_bs             wbc_bs                      Baseline WBC count (K/uL)
+plate_bs         plate_bs                 Baseline platelet count (K/uL)
+gfr_bs             gfr_bs                  Baseline eGFR (mL/min/1.73m2)
+lvefvs_b         lvefvs_b              Baseline LV ejection fraction (%)
+lvmass_b         lvmass_b                           Baseline LV mass (g)
+lvmsi_b           lvmsi_b                  Baseline LV mass index (g/m2)
+stvoli_b         stvoli_b           Baseline SV index - systolic (mL/m2)
+stvold_b         stvold_b          Baseline SV index - diastolic (mL/m2)
+bypass_time   bypass_time              Cardiopulmonary bypass time (min)
+xclamp_time   xclamp_time                  Aortic cross-clamp time (min)
+nyha_class     nyha_class                          NYHA functional class
+diabetes         diabetes                              Diabetes mellitus
+hypertension hypertension                                   Hypertension
+                 class n_unique pct_missing
+ccfid        character      200         0.0
+origin_year    integer       21         0.0
+iv_opyrs       numeric      183         0.0
+iv_dead        numeric      184         0.0
+dead           integer        2         0.0
+reop           integer        2         0.0
+iv_reop        numeric       31        83.5
+age            numeric      165         0.0
+sex             factor        2         0.0
+bmi            numeric      123         0.0
+hgb_bs         numeric       66         0.0
+wbc_bs         numeric      172         0.0
+plate_bs       numeric      135         0.0
+gfr_bs         numeric      174         0.0
+lvefvs_b       numeric      149         0.0
+lvmass_b       numeric      191         0.0
+lvmsi_b        numeric        1         0.0
+stvoli_b       numeric      168         0.0
+stvold_b       numeric      171         0.0
+bypass_time    numeric      100         0.0
+xclamp_time    numeric       75         0.0
+nyha_class     ordered        4         0.0
+diabetes        factor        2         0.0
+hypertension    factor        2         0.0
+                                                                  summary
+ccfid        200 levels: PT00001, PT00002, PT00003, PT00004, PT00005, ...
+origin_year                                            1998 / 2008 / 2018
+iv_opyrs                                              1.06 / 7.87 / 14.99
+iv_dead                                                0.25 / 4.1 / 13.98
+dead                                                            0 / 1 / 1
+reop                                                            0 / 0 / 1
+iv_reop                                                0.04 / 1.29 / 9.92
+age                                                        1 / 44.75 / 85
+sex                                                2 levels: Female, Male
+bmi                                                     15 / 26.65 / 41.8
+hgb_bs                                                      7.6 / 13 / 18
+wbc_bs                                                 1.5 / 7.35 / 15.53
+plate_bs                                                   50 / 225 / 447
+gfr_bs                                                 25.9 / 75.75 / 120
+lvefvs_b                                                29.1 / 53.75 / 75
+lvmass_b                                               60 / 184.4 / 377.2
+lvmsi_b                                                      40 / 40 / 40
+stvoli_b                                               20.5 / 53.7 / 90.3
+stvold_b                                               40 / 93.35 / 153.6
+bypass_time                                               20 / 88.5 / 194
+xclamp_time                                                 13 / 57 / 118
+nyha_class                                       4 levels: I, II, III, IV
+diabetes                                                2 levels: No, Yes
+hypertension                                            2 levels: No, Yes</code></pre>
+</div>
+</div>
+<p>That summary column is what makes the table hand-off-able, and it is also where degenerate variables announce themselves. <code>lvmsi_b</code> reads <code>40 / 40 / 40</code> with an <code>n_unique</code> of 1, so it is a constant. A constant costs a row in Table 1 and tells the reader nothing. Send this frame through <code>write.csv()</code> and you have the data-dictionary appendix a protocol or a data-sharing agreement asks for.</p>
+</section>
+</section>
+<section id="read-it" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="read-it"><span class="header-section-number">5.4</span> Read it</h2>
+<p>Three outputs, three questions.</p>
+<p><code>proc_contents()</code> answers <em>what is here</em>: names, types, labels, and how complete each column is. Read it top to bottom once, then read <code>pct_missing</code> on its own, column-first rather than row-first. That single pass is most of the value.</p>
+<p><code>proc_means()</code> answers <em>what do the numbers look like</em>: centre, spread, and range per variable, and per group once you add <code>class =</code>. Read <code>min</code> and <code>max</code> before you read the mean. Impossible values show up at the ends, and a mean is good at hiding one. The <code>age</code> minimum of 1 in this simulated cohort is the kind of thing you would query on real data.</p>
+<p><code>data_dictionary()</code> answers <em>what do I hand someone else</em>. It is the one of the three you save to a file, and the <a href="./data_governance.html">data governance</a> chapter files it beside the manifest for exactly that reason. Read it column by column, with most of the attention on <code>pct_missing</code> and <code>n_unique</code>. High missingness flags a variable you cannot lean on without saying so. A distinct-value count that surprises you, two levels where you expected continuous or a thousand where you expected a category, usually means a typing or coding problem upstream, caught here before it reaches a model. The <code>summary</code> column is your sanity check on range: a negative age or an ejection fraction above 100 shows up immediately.</p>
+<p>None of the three is a publication table. They are the reconnaissance you do before deciding what the publication table should contain, and <a href="./qt_tables.html">Table 1</a> comes after.</p>
+</section>
+<section id="pitfalls" class="level2" data-number="5.5">
+<h2 data-number="5.5" class="anchored" data-anchor-id="pitfalls"><span class="header-section-number">5.5</span> Pitfalls</h2>
+<ul>
+<li><p><strong><code>pct_missing</code> is <code>NaN</code>, not <code>0</code>, when the frame has no rows.</strong> Filter a cohort down to nothing and every <code>pct_missing</code> comes back <code>NaN</code>, because <code>mean(is.na(x))</code> over an empty vector is 0/0. The table looks broken and is in fact reporting honestly: the proportion of missing values among no values is undefined, and a <code>0</code> there would assert that nothing is missing. If you format the column for display, handle <code>NaN</code> explicitly rather than letting it print raw next to real percentages, and treat it as the signal it is that your filter removed everything.</p></li>
+<li><p><strong><code>class =</code> groups on the stored value, not the printed one.</strong> Two values that render identically but differ underneath stay separate groups, and you get back two rows that look like duplicates of each other. A trailing space in a character code does it, and so does a numeric group variable whose values differ below print precision. The behaviour is correct, since grouping on the rendered string would quietly merge values that are genuinely distinct, but it will mislead you if you are diagnosing from printed output alone. When a group count looks doubled, run <code>unique()</code> or <code>table()</code> on the class variable and compare what you get to what the table showed you.</p></li>
+</ul>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./describe.html" class="pagination-link" aria-label="Describe the cohort">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Describe the cohort</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./qt_tables.html" class="pagination-link" aria-label="Publication tables">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Publication tables</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2025, John Ehrlinger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ehrlinger/hvtiGraphics">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

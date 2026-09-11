@@ -1,0 +1,2832 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>4&nbsp; Data governance and reproducibility – HVTI Recipes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./describe.html" rel="next">
+<link href="./usingR.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-f815791d8ae4ce63213271c49438a130.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b52abe616cc2e35bbb5f05103ec4018f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-f815791d8ae4ce63213271c49438a130.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./gettingstarted.html">Start a reproducible analysis</a></li><li class="breadcrumb-item"><a href="./data_governance.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data governance and reproducibility</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">HVTI Recipes</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./gettingstarted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Start a reproducible analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Packages</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./usingR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using R for figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_governance.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data governance and reproducibility</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./describe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Describe the cohort</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Describing a dataset</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./qt_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Publication tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hv_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Manuscript tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./histograms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Histogram plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./density.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Density plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boxplots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Box plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bar.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Bar chart plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./scatter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Scatter plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./spaghetti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Spaghetti plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./postagestamp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Postage stamp plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./consort.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">CONSORT patient-flow diagrams</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./upset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Venn diagrams and UpSet plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sankey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Alluvial and Sankey plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./balance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Covariate balance and follow-up</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./timetoevent.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyze time-to-event outcomes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./survival.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Survival plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hazard.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Hazard and nonparametric curves</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./nnt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Number needed to treat and survival difference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Fit additive hazard models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_prediction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Predict from a hazard model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Check a hazard model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_migration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Move a legacy HAZARD analysis into R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./randomforests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Explain predictive models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_error.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Did the forest stabilize?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_predicted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">What does the forest predict?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_vimp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Which variables contribute to prediction?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_shap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">SHAP attribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_dependence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Variable and partial dependence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_roc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">How well does the forest predict?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./varpro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Variable priority with varPro</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./varpro_partial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">varPro partial dependence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_rhf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">What if a predictor changes during follow-up?</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./publications.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Finish and deliver the result</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./themes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Themes for consistency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./colors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Color templates for consistency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./annotation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Annotating figures and formatting axes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./legends.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Using legends</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./combination.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Combination figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./figure_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Tables that accompany figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./manuscripts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Preparing figures for manuscripts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./researchday.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Posters and research day</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./presentations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Slides and presentations</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./function_map.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Function-to-recipe map</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#when-to-use-it" id="toc-when-to-use-it" class="nav-link active" data-scroll-target="#when-to-use-it"><span class="header-section-number">4.1</span> When to use it</a></li>
+  <li><a href="#the-data-it-needs" id="toc-the-data-it-needs" class="nav-link" data-scroll-target="#the-data-it-needs"><span class="header-section-number">4.2</span> The data it needs</a></li>
+  <li><a href="#build-it" id="toc-build-it" class="nav-link" data-scroll-target="#build-it"><span class="header-section-number">4.3</span> Build it</a>
+  <ul class="collapse">
+  <li><a href="#step-1-a-data-dictionary" id="toc-step-1-a-data-dictionary" class="nav-link" data-scroll-target="#step-1-a-data-dictionary"><span class="header-section-number">4.3.1</span> Step 1: a data dictionary</a></li>
+  <li><a href="#step-2-variable-labels-in-one-place" id="toc-step-2-variable-labels-in-one-place" class="nav-link" data-scroll-target="#step-2-variable-labels-in-one-place"><span class="header-section-number">4.3.2</span> Step 2: variable labels in one place</a></li>
+  <li><a href="#step-3-infer-and-check-r-data-types" id="toc-step-3-infer-and-check-r-data-types" class="nav-link" data-scroll-target="#step-3-infer-and-check-r-data-types"><span class="header-section-number">4.3.3</span> Step 3: infer and check R data types</a></li>
+  <li><a href="#step-4-pin-the-extract-with-a-manifest" id="toc-step-4-pin-the-extract-with-a-manifest" class="nav-link" data-scroll-target="#step-4-pin-the-extract-with-a-manifest"><span class="header-section-number">4.3.4</span> Step 4: pin the extract with a manifest</a></li>
+  <li><a href="#step-5-compare-versions-on-re-delivery" id="toc-step-5-compare-versions-on-re-delivery" class="nav-link" data-scroll-target="#step-5-compare-versions-on-re-delivery"><span class="header-section-number">4.3.5</span> Step 5: compare versions on re-delivery</a></li>
+  </ul></li>
+  <li><a href="#read-it" id="toc-read-it" class="nav-link" data-scroll-target="#read-it"><span class="header-section-number">4.4</span> Read it</a></li>
+  <li><a href="#pitfalls" id="toc-pitfalls" class="nav-link" data-scroll-target="#pitfalls"><span class="header-section-number">4.5</span> Pitfalls</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./gettingstarted.html">Start a reproducible analysis</a></li><li class="breadcrumb-item"><a href="./data_governance.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data governance and reproducibility</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data governance and reproducibility</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>Most chapters in this book end in a figure, and the four in the <em>Tables</em> part end in a table. This one comes first in practice, because reproducible analysis starts before either. A documented dataset, typed and labelled variables, and a manifest pinning the exact extract are the difference between a figure you can defend in review and one you cannot. The <code>hvtiRutilities</code> <span class="citation" data-cites="R-hvtiRutilities">(<a href="references.html#ref-R-hvtiRutilities" role="doc-biblioref">Ehrlinger 2026</a>)</span> package supplies the primitives for that work: synthetic data for examples, a data dictionary, label and type maps, dataset manifests, and version diffs.</p>
+<section id="when-to-use-it" class="level2" data-number="4.1">
+<h2 data-number="4.1" class="anchored" data-anchor-id="when-to-use-it"><span class="header-section-number">4.1</span> When to use it</h2>
+<p>Reach for this workflow at the start of any analysis that will end up in front of a reviewer, a co-author, or your future self. The moment to run it is the moment a data extract lands: before you fit a model, before you draw a curve, while you still remember which warehouse pull this was and what date it covered. The payoff comes later, when someone asks “which version of the data is this figure built on” and you can answer with a hash instead of a shrug, or when a re-delivery arrives and you need to know in seconds whether anything moved.</p>
+<p>None of this requires touching protected health information. Everything below runs on synthetic data, and the same helpers run unchanged against your real extract once the pipeline is wired up. Think of it as the paperwork that makes the science reproducible, kept light enough that you will actually do it. Real patient extracts never belong in this recipe repository or its freeze cache.</p>
+</section>
+<section id="the-data-it-needs" class="level2" data-number="4.2">
+<h2 data-number="4.2" class="anchored" data-anchor-id="the-data-it-needs"><span class="header-section-number">4.2</span> The data it needs</h2>
+<p>The workflow needs a clinical data frame, one row per patient, with whatever columns the study carries. For the examples we generate a synthetic survival cohort so the chapter runs end to end without any real patient data. <code>generate_survival_data()</code> is deterministic: fix the seed and every table and figure downstream is reproducible.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>dat <span class="ot">&lt;-</span> <span class="fu">generate_survival_data</span>(<span class="at">n =</span> <span class="dv">200</span>, <span class="at">seed =</span> <span class="dv">42</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(dat)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   200 obs. of  24 variables:
+ $ ccfid       : chr  "PT00001" "PT00002" "PT00003" "PT00004" ...
+  ..- attr(*, "label")= chr "Patient ID"
+ $ origin_year : int  2018 2006 1999 2014 2009 2011 1999 2000 2017 2015 ...
+  ..- attr(*, "label")= chr "Calendar year for iv_opyrs = 0"
+ $ iv_opyrs    : num  3.77 3.99 8.64 13.54 2.28 ...
+  ..- attr(*, "label")= chr "Observation interval (years) since origin_year"
+ $ iv_dead     : num  3.77 2.76 8.64 9.16 2.28 3.72 0.77 5.65 1.09 5.97 ...
+  ..- attr(*, "label")= chr "Follow-up time to death (years)"
+ $ dead        : int  0 1 0 1 0 0 1 0 0 1 ...
+  ..- attr(*, "label")= chr "Death indicator (1=dead, 0=censored)"
+ $ reop        : int  0 1 0 0 0 1 1 0 0 0 ...
+  ..- attr(*, "label")= chr "Reoperation (1=yes, 0=no)"
+ $ iv_reop     : num  NA 1.81 NA NA NA 1.29 0.72 NA NA NA ...
+  ..- attr(*, "label")= chr "Follow-up time to reoperation (years)"
+ $ age         : num  65.6 36.5 50.4 54.5 51.1 43.4 67.7 43.6 75.3 44.1 ...
+  ..- attr(*, "label")= chr "Age at surgery (years)"
+ $ sex         : Factor w/ 2 levels "Female","Male": 2 2 1 2 1 2 1 2 2 2 ...
+  ..- attr(*, "label")= chr "Sex"
+ $ bmi         : num  27 30.8 27.2 30.7 26.3 26.7 29.4 32 20.8 26.8 ...
+  ..- attr(*, "label")= chr "Body mass index (kg/m2)"
+ $ hgb_bs      : num  14.9 14.6 13 13.2 11.7 12.6 11.1 11.3 10.8 14.5 ...
+  ..- attr(*, "label")= chr "Baseline hemoglobin (g/dL)"
+ $ wbc_bs      : num  8.24 8.48 5 6.69 4.98 5.91 4.48 4.71 9.07 6.82 ...
+  ..- attr(*, "label")= chr "Baseline WBC count (K/uL)"
+ $ plate_bs    : num  281 204 226 192 362 50 225 227 234 119 ...
+  ..- attr(*, "label")= chr "Baseline platelet count (K/uL)"
+ $ gfr_bs      : num  62 54.9 64.3 72.8 87 83.3 72.9 57.9 97.5 93.3 ...
+  ..- attr(*, "label")= chr "Baseline eGFR (mL/min/1.73m2)"
+ $ lvefvs_b    : num  43.1 48.4 65.9 60.1 53.6 53.9 62.5 52.8 55.7 38.5 ...
+  ..- attr(*, "label")= chr "Baseline LV ejection fraction (%)"
+ $ lvmass_b    : num  147 172 126 226 136 ...
+  ..- attr(*, "label")= chr "Baseline LV mass (g)"
+ $ lvmsi_b     : num  40 40 40 40 40 40 40 40 40 40 ...
+  ..- attr(*, "label")= chr "Baseline LV mass index (g/m2)"
+ $ stvoli_b    : num  76.7 53.7 31.4 74.4 56.3 69.5 84.1 71.2 49.7 53 ...
+  ..- attr(*, "label")= chr "Baseline SV index - systolic (mL/m2)"
+ $ stvold_b    : num  97.4 131.6 119.8 130.4 61.6 ...
+  ..- attr(*, "label")= chr "Baseline SV index - diastolic (mL/m2)"
+ $ bypass_time : num  72 118 88 62 71 73 96 106 77 80 ...
+  ..- attr(*, "label")= chr "Cardiopulmonary bypass time (min)"
+ $ xclamp_time : num  50 76 64 34 40 47 62 69 41 56 ...
+  ..- attr(*, "label")= chr "Aortic cross-clamp time (min)"
+ $ nyha_class  : Ord.factor w/ 4 levels "I"&lt;"II"&lt;"III"&lt;..: 4 2 2 3 3 3 2 2 3 3 ...
+  ..- attr(*, "label")= chr "NYHA functional class"
+ $ diabetes    : Factor w/ 2 levels "No","Yes": 1 1 1 2 1 1 1 2 1 1 ...
+  ..- attr(*, "label")= chr "Diabetes mellitus"
+ $ hypertension: Factor w/ 2 levels "No","Yes": 1 1 2 1 2 2 2 1 2 1 ...
+  ..- attr(*, "label")= chr "Hypertension"</code></pre>
+</div>
+</div>
+<p>Notice that each column carries a <code>label</code> attribute. That label is not decoration. The governance helpers below read it and carry it forward into dictionaries, tables, and figure axes, so a variable described once stays described everywhere.</p>
+</section>
+<section id="build-it" class="level2" data-number="4.3">
+<h2 data-number="4.3" class="anchored" data-anchor-id="build-it"><span class="header-section-number">4.3</span> Build it</h2>
+<p>The governance workflow is a short sequence of steps. Each one produces an artifact you can save next to the analysis: a dictionary, a label map, a typing check, a manifest, and a comparison report. We walk them in order.</p>
+<section id="step-1-a-data-dictionary" class="level3" data-number="4.3.1">
+<h3 data-number="4.3.1" class="anchored" data-anchor-id="step-1-a-data-dictionary"><span class="header-section-number">4.3.1</span> Step 1: a data dictionary</h3>
+<p>A data dictionary is the human-readable index of an extract, and it is the first artifact worth saving next to the analysis. <code>data_dictionary()</code> returns a per-column summary as a data frame, one row per variable, which renders straight through <code>gt()</code> into a table you can drop into a supplement. The <a href="./data_tables.html">describing a dataset</a> chapter takes the six columns apart and says how to read them; here we want the artifact itself, dated and filed with everything else that pins this analysis down.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>dd <span class="ot">&lt;-</span> <span class="fu">data_dictionary</span>(dat)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(dd) <span class="sc">|&gt;</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(<span class="at">title =</span> <span class="st">"Data dictionary"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="mbezfsunum" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#mbezfsunum table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#mbezfsunum thead, #mbezfsunum tbody, #mbezfsunum tfoot, #mbezfsunum tr, #mbezfsunum td, #mbezfsunum th {
+  border-style: none;
+}
+
+#mbezfsunum p {
+  margin: 0;
+  padding: 0;
+}
+
+#mbezfsunum .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#mbezfsunum .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#mbezfsunum .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#mbezfsunum .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#mbezfsunum .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#mbezfsunum .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#mbezfsunum .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#mbezfsunum .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#mbezfsunum .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#mbezfsunum .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#mbezfsunum .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#mbezfsunum .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#mbezfsunum .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#mbezfsunum .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#mbezfsunum .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mbezfsunum .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#mbezfsunum .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#mbezfsunum .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#mbezfsunum .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mbezfsunum .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#mbezfsunum .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mbezfsunum .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#mbezfsunum .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mbezfsunum .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#mbezfsunum .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mbezfsunum .gt_left {
+  text-align: left;
+}
+
+#mbezfsunum .gt_center {
+  text-align: center;
+}
+
+#mbezfsunum .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#mbezfsunum .gt_font_normal {
+  font-weight: normal;
+}
+
+#mbezfsunum .gt_font_bold {
+  font-weight: bold;
+}
+
+#mbezfsunum .gt_font_italic {
+  font-style: italic;
+}
+
+#mbezfsunum .gt_super {
+  font-size: 65%;
+}
+
+#mbezfsunum .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#mbezfsunum .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#mbezfsunum .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#mbezfsunum .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#mbezfsunum .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#mbezfsunum .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#mbezfsunum .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#mbezfsunum .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#mbezfsunum div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="6" class="gt_heading gt_title gt_font_normal gt_bottom_border">Data dictionary</td>
+</tr>
+<tr class="gt_col_headings even">
+<th id="variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">variable</th>
+<th id="label" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">label</th>
+<th id="class" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">class</th>
+<th id="n_unique" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">n_unique</th>
+<th id="pct_missing" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">pct_missing</th>
+<th id="summary" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">summary</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">ccfid</td>
+<td class="gt_row gt_left" headers="label">Patient ID</td>
+<td class="gt_row gt_left" headers="class">character</td>
+<td class="gt_row gt_right" headers="n_unique">200</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">200 levels: PT00001, PT00002, PT00003, PT00004, PT00005, ...</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">origin_year</td>
+<td class="gt_row gt_left" headers="label">Calendar year for iv_opyrs = 0</td>
+<td class="gt_row gt_left" headers="class">integer</td>
+<td class="gt_row gt_right" headers="n_unique">21</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">1998 / 2008 / 2018</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">iv_opyrs</td>
+<td class="gt_row gt_left" headers="label">Observation interval (years) since origin_year</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">183</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">1.06 / 7.87 / 14.99</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">iv_dead</td>
+<td class="gt_row gt_left" headers="label">Follow-up time to death (years)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">184</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">0.25 / 4.1 / 13.98</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">dead</td>
+<td class="gt_row gt_left" headers="label">Death indicator (1=dead, 0=censored)</td>
+<td class="gt_row gt_left" headers="class">integer</td>
+<td class="gt_row gt_right" headers="n_unique">2</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">0 / 1 / 1</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">reop</td>
+<td class="gt_row gt_left" headers="label">Reoperation (1=yes, 0=no)</td>
+<td class="gt_row gt_left" headers="class">integer</td>
+<td class="gt_row gt_right" headers="n_unique">2</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">0 / 0 / 1</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">iv_reop</td>
+<td class="gt_row gt_left" headers="label">Follow-up time to reoperation (years)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">31</td>
+<td class="gt_row gt_right" headers="pct_missing">83.5</td>
+<td class="gt_row gt_left" headers="summary">0.04 / 1.29 / 9.92</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">age</td>
+<td class="gt_row gt_left" headers="label">Age at surgery (years)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">165</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">1 / 44.75 / 85</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">sex</td>
+<td class="gt_row gt_left" headers="label">Sex</td>
+<td class="gt_row gt_left" headers="class">factor</td>
+<td class="gt_row gt_right" headers="n_unique">2</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">2 levels: Female, Male</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">bmi</td>
+<td class="gt_row gt_left" headers="label">Body mass index (kg/m2)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">123</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">15 / 26.65 / 41.8</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">hgb_bs</td>
+<td class="gt_row gt_left" headers="label">Baseline hemoglobin (g/dL)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">66</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">7.6 / 13 / 18</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">wbc_bs</td>
+<td class="gt_row gt_left" headers="label">Baseline WBC count (K/uL)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">172</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">1.5 / 7.35 / 15.53</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">plate_bs</td>
+<td class="gt_row gt_left" headers="label">Baseline platelet count (K/uL)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">135</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">50 / 225 / 447</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">gfr_bs</td>
+<td class="gt_row gt_left" headers="label">Baseline eGFR (mL/min/1.73m2)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">174</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">25.9 / 75.75 / 120</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">lvefvs_b</td>
+<td class="gt_row gt_left" headers="label">Baseline LV ejection fraction (%)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">149</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">29.1 / 53.75 / 75</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">lvmass_b</td>
+<td class="gt_row gt_left" headers="label">Baseline LV mass (g)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">191</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">60 / 184.4 / 377.2</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">lvmsi_b</td>
+<td class="gt_row gt_left" headers="label">Baseline LV mass index (g/m2)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">1</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">40 / 40 / 40</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">stvoli_b</td>
+<td class="gt_row gt_left" headers="label">Baseline SV index - systolic (mL/m2)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">168</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">20.5 / 53.7 / 90.3</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">stvold_b</td>
+<td class="gt_row gt_left" headers="label">Baseline SV index - diastolic (mL/m2)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">171</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">40 / 93.35 / 153.6</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">bypass_time</td>
+<td class="gt_row gt_left" headers="label">Cardiopulmonary bypass time (min)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">100</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">20 / 88.5 / 194</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">xclamp_time</td>
+<td class="gt_row gt_left" headers="label">Aortic cross-clamp time (min)</td>
+<td class="gt_row gt_left" headers="class">numeric</td>
+<td class="gt_row gt_right" headers="n_unique">75</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">13 / 57 / 118</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">nyha_class</td>
+<td class="gt_row gt_left" headers="label">NYHA functional class</td>
+<td class="gt_row gt_left" headers="class">ordered</td>
+<td class="gt_row gt_right" headers="n_unique">4</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">4 levels: I, II, III, IV</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">diabetes</td>
+<td class="gt_row gt_left" headers="label">Diabetes mellitus</td>
+<td class="gt_row gt_left" headers="class">factor</td>
+<td class="gt_row gt_right" headers="n_unique">2</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">2 levels: No, Yes</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">hypertension</td>
+<td class="gt_row gt_left" headers="label">Hypertension</td>
+<td class="gt_row gt_left" headers="class">factor</td>
+<td class="gt_row gt_right" headers="n_unique">2</td>
+<td class="gt_row gt_right" headers="pct_missing">0.0</td>
+<td class="gt_row gt_left" headers="summary">2 levels: No, Yes</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="step-2-variable-labels-in-one-place" class="level3" data-number="4.3.2">
+<h3 data-number="4.3.2" class="anchored" data-anchor-id="step-2-variable-labels-in-one-place"><span class="header-section-number">4.3.2</span> Step 2: variable labels in one place</h3>
+<p><code>label_map()</code> returns the current variable-to-label mapping as a data frame: <code>key</code> and <code>label</code>, plus <code>label_full</code> and <code>truncated</code>. Holding labels in one place is what keeps an axis title in a figure and a column header in a table reading the same way. Change a label here and it propagates everywhere the map is read, so you never hand-edit “Ejection Fraction” in five places and miss the sixth.</p>
+<p>The <code>label</code> column is trimmed to 40 characters, because a long descriptive label has nowhere to go on an axis or in a column header. Nothing is lost: the source text stays in <code>label_full</code>, and <code>truncated</code> marks the rows that were cut. So <code>subset(lm, truncated)</code> tells you which labels a figure is going to abbreviate, before a reviewer asks you about one. Pass <code>label_max</code> if you want a different width, or <code>Inf</code> to leave every label whole.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>lm <span class="ot">&lt;-</span> <span class="fu">label_map</span>(dat)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(<span class="fu">head</span>(lm, <span class="dv">10</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="wfgzhriwai" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wfgzhriwai table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#wfgzhriwai thead, #wfgzhriwai tbody, #wfgzhriwai tfoot, #wfgzhriwai tr, #wfgzhriwai td, #wfgzhriwai th {
+  border-style: none;
+}
+
+#wfgzhriwai p {
+  margin: 0;
+  padding: 0;
+}
+
+#wfgzhriwai .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#wfgzhriwai .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wfgzhriwai .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wfgzhriwai .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#wfgzhriwai .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#wfgzhriwai .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#wfgzhriwai .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#wfgzhriwai .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#wfgzhriwai .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#wfgzhriwai .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#wfgzhriwai .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#wfgzhriwai .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wfgzhriwai .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wfgzhriwai .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wfgzhriwai .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wfgzhriwai .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#wfgzhriwai .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#wfgzhriwai .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#wfgzhriwai .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wfgzhriwai .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#wfgzhriwai .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wfgzhriwai .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#wfgzhriwai .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wfgzhriwai .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wfgzhriwai .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wfgzhriwai .gt_left {
+  text-align: left;
+}
+
+#wfgzhriwai .gt_center {
+  text-align: center;
+}
+
+#wfgzhriwai .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wfgzhriwai .gt_font_normal {
+  font-weight: normal;
+}
+
+#wfgzhriwai .gt_font_bold {
+  font-weight: bold;
+}
+
+#wfgzhriwai .gt_font_italic {
+  font-style: italic;
+}
+
+#wfgzhriwai .gt_super {
+  font-size: 65%;
+}
+
+#wfgzhriwai .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#wfgzhriwai .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#wfgzhriwai .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#wfgzhriwai .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#wfgzhriwai .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#wfgzhriwai .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#wfgzhriwai .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#wfgzhriwai .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#wfgzhriwai div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="key" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">key</th>
+<th id="label" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">label</th>
+<th id="label_full" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">label_full</th>
+<th id="truncated" class="gt_col_heading gt_columns_bottom_border gt_center" data-quarto-table-cell-role="th" scope="col">truncated</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="key">ccfid</td>
+<td class="gt_row gt_left" headers="label">Patient ID</td>
+<td class="gt_row gt_left" headers="label_full">Patient ID</td>
+<td class="gt_row gt_center" headers="truncated">FALSE</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="key">origin_year</td>
+<td class="gt_row gt_left" headers="label">Calendar year for iv_opyrs = 0</td>
+<td class="gt_row gt_left" headers="label_full">Calendar year for iv_opyrs = 0</td>
+<td class="gt_row gt_center" headers="truncated">FALSE</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="key">iv_opyrs</td>
+<td class="gt_row gt_left" headers="label">Observation interval (years) since...</td>
+<td class="gt_row gt_left" headers="label_full">Observation interval (years) since origin_year</td>
+<td class="gt_row gt_center" headers="truncated">TRUE</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="key">iv_dead</td>
+<td class="gt_row gt_left" headers="label">Follow-up time to death (years)</td>
+<td class="gt_row gt_left" headers="label_full">Follow-up time to death (years)</td>
+<td class="gt_row gt_center" headers="truncated">FALSE</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="key">dead</td>
+<td class="gt_row gt_left" headers="label">Death indicator (1=dead, 0=censored)</td>
+<td class="gt_row gt_left" headers="label_full">Death indicator (1=dead, 0=censored)</td>
+<td class="gt_row gt_center" headers="truncated">FALSE</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="key">reop</td>
+<td class="gt_row gt_left" headers="label">Reoperation (1=yes, 0=no)</td>
+<td class="gt_row gt_left" headers="label_full">Reoperation (1=yes, 0=no)</td>
+<td class="gt_row gt_center" headers="truncated">FALSE</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="key">iv_reop</td>
+<td class="gt_row gt_left" headers="label">Follow-up time to reoperation (years)</td>
+<td class="gt_row gt_left" headers="label_full">Follow-up time to reoperation (years)</td>
+<td class="gt_row gt_center" headers="truncated">FALSE</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="key">age</td>
+<td class="gt_row gt_left" headers="label">Age at surgery (years)</td>
+<td class="gt_row gt_left" headers="label_full">Age at surgery (years)</td>
+<td class="gt_row gt_center" headers="truncated">FALSE</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="key">sex</td>
+<td class="gt_row gt_left" headers="label">Sex</td>
+<td class="gt_row gt_left" headers="label_full">Sex</td>
+<td class="gt_row gt_center" headers="truncated">FALSE</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="key">bmi</td>
+<td class="gt_row gt_left" headers="label">Body mass index (kg/m2)</td>
+<td class="gt_row gt_left" headers="label_full">Body mass index (kg/m2)</td>
+<td class="gt_row gt_center" headers="truncated">FALSE</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="step-3-infer-and-check-r-data-types" class="level3" data-number="4.3.3">
+<h3 data-number="4.3.3" class="anchored" data-anchor-id="step-3-infer-and-check-r-data-types"><span class="header-section-number">4.3.3</span> Step 3: infer and check R data types</h3>
+<p>Raw extracts arrive with everything as character or numeric, and the wrong type quietly breaks an analysis: an ID read as a number gets averaged, a 0/1 flag read as a count gets summed. <code>r_data_types()</code> classifies each column by role and returns the dataset with columns coerced to the inferred type, so character IDs become factors and 0/1 indicators become logical. Read that sentence twice: it returns the <em>coerced data</em>, not a report about it. To see what changed, compare the source class against the inferred class yourself.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>typed <span class="ot">&lt;-</span> <span class="fu">r_data_types</span>(dat)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">variable =</span> <span class="fu">names</span>(dat),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">source   =</span> <span class="fu">vapply</span>(dat,   \(x) <span class="fu">class</span>(x)[<span class="dv">1</span>], <span class="fu">character</span>(<span class="dv">1</span>)),</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">inferred =</span> <span class="fu">vapply</span>(typed, \(x) <span class="fu">class</span>(x)[<span class="dv">1</span>], <span class="fu">character</span>(<span class="dv">1</span>)),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">row.names =</span> <span class="cn">NULL</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">subset</span>(source <span class="sc">!=</span> inferred) <span class="sc">|&gt;</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(<span class="at">title =</span> <span class="st">"Columns retyped by r_data_types()"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="ktvdxkihcf" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ktvdxkihcf table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ktvdxkihcf thead, #ktvdxkihcf tbody, #ktvdxkihcf tfoot, #ktvdxkihcf tr, #ktvdxkihcf td, #ktvdxkihcf th {
+  border-style: none;
+}
+
+#ktvdxkihcf p {
+  margin: 0;
+  padding: 0;
+}
+
+#ktvdxkihcf .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ktvdxkihcf .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ktvdxkihcf .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ktvdxkihcf .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ktvdxkihcf .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ktvdxkihcf .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ktvdxkihcf .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ktvdxkihcf .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ktvdxkihcf .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ktvdxkihcf .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ktvdxkihcf .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ktvdxkihcf .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ktvdxkihcf .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ktvdxkihcf .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ktvdxkihcf .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ktvdxkihcf .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ktvdxkihcf .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ktvdxkihcf .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ktvdxkihcf .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ktvdxkihcf .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ktvdxkihcf .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ktvdxkihcf .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ktvdxkihcf .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ktvdxkihcf .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ktvdxkihcf .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ktvdxkihcf .gt_left {
+  text-align: left;
+}
+
+#ktvdxkihcf .gt_center {
+  text-align: center;
+}
+
+#ktvdxkihcf .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ktvdxkihcf .gt_font_normal {
+  font-weight: normal;
+}
+
+#ktvdxkihcf .gt_font_bold {
+  font-weight: bold;
+}
+
+#ktvdxkihcf .gt_font_italic {
+  font-style: italic;
+}
+
+#ktvdxkihcf .gt_super {
+  font-size: 65%;
+}
+
+#ktvdxkihcf .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ktvdxkihcf .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ktvdxkihcf .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ktvdxkihcf .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ktvdxkihcf .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ktvdxkihcf .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ktvdxkihcf .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#ktvdxkihcf .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#ktvdxkihcf div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<td colspan="3" class="gt_heading gt_title gt_font_normal gt_bottom_border">Columns retyped by r_data_types()</td>
+</tr>
+<tr class="gt_col_headings even">
+<th id="variable" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">variable</th>
+<th id="source" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">source</th>
+<th id="inferred" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">inferred</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">ccfid</td>
+<td class="gt_row gt_left" headers="source">character</td>
+<td class="gt_row gt_left" headers="inferred">factor</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="variable">dead</td>
+<td class="gt_row gt_left" headers="source">integer</td>
+<td class="gt_row gt_left" headers="inferred">logical</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="variable">reop</td>
+<td class="gt_row gt_left" headers="source">integer</td>
+<td class="gt_row gt_left" headers="inferred">logical</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="step-4-pin-the-extract-with-a-manifest" class="level3" data-number="4.3.4">
+<h3 data-number="4.3.4" class="anchored" data-anchor-id="step-4-pin-the-extract-with-a-manifest"><span class="header-section-number">4.3.4</span> Step 4: pin the extract with a manifest</h3>
+<p>A dictionary documents <em>what</em> the data is; a manifest documents <em>which</em> data it is. A manifest records provenance for every extract: the source system, the extract date, the row count, and a SHA-256 hash of the file. <code>update_manifest()</code> appends an entry, hashing the file on disk, and <code>verify_manifest()</code> re-hashes the data directory against the manifest to confirm nothing has drifted since you wrote it down. The chunk below is not evaluated because it writes files to disk; run it interactively, then commit the manifest (never the data) to the repo.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">saveRDS</span>(dat, <span class="st">"cohort.rds"</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>mp <span class="ot">&lt;-</span> <span class="fu">tempfile</span>(<span class="at">fileext =</span> <span class="st">".yaml"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">update_manifest</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">file         =</span> <span class="st">"cohort.rds"</span>,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">manifest_path =</span> mp,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">extract_date =</span> <span class="fu">Sys.Date</span>(),</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">n_rows       =</span> <span class="fu">nrow</span>(dat),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">source       =</span> <span class="st">"CORR DWH"</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">verify_manifest</span>(<span class="at">manifest_path =</span> mp, <span class="at">data_dir =</span> <span class="st">"."</span>, <span class="at">stop_on_error =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>A representative manifest entry looks like this. The hash is the load-bearing field: it is what lets <code>verify_manifest()</code> catch a file that changed under you.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode yaml code-with-copy"><code class="sourceCode yaml"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datasets</span><span class="kw">:</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">-</span><span class="at"> </span><span class="fu">file</span><span class="kw">:</span><span class="at"> cohort.rds</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">extract_date</span><span class="kw">:</span><span class="at"> </span><span class="st">'2026-05-28'</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">n_rows</span><span class="kw">:</span><span class="at"> </span><span class="dv">200</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">sha256</span><span class="kw">:</span><span class="at"> 8b3e0188eae294e61a16f0e09e3989e8b5249601209bde987fb5153c9ab1bd76</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="at">  </span><span class="fu">source</span><span class="kw">:</span><span class="at"> CORR DWH</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</section>
+<section id="step-5-compare-versions-on-re-delivery" class="level3" data-number="4.3.5">
+<h3 data-number="4.3.5" class="anchored" data-anchor-id="step-5-compare-versions-on-re-delivery"><span class="header-section-number">4.3.5</span> Step 5: compare versions on re-delivery</h3>
+<p>Data warehouses re-deliver extracts, and a re-delivery is rarely a no-op: rows get added, a column is renamed, a coding changes. <code>compare_datasets()</code> diffs the old and new versions and reports row-count and structural changes through its print method. It is the fast first check that a fresh pull is what you asked for before you rerun anything on it.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>old <span class="ot">&lt;-</span> <span class="fu">generate_survival_data</span>(<span class="at">n =</span> <span class="dv">150</span>, <span class="at">seed =</span> <span class="dv">42</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>new <span class="ot">&lt;-</span> <span class="fu">generate_survival_data</span>(<span class="at">n =</span> <span class="dv">200</span>, <span class="at">seed =</span> <span class="dv">99</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">compare_datasets</span>(old, new)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Dataset Comparison
+  Rows: 150 -&gt; 200</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="read-it" class="level2" data-number="4.4">
+<h2 data-number="4.4" class="anchored" data-anchor-id="read-it"><span class="header-section-number">4.4</span> Read it</h2>
+<p>One of these artifacts is a report you read rather than a file you store. The data dictionary is a report too, but its reading guide lives with the function, over in <a href="./data_tables.html">describing a dataset</a>.</p>
+<p>A <strong>dataset-comparison report</strong> is read for the diff, not the totals. A change in row count is expected on re-delivery and is fine if it matches what the warehouse told you to expect. The lines that should make you stop are structural ones: a column that appeared, disappeared, or changed type. Those silently break joins and recodes downstream, so confirm each one is intentional before you build anything on the new extract.</p>
+</section>
+<section id="pitfalls" class="level2" data-number="4.5">
+<h2 data-number="4.5" class="anchored" data-anchor-id="pitfalls"><span class="header-section-number">4.5</span> Pitfalls</h2>
+<ul>
+<li><strong>Unpinned extracts.</strong> A figure built on “the data I pulled sometime last month” is not reproducible. Write a manifest the day the extract lands, commit it, and reference its hash from the analysis. The hash is cheap insurance against a silently swapped file.</li>
+<li><strong>Silent type coercion.</strong> <code>r_data_types()</code> returns the <em>coerced data frame</em>, not a summary of what it did. If you treat its output as a report you will miss that it changed your data. Diff source class against inferred class, as in step 3, and keep the typed object as the one you analyse.</li>
+<li><strong>Manifests not re-verified after a re-delivery.</strong> Writing a manifest once is not enough. When a new extract arrives, run <code>verify_manifest()</code> and <code>compare_datasets()</code> again. A manifest that nobody re-checks is documentation, not a guard rail.</li>
+<li><strong>PHI in the repo.</strong> Commit the manifest, the dictionary, and the code; never commit the data file itself. The whole point of the hash is to pin the extract without carrying protected health information into version control. Examples in a book stay on synthetic data for the same reason.</li>
+</ul>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-R-hvtiRutilities" class="csl-entry" role="listitem">
+Ehrlinger, John. 2026. <em>hvtiRutilities: A Collection of Utilities for Use by HVTI CORR Group at the Cleveland Clinic</em>. <a href="https://github.com/ehrlinger/hvtiRutilities">https://github.com/ehrlinger/hvtiRutilities</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./usingR.html" class="pagination-link" aria-label="Using R for figures">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using R for figures</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./describe.html" class="pagination-link" aria-label="Describe the cohort">
+        <span class="nav-page-text">Describe the cohort</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2025, John Ehrlinger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ehrlinger/hvtiGraphics">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

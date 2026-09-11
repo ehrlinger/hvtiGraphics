@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>32&nbsp; Variable priority with varPro – HVTI Recipes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./varpro_partial.html" rel="next">
+<link href="./rf_roc.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-f815791d8ae4ce63213271c49438a130.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-b52abe616cc2e35bbb5f05103ec4018f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-f815791d8ae4ce63213271c49438a130.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./randomforests.html">Explain predictive models</a></li><li class="breadcrumb-item"><a href="./varpro.html"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Variable priority with varPro</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">HVTI Recipes</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./gettingstarted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Start a reproducible analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Packages</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./usingR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using R for figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_governance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data governance and reproducibility</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./describe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Describe the cohort</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Describing a dataset</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./qt_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Publication tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hv_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Manuscript tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./histograms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Histogram plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./density.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Density plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boxplots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Box plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bar.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Bar chart plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./scatter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Scatter plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./spaghetti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Spaghetti plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./postagestamp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Postage stamp plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./consort.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">CONSORT patient-flow diagrams</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./upset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Venn diagrams and UpSet plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sankey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Alluvial and Sankey plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./balance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Covariate balance and follow-up</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./timetoevent.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyze time-to-event outcomes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./survival.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Survival plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hazard.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Hazard and nonparametric curves</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./nnt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Number needed to treat and survival difference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Fit additive hazard models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_prediction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Predict from a hazard model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Check a hazard model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_migration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Move a legacy HAZARD analysis into R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./randomforests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Explain predictive models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_error.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Did the forest stabilize?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_predicted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">What does the forest predict?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_vimp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Which variables contribute to prediction?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_shap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">SHAP attribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_dependence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Variable and partial dependence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_roc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">How well does the forest predict?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./varpro.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Variable priority with varPro</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./varpro_partial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">varPro partial dependence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_rhf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">What if a predictor changes during follow-up?</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./publications.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Finish and deliver the result</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./themes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Themes for consistency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./colors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Color templates for consistency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./annotation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Annotating figures and formatting axes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./legends.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Using legends</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./combination.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Combination figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./figure_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Tables that accompany figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./manuscripts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Preparing figures for manuscripts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./researchday.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Posters and research day</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./presentations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Slides and presentations</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./function_map.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Function-to-recipe map</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#when-to-use-it" id="toc-when-to-use-it" class="nav-link active" data-scroll-target="#when-to-use-it"><span class="header-section-number">32.1</span> When to use it</a></li>
+  <li><a href="#the-data-it-needs" id="toc-the-data-it-needs" class="nav-link" data-scroll-target="#the-data-it-needs"><span class="header-section-number">32.2</span> The data it needs</a></li>
+  <li><a href="#build-it" id="toc-build-it" class="nav-link" data-scroll-target="#build-it"><span class="header-section-number">32.3</span> Build it</a></li>
+  <li><a href="#read-it" id="toc-read-it" class="nav-link" data-scroll-target="#read-it"><span class="header-section-number">32.4</span> Read it</a></li>
+  <li><a href="#variations" id="toc-variations" class="nav-link" data-scroll-target="#variations"><span class="header-section-number">32.5</span> Variations</a>
+  <ul class="collapse">
+  <li><a href="#beta-refined-importance" id="toc-beta-refined-importance" class="nav-link" data-scroll-target="#beta-refined-importance"><span class="header-section-number">32.5.1</span> Beta-refined importance</a></li>
+  <li><a href="#individual-variable-priority" id="toc-individual-variable-priority" class="nav-link" data-scroll-target="#individual-variable-priority"><span class="header-section-number">32.5.2</span> Individual variable priority</a></li>
+  <li><a href="#conditional-priority-by-class" id="toc-conditional-priority-by-class" class="nav-link" data-scroll-target="#conditional-priority-by-class"><span class="header-section-number">32.5.3</span> Conditional priority by class</a></li>
+  <li><a href="#anomaly-isolation-scores" id="toc-anomaly-isolation-scores" class="nav-link" data-scroll-target="#anomaly-isolation-scores"><span class="header-section-number">32.5.4</span> Anomaly / isolation scores</a></li>
+  <li><a href="#partial-dependence" id="toc-partial-dependence" class="nav-link" data-scroll-target="#partial-dependence"><span class="header-section-number">32.5.5</span> Partial dependence</a></li>
+  </ul></li>
+  <li><a href="#unsupervised-variable-dependence" id="toc-unsupervised-variable-dependence" class="nav-link" data-scroll-target="#unsupervised-variable-dependence"><span class="header-section-number">32.6</span> Unsupervised variable dependence</a>
+  <ul class="collapse">
+  <li><a href="#signal-variable-detection" id="toc-signal-variable-detection" class="nav-link" data-scroll-target="#signal-variable-detection"><span class="header-section-number">32.6.1</span> Signal-variable detection</a></li>
+  </ul></li>
+  <li><a href="#pitfalls" id="toc-pitfalls" class="nav-link" data-scroll-target="#pitfalls"><span class="header-section-number">32.7</span> Pitfalls</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./randomforests.html">Explain predictive models</a></li><li class="breadcrumb-item"><a href="./varpro.html"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Variable priority with varPro</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Variable priority with varPro</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="when-to-use-it" class="level2" data-number="32.1">
+<h2 data-number="32.1" class="anchored" data-anchor-id="when-to-use-it"><span class="header-section-number">32.1</span> When to use it</h2>
+<p>Permutation importance (the VIMP chapter) answers “how much does the forest lean on this variable?” by breaking the variable and watching error rise. <code>varPro</code> <span class="citation" data-cites="R-varPro">(<a href="references.html#ref-R-varPro" role="doc-biblioref">Lu et al. 2026</a>)</span> asks a different question: “how much do the forest’s own splitting rules <em>depend</em> on this variable?” Rather than permuting predictors, it scores each one by how much a tree’s release rules rely on it, and calls the result variable <em>priority</em>. Reach for it when you want a selection that comes with a built-in cutoff (so the method tells you which variables to keep, not just how to rank them), when you want the direction and magnitude of a local effect, or when you want to flag unusual observations the same forest can isolate.</p>
+<p>So varPro sits alongside VIMP as a statement about the model, while <a href="./rf_shap.html">SHAP</a> speaks about a patient and <a href="./rf_dependence.html">dependence</a> speaks about a predictor. The <a href="./rf_shap.html#when-to-use-it">SHAP chapter</a> lays those four views out side by side if you are deciding which one a figure needs.</p>
+<p><code>ggRandomForests</code> <span class="citation" data-cites="R-ggRandomForests">(<a href="references.html#ref-R-ggRandomForests" role="doc-biblioref">Ehrlinger 2026</a>)</span> provides a family of <code>gg_*</code> extractors that pull these scores out of a fitted <code>varpro</code> object and render them as tidy ggplot2 graphics. This chapter works through the main extractors on a regression fit and a classification fit. As elsewhere, each <code>plot()</code> hands back a bare ggplot you finish with a house theme.</p>
+</section>
+<section id="the-data-it-needs" class="level2" data-number="32.2">
+<h2 data-number="32.2" class="anchored" data-anchor-id="the-data-it-needs"><span class="header-section-number">32.2</span> The data it needs</h2>
+<p>The extractors read from a fitted <code>varpro</code> object, so the input is whatever <code>varpro()</code> itself needs: a formula and a data frame. The outcome type decides the family, and that matters here because several of the extractors are family-specific. We start with a regression fit on the <code>housing</code> data shipped with <code>randomForestSRC</code> <span class="citation" data-cites="R-randomForestSRC">(<a href="references.html#ref-R-randomForestSRC" role="doc-biblioref">Ishwaran and Kogalur 2026</a>)</span>: 2,930 homes and 80 predictors, modelling sale price (<code>SalePrice</code>). This is the same kind of dataset the random-forest chapters use, and the extra width is the point: variable priority earns its keep when there are far more candidates than you can eyeball.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(housing, <span class="at">package =</span> <span class="st">"randomForestSRC"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>o <span class="ot">&lt;-</span> <span class="fu">varpro</span>(SalePrice <span class="sc">~</span> ., <span class="at">data =</span> housing, <span class="at">ntree =</span> <span class="dv">100</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_varpro</span>(o, <span class="at">nvar =</span> <span class="dv">20</span>)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.1: Variable priority for the top 20 predictors of the housing regression fit, with the dashed cutoff line separating selected from unselected variables
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><code>gg_varpro()</code> returns an honest 15/85 boxplot for each variable. With 80 predictors we pass <code>nvar = 20</code> to show the top-ranked; the box spans the importance values obtained when the variable is released across the rule ensemble, and the dashed reference line at the <code>cutoff</code> (default 0.79 of the top score on the local-standardized scale) separates selected from unselected variables. Variables whose boxes sit to the right of the cutoff are retained.</p>
+</section>
+<section id="build-it" class="level2" data-number="32.3">
+<h2 data-number="32.3" class="anchored" data-anchor-id="build-it"><span class="header-section-number">32.3</span> Build it</h2>
+<p>The plot in <a href="#fig-varpro" class="quarto-xref">Figure&nbsp;<span>32.1</span></a> is the core figure. Two variants make it more informative. Setting <code>faithful = TRUE</code> shows the per-tree importance draws as jittered points behind the boxplot, exposing the spread that the summary hides:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_varpro</span>(o, <span class="at">faithful =</span> <span class="cn">TRUE</span>, <span class="at">nvar =</span> <span class="dv">20</span>)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro-faithful" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-faithful-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-faithful-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-faithful-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.2: The same priority boxplots with per-tree importance draws shown as jittered points behind each box, exposing the spread the summary hides
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Setting <code>nvar</code> lower restricts the display further, handy when a wide problem like this one would otherwise crowd the panel and you only want the leaders:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_varpro</span>(o, <span class="at">nvar =</span> <span class="dv">8</span>)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro-nvar" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-nvar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-nvar-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-nvar-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.3: Variable priority restricted to the top eight predictors, the leaders-only view for a crowded wide problem
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="read-it" class="level2" data-number="32.4">
+<h2 data-number="32.4" class="anchored" data-anchor-id="read-it"><span class="header-section-number">32.4</span> Read it</h2>
+<p>The 15/85 boxplot is the figure to learn to read, and the cutoff line is what makes it a <em>selection</em> rather than just a ranking.</p>
+<ul>
+<li><strong>The cutoff line decides membership.</strong> Boxes to the right of the dashed line are the variables varPro keeps; boxes to the left are set aside. Unlike a VIMP bar chart, where you eyeball the break yourself, the method draws the line for you. You can move it with the <code>cutoff</code> argument when you want to be stricter or looser.</li>
+<li><strong>Box width is stability.</strong> A tight box means the variable scored consistently across the rule ensemble; a wide box straddling the cutoff is a variable whose selection you should not bet the paper on. Turn on <code>faithful = TRUE</code> to see the raw draws behind the summary.</li>
+<li><strong>Priority is not the same as importance.</strong> A variable can carry high priority (the rules depend on it) without the large error jump that permutation VIMP rewards, and vice versa. Read the two methods as complementary views, not as two attempts at the same number.</li>
+</ul>
+</section>
+<section id="variations" class="level2" data-number="32.5">
+<h2 data-number="32.5" class="anchored" data-anchor-id="variations"><span class="header-section-number">32.5</span> Variations</h2>
+<section id="beta-refined-importance" class="level3" data-number="32.5.1">
+<h3 data-number="32.5.1" class="anchored" data-anchor-id="beta-refined-importance"><span class="header-section-number">32.5.1</span> Beta-refined importance</h3>
+<p><code>gg_beta_varpro()</code> is regression-only. Within each release region it fits a lasso and reports the refined slope (β) coefficients instead of a VIMP-style importance, so you get not just <em>whether</em> a variable matters but the direction and magnitude of its local linear effect.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_beta_varpro</span>(o)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro-beta" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-beta-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-beta-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-beta-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.4: Beta-refined importance for the housing regression fit, reporting lasso slope coefficients that carry direction and magnitude rather than VIMP-style scores
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The per-rule lasso refinement (<code>beta.varpro</code>) is the expensive step; under Quarto’s <code>freeze</code> the result is cached after the first render. Because these are lasso-refined β coefficients rather than importance scores, they can be negative.</p>
+<p><code>gg_beta_uvarpro()</code> is the same idea for a fit with no outcome at all. <code>varPro::uvarpro()</code> grows the forest without a response (the unsupervised section later in this chapter has the full treatment), and the lasso inside each region asks how well the <em>other</em> variables explain the released one. Average those absolute coefficients and you get one importance per variable, on the same lasso scale but answering a question about the design rather than about <code>SalePrice</code>. We fit it on the numeric <code>housing</code> predictors and reuse that fit for the dependency graph in <a href="#fig-varpro-udependent" class="quarto-xref">Figure&nbsp;<span>32.10</span></a>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>num_cols <span class="ot">&lt;-</span> <span class="fu">names</span>(housing)[<span class="fu">vapply</span>(housing, is.numeric, <span class="fu">logical</span>(<span class="dv">1</span>))]</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>uv <span class="ot">&lt;-</span> <span class="fu">uvarpro</span>(housing[, <span class="fu">setdiff</span>(num_cols, <span class="st">"SalePrice"</span>)], <span class="at">ntree =</span> <span class="dv">100</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_beta_uvarpro</span>(uv)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro-beta-uvarpro" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-beta-uvarpro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-beta-uvarpro-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-beta-uvarpro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.5: Beta-refined importance for the unsupervised housing fit, the outcome-free counterpart to the regression beta plot above
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>The two are told apart by the object you hand them. <code>gg_beta_varpro()</code> needs a regression <code>varpro</code> fit and reports a slope on the outcome; <code>gg_beta_uvarpro()</code> needs a <code>uvarpro</code> fit and reports how much the rest of the design explains each variable. Bars at or above the dashed cutoff are flagged as selected, and that cutoff sits at <code>mean(beta_mean)</code> unless you set <code>cutoff</code> yourself.</p>
+</section>
+<section id="individual-variable-priority" class="level3" data-number="32.5.2">
+<h3 data-number="32.5.2" class="anchored" data-anchor-id="individual-variable-priority"><span class="header-section-number">32.5.2</span> Individual variable priority</h3>
+<p><code>gg_ivarpro()</code> computes <em>individual</em> (observation-level) variable priority, decomposing the forest importance down to each case. On a regression fit with weak per-observation signal the decomposition can collapse to nothing (it returns zero rows), so we demonstrate it on a classification forest, which also lets us show the <code>which_class</code> argument. We fit <code>status ~ .</code> on the <code>breast</code> data (also from <code>randomForestSRC</code>): 198 patients, 32 predictors, and a two-level recurrence outcome (<code>N</code> = no recurrence, <code>R</code> = recurrence).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">42</span>)</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(breast, <span class="at">package =</span> <span class="st">"randomForestSRC"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>oc <span class="ot">&lt;-</span> <span class="fu">varpro</span>(status <span class="sc">~</span> ., <span class="at">data =</span> breast, <span class="at">ntree =</span> <span class="dv">100</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_ivarpro</span>(oc)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro-ivarpro" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-ivarpro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-ivarpro-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-ivarpro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.6: Individual variable priority for the breast classification fit, decomposing forest importance down to each observation
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Each panel summarises how strongly individual observations rely on a given variable. You can focus on a single outcome level with <code>which_class</code>, here the recurrence class:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_ivarpro</span>(oc, <span class="at">which_class =</span> <span class="st">"R"</span>)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro-ivarpro-class" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-ivarpro-class-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-ivarpro-class-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-ivarpro-class-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.7: Individual variable priority focused on the recurrence class of the breast fit via the which_class argument
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="conditional-priority-by-class" class="level3" data-number="32.5.3">
+<h3 data-number="32.5.3" class="anchored" data-anchor-id="conditional-priority-by-class"><span class="header-section-number">32.5.3</span> Conditional priority by class</h3>
+<p>The classification fit also supports <code>conditional = TRUE</code> in <code>gg_varpro()</code>, which facets the priority bars by outcome class so you can read which predictors separate which classes. This option needs a classification forest; it errors on the regression fit.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_varpro</span>(oc, <span class="at">conditional =</span> <span class="cn">TRUE</span>, <span class="at">nvar =</span> <span class="dv">15</span>)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro-conditional" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-conditional-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-conditional-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-conditional-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.8: Conditional variable priority faceted by outcome class, showing which predictors separate which classes in the breast fit
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="anomaly-isolation-scores" class="level3" data-number="32.5.4">
+<h3 data-number="32.5.4" class="anchored" data-anchor-id="anomaly-isolation-scores"><span class="header-section-number">32.5.4</span> Anomaly / isolation scores</h3>
+<p><code>gg_isopro()</code> visualises in-sample anomaly (isolation) scores. These come from an <code>isopro</code> object, and there is no <code>.varpro</code> method that builds one for you: you construct it first with <code>varPro::isopro()</code> on the fitted forest, then pass that to <code>gg_isopro()</code>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>iso <span class="ot">&lt;-</span> <span class="fu">isopro</span>(<span class="at">object =</span> o, <span class="at">ntree =</span> <span class="dv">100</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_isopro</span>(iso)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro-isopro" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-isopro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-isopro-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-isopro-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.9: In-sample anomaly scores from an isolation forest, where higher scores flag observations the forest separates with few splits
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Higher isolation scores flag observations the forest separates with few splits, candidate outliers. Pass <code>newdata</code> to <code>gg_isopro()</code> to score held-out observations against the fitted isolation forest.</p>
+</section>
+<section id="partial-dependence" class="level3" data-number="32.5.5">
+<h3 data-number="32.5.5" class="anchored" data-anchor-id="partial-dependence"><span class="header-section-number">32.5.5</span> Partial dependence</h3>
+<p>The extractors so far rank and refine variables; partial dependence asks <em>how</em> a selected variable moves the prediction. <code>gg_partial_varpro()</code> runs <code>varPro::partialpro()</code> on the fitted forest and draws a marginal-effect curve per variable, with a <code>scale</code> argument that sets the y-axis to suit the outcome family. Because that treatment spans regression, classification, and survival, it gets its own chapter; see <a href="./varpro_partial.html">varPro partial dependence</a>. (<code>gg_partialpro()</code> is the superseded name for this extractor; it is now a thin alias for <code>gg_partial_varpro()</code>, so reach for the new name.)</p>
+</section>
+</section>
+<section id="unsupervised-variable-dependence" class="level2" data-number="32.6">
+<h2 data-number="32.6" class="anchored" data-anchor-id="unsupervised-variable-dependence"><span class="header-section-number">32.6</span> Unsupervised variable dependence</h2>
+<p>The beta plot in <a href="#fig-varpro-beta-uvarpro" class="quarto-xref">Figure&nbsp;<span>32.5</span></a> was a first taste of an <em>unsupervised</em> fit. <code>varPro::uvarpro()</code> grows a forest with no response to predict, then scores how strongly each variable depends on the others. <code>gg_udependent()</code> reads those cross-variable scores and draws them as a dependency graph, where nodes are variables, edges the dependencies between them, so you can see which predictors travel together before any modelling. Reach for it when you want to understand the structure among the predictors themselves, for example to spot a cluster of collinear measurements.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_udependent</span>(uv)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro-udependent" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-udependent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-udependent-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-udependent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.10: Unsupervised dependency graph among the numeric housing predictors, where thick edges mark strongly interdependent variables
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This is the same <code>uv</code> fit, built on the numeric <code>housing</code> predictors with the <code>SalePrice</code> outcome and the factor columns dropped, because the dependency graph comes from a numeric distance and cannot square a mixed-type design. A thick edge between two variables means the forest finds them strongly interdependent; an isolated node is a variable that carries information the others do not.</p>
+<section id="signal-variable-detection" class="level3" data-number="32.6.1">
+<h3 data-number="32.6.1" class="anchored" data-anchor-id="signal-variable-detection"><span class="header-section-number">32.6.1</span> Signal-variable detection</h3>
+<p>The graph shows you the structure; <code>gg_sdependent()</code> gives you the ranked table behind it. Both read the same lasso-coefficient matrix, but where <code>gg_udependent()</code> draws nodes and edges, <code>gg_sdependent()</code> returns one row per candidate variable carrying a signal score, that variable’s degree in the graph, and a flag for whether it landed in <code>sdependent()</code>’s detected signal set. Reach for it when you need to <em>name</em> the variables rather than point at a picture.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">plot</span>(<span class="fu">gg_sdependent</span>(uv)) <span class="sc">+</span> <span class="fu">theme_hv_manuscript</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div id="fig-varpro-sdependent" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-varpro-sdependent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="varpro_files/figure-html/fig-varpro-sdependent-1.png" class="img-fluid figure-img" width="1050">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-varpro-sdependent-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;32.11: Signal-variable detection for the same unsupervised housing fit, ranking each variable by its dependency signal score with the detected signal set highlighted
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Both <code>gg_udependent()</code> and <code>gg_sdependent()</code> take a <code>labels</code> argument, the same named character vector used in the <a href="./rf_dependence.html">dependence chapter</a>, so a graph built on raw column names can be relabelled for a manuscript without renaming anything in the data.</p>
+<p>Highlighted variables are the detected signal set, and the caption reports how many of them cleared the threshold. Four arguments carry over from <code>gg_udependent()</code>: <code>threshold</code>, <code>q.signal</code>, <code>directed</code>, and <code>min.degree</code>. <code>threshold</code> (default 0.25) only builds the dependency graph, deciding which entries of the lasso-coefficient matrix count as an edge, so raising it shrinks the signal set solely by isolating nodes, which then get dropped before scoring ever runs. The argument that actually sizes the signal set is <code>q.signal</code> (default 0.75): a variable is flagged as signal when its degree in that graph clears <code>min.degree</code> (<code>NULL</code> by default, which falls back to 1 for a directed graph or 2 for an undirected one) <em>and</em> its score clears the <code>q.signal</code> quantile of every score in the fit. Raise <code>q.signal</code> for a shorter, more conservative list; lower it for a longer one. <code>directed</code> (default <code>TRUE</code>) keeps the two directions of a pair apart, because “j explains i” and “i explains j” are separate lasso coefficients and need not agree; set it <code>FALSE</code> when you only want to know that two variables are dependent, not which way the dependency reads. The <code>degree</code> column rides along in the returned data frame even though the plot does not draw it, so a variable with a middling score but a high degree is worth a second look.</p>
+</section>
+</section>
+<section id="pitfalls" class="level2" data-number="32.7">
+<h2 data-number="32.7" class="anchored" data-anchor-id="pitfalls"><span class="header-section-number">32.7</span> Pitfalls</h2>
+<ul>
+<li><strong><code>gg_isopro()</code> needs an <code>isopro</code> object first.</strong> There is no <code>.varpro</code> method, so calling <code>gg_isopro()</code> on the <code>varpro</code> object directly fails. Build <code>iso &lt;- isopro(object = o, ...)</code> and then plot <code>iso</code>.</li>
+<li><strong><code>gg_beta_varpro()</code> is regression-only.</strong> The lasso β refinement is defined for a regression fit; do not expect it off a classification <code>varpro</code> object.</li>
+<li><strong><code>conditional = TRUE</code> needs a classification forest.</strong> <code>gg_varpro(conditional = TRUE)</code> facets priority by class, so it errors on a regression fit like the <code>housing</code> model. Use it on a classification fit such as the <code>breast</code> one.</li>
+<li><strong><code>gg_ivarpro()</code> needs real signal.</strong> Individual priority decomposes importance to each observation, and on a weak problem that decomposition can return zero rows and an empty plot. It works on a strong-signal fit like the <code>breast</code> classification forest, which is why the individual-priority examples use it.</li>
+<li><strong><code>gg_udependent()</code> needs all-numeric data.</strong> The unsupervised dependency graph is built from a numeric distance, so a mixed-type design (factors plus numerics, like the full <code>housing</code> frame) fails with “Adjacency matrices must be square.” Pass only the numeric columns, as the example does.</li>
+<li><strong>Wide data needs <code>nvar</code>/<code>nvars</code>.</strong> With 80 predictors the bare <code>gg_varpro()</code> and <code>gg_partial_varpro()</code> displays are unreadable walls; cap them with <code>nvar</code> (the boxplot) and <code>nvars</code> (which variables <code>partialpro</code> even computes, the expensive step).</li>
+<li><strong><code>o$xvar.names</code> is not a list of columns you can subset with.</strong> A <code>varpro</code> fit reports the features its rules actually use, and it one-hot encodes every factor it keeps, so a <code>Neighborhood</code> column comes back as <code>NeighborhoodNoRidge</code>, <code>NeighborhoodNridgHt</code>, and <code>NeighborhoodStoneBr</code>. Hand those to <code>housing[, ...]</code> and you get an undefined-columns error, which is a confusing way to find out that the name you asked for was never a column. <code>varpro_feature_names()</code> maps them back.</li>
+</ul>
+<p>For the housing fit above, <code>o$xvar.names</code> runs 30 feature names against the 81-column frame we handed <code>varpro()</code>, 14 of them encoded level names, and <code>varpro_feature_names()</code> recovers the 26 original columns:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ncol</span>(housing)                                <span class="co"># what you handed it</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 81</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(o<span class="sc">$</span>xvar.names)                         <span class="co"># what the fit reports</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 30</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">setdiff</span>(o<span class="sc">$</span>xvar.names, <span class="fu">names</span>(housing))        <span class="co"># encoded level names</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "MS.ZoningRM"         "NeighborhoodNoRidge" "NeighborhoodNridgHt"
+ [4] "NeighborhoodStoneBr" "Bldg.Type1Fam"       "Roof.MatlClyTile"   
+ [7] "Exter.QualEx"        "Exter.QualTA"        "Bsmt.QualEx"        
+[10] "Bsmt.ExposureGd"     "BsmtFin.Type.1GLQ"   "Kitchen.QualEx"     
+[13] "Kitchen.QualTA"      "Misc.FeatureElev"   </code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">varpro_feature_names</span>(o<span class="sc">$</span>xvar.names, housing)  <span class="co"># mapped back to real columns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> [1] "PID"            "Lot.Area"       "Overall.Qual"   "Year.Built"    
+ [5] "Year.Remod.Add" "Mas.Vnr.Area"   "BsmtFin.SF.1"   "Total.Bsmt.SF" 
+ [9] "X1st.Flr.SF"    "X2nd.Flr.SF"    "Gr.Liv.Area"    "Full.Bath"     
+[13] "Fireplaces"     "Garage.Yr.Blt"  "Garage.Cars"    "Garage.Area"   
+[17] "MS.Zoning"      "Exter.Qual"     "Bsmt.Qual"      "Bsmt.Exposure" 
+[21] "Kitchen.Qual"   "BsmtFin.Type.1" "Bldg.Type"      "Misc.Feature"  
+[25] "Neighborhood"   "Roof.Matl"     </code></pre>
+</div>
+</div>
+<p>That gap between what a fit reports and what your data frame actually holds is the same seam that runs through every extractor in this chapter: the score, the graph, and the ranked table all read straight from the fitted object, and <code>varpro_feature_names()</code> is the one step that translates its column names back into ones you can hand to <code>housing[, ...]</code>.</p>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-R-ggRandomForests" class="csl-entry" role="listitem">
+Ehrlinger, John. 2026. <em>ggRandomForests: Visually Exploring Random Forests</em>. <a href="https://github.com/ehrlinger/ggRandomForests">https://github.com/ehrlinger/ggRandomForests</a>.
+</div>
+<div id="ref-R-randomForestSRC" class="csl-entry" role="listitem">
+Ishwaran, Hemant, and Udaya B. Kogalur. 2026. <em>randomForestSRC: Fast Unified Random Forests for Survival, Regression, and Classification (RF-SRC)</em>. <a href="https://www.randomforestsrc.org/">https://www.randomforestsrc.org/</a>.
+</div>
+<div id="ref-R-varPro" class="csl-entry" role="listitem">
+Lu, Min, Aster K. Shear, Udaya B. Kogalur, and Hemant Ishwaran. 2026. <em>varPro: Model-Independent Variable Selection via the Rule-Based Variable Priority</em>. <a href="https://www.varprotools.org/">https://www.varprotools.org/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./rf_roc.html" class="pagination-link" aria-label="How well does the forest predict?">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">How well does the forest predict?</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./varpro_partial.html" class="pagination-link" aria-label="varPro partial dependence">
+        <span class="nav-page-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">varPro partial dependence</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2025, John Ehrlinger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ehrlinger/hvtiGraphics">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
