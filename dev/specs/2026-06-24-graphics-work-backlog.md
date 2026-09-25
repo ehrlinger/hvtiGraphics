@@ -117,6 +117,15 @@ balance / follow-up), but it's listed as a plain chapter and gets numbered (17).
 Restructure `_quarto.yml`: make it a `part:` page over consort/sankey/balance/
 combination so it stops being a numbered chapter. (Renumbers later chapters.)
 
+### Closed, 2026-09-25: #6 is done for all four chapters
+
+`nnt.qmd` was the last. ehrlinger/hvtiGraphics#66 draws a cohort with
+`sample_hazard_cohort()`, estimates NNT from Kaplan-Meier curves on those
+records, and composes the risk table from the same records. So the counts sit
+under a curve they did generate, which answers the objection recorded below.
+The analytic `sample_nnt_data()` curve keeps no table. Composing a two-arm table
+exposed a clipping bug in `hv_atrisk_compose()`, fixed in ehrlinger/hvtiPlotR#156.
+
 ### Correction, 2026-09-01: #6 is now closed for three of four, and hazard is done
 
 The 2026-08-29 resolution below called `hazard.qmd` permanently blocked. That was
