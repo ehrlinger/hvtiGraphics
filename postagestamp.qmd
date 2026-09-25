@@ -24,7 +24,7 @@ the way it compares photographs in a contact sheet: the layout does the
 alignment for you. Reach for it when one figure has to carry a per-subgroup
 comparison and an overlay would be too busy.
 
-hvtiPlotR 2.7.15 has no postage-stamp or faceting constructor, so we build this
+hvtiPlotR 2.7.17 has no postage-stamp or faceting constructor, so we build this
 layout directly with ggplot2's
 [@R-ggplot2] `facet_wrap()` and apply the house theme `theme_hv_manuscript()` for
 visual consistency. The faceting is the whole trick. You write one `ggplot()`
