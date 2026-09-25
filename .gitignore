@@ -31,3 +31,6 @@
 # Old/auxiliary LaTeX build leftovers
 *.log
 index.tex
+
+# Local findings reports can quote PHI-adjacent content; never commit.
+reports/
