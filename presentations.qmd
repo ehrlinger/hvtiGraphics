@@ -55,8 +55,8 @@ shape live in the scales, so a finished slide figure is a theme call plus
 `scale_colour_manual()` plus `scale_shape_manual()`.
 
 Three lines is nothing once. On a twelve-figure deck it is thirty-six, and the
-cost is not the typing. It is that one figure drifts out of step with the rest,
-usually the one you added last and looked at least.
+cost that matters is one figure drifting out of step with the rest, usually the
+one you added last and looked at least.
 
 `hv_ppt_series()` bundles the three into a single object. It returns a plain
 list holding the theme and both scales, and ggplot2's `+` unrolls a list element
@@ -111,7 +111,7 @@ monitor that looks like belt and braces. In the room it is not. A projector in a
 dim hall flattens colour differences that are perfectly clean on screen, and a
 black-and-white handout drops them altogether, but the point shapes survive
 both. This is the same redundancy the [colour chapter](colors.qmd) argues for in
-a manuscript figure, and the case for it on a slide is stronger, not weaker.
+a manuscript figure, and the case for it on a slide is stronger.
 
 The shape scale still earns its keep with no legend drawn. Where two curves
 cross, the plotted summary points are what tells them apart.

@@ -36,7 +36,7 @@ Both return a bare ggplot you finish with scales, labels, and a house theme.
 `hv_spaghetti()` expects long-format data: one row per measurement, with an id
 column identifying the patient, a time column, and the value being tracked.
 Optionally, a grouping column lets the smoother compare strata when
-`add_smooth = TRUE`. In hvtiPlotR 2.7.10 the individual trajectory layer remains
+`add_smooth = TRUE`. In hvtiPlotR 2.7.15 the individual trajectory layer remains
 black even when `colour_col` is set; the group colours apply to the smoother.
 `sample_spaghetti_data()` generates 150 patients with up to 6 observations each,
 split by a named proportion vector that stands in for a sex stratification. Build
@@ -192,9 +192,8 @@ individual trajectories with a smoother plus one summary point per year. Subset
 to a single group and fit with `group_col = NULL` for a single series. The points
 are annual means of the continuous `value` column, but the LOESS curve is fitted
 to the raw rows in `tr1$data`, not to those means. Set the x-axis to the study
-window and let the y-axis span both layers (here roughly 20 to 70). One detail to
-watch, called out again in the pitfalls below: setting `limits` tighter than the
-data, for instance `c(0, 10)`, silently drops every point and line and leaves a
+window and let the y-axis span both layers (here roughly 20 to 70). As the
+pitfalls below repeat, setting `limits` tighter than the data, for instance `c(0, 10)`, silently drops every point and line and leaves a
 blank panel. The `c(0, 80)` limits here comfortably contain the series.
 
 ```{r}

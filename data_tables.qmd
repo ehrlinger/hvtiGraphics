@@ -19,7 +19,7 @@ then use `proc_means()` to inspect the numeric distributions.
 collaborator. These are R-side checks, and none produces a table anybody will
 publish. You run them because you cannot decide what belongs in Table 1 until
 you know what you are holding: which variables are there, what type each one
-came in as, and how much of each is actually populated.
+came in as, and how much of each is populated.
 
 For readers moving an older workflow to R, the first two names are migration
 landmarks for the retired `PROC CONTENTS` and `PROC MEANS` steps. That is this

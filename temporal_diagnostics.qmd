@@ -120,8 +120,8 @@ ggplot() +
 
 The curves differ, and the summary reports fewer expected events at the mean
 covariate profile than were observed in the cohort. Those quantities have
-different estimands: one is conditional on a single reference profile, while
-the other is marginal over the cohort. The discrepancy therefore demonstrates
+different estimands. One is conditional on a single reference profile, while
+the other is marginal over the cohort. The discrepancy therefore reflects
 an estimand mismatch, not underprediction or a misspecified hazard shape. Before
 concluding that the model is miscalibrated, standardize predictions over the
 cohort or use a subject-specific check such as the decile observed-to-expected

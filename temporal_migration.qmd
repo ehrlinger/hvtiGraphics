@@ -55,8 +55,11 @@ data.frame(
 ```
 
 Coverage reports what the parser recognized, not whether a model has been
-validated. For this bounded input all six tokens are mapped and no construct
-is left untranslated. Now inspect the emitted fit call itself.
+validated. For this bounded input five of the six tokens are mapped. The sixth,
+`CONDITION=14`, comes back as a row in `job$untranslated`, and the reason it
+gives is worth reading: in PROC HAZARD it stops the optimizer once the Hessian
+turns ill-conditioned, and `hazard()` has no such stop. It fits, then warns if
+the final Hessian is ill-conditioned. Now inspect the emitted fit call itself.
 
 ```{r}
 #| label: inspect-translated-call
@@ -65,8 +68,8 @@ cat(paste(deparse(job$calls$fit, width.cutoff = 80), collapse = "\n"))
 
 The generated call carries `TIME` to `time`, derives a 0/1 status from the
 historical event count, preserves event counts as weights, turns the early
-parameters into `hzr_phase("cdf", ...)`, and carries `CONSERVE` and
-`CONDITION=14` into `control`. The returned job also contains a data guard and
+parameters into `hzr_phase("cdf", ...)`, and carries `CONSERVE` into
+`control`. The returned job also contains a data guard and
 status expression. Translation does not recreate a SAS `DATA` step, so you
 must bind the reviewed R data frame before running the generated fit.
 
@@ -83,7 +86,7 @@ unsupported step directly in R and document the choice.
 ## Map the old names once
 
 `hzr_argument_mapping()` exposes the package's formal crosswalk. Keep planned
-rows visible during migration: the status column distinguishes a maintained
+rows visible during migration, because the status column distinguishes a maintained
 mapping from a broader legacy concept that still needs review.
 
 ```{r}
@@ -97,9 +100,10 @@ argument_map[
 ]
 ```
 
-The general `PARMS` row remains marked as planned even though the translator
-can parse the small early-phase subset above. Treat that as a limit on the
-claim: the successful example is evidence for those statements, not blanket
+Two rows remain marked as planned. The general `PARMS` row is one, even though
+the translator can parse the small early-phase subset above. The early-phase
+`DELTA` time transform is the other: it drops out at `DELTA = 0`, and any other
+value is not implemented. Treat both as limits on the claim. The successful example is evidence for those statements, not blanket
 support for every historical parameter combination. For a new analysis, write
 the reviewed `hazard()` and `hzr_phase()` call directly rather than carrying
 legacy names forward.
@@ -170,6 +174,5 @@ Before calling the migration complete, keep these pieces together:
 - the comparison quantities chosen in advance, with tolerances;
 - the fitted R object, diagnostics, predictions, and session/package versions.
 
-That record answers the question the old file cannot: not only whether a few
-stored estimates matched, but exactly how the maintained analysis was built and
-how we will rerun it next time.
+That record answers what the old file cannot: how the maintained analysis was
+built and how we will rerun it next time.

@@ -146,20 +146,20 @@ anchors the key in whichever corner the data leave emptiest.
 Hazard here is a local event rate: a high point says events are occurring at a high
 instantaneous rate among the subjects still at risk around that time. It is not the
 probability that this subject has the event then, and neither its height nor its
-scale should be reported as a percentage. We plot six subjects because the extracted
-object holds all of them and the panel becomes unreadable well before that.
+scale should be reported as a percentage. We plot six subjects, not all of them:
+the extracted object holds a curve for every subject, and a panel becomes
+unreadable long before it shows them all.
 
 The curves stop at different places, and that is deliberate rather than missing data.
 From version 2.0.0, `randomForestRHF::rhf()` returns a hazard only where a grid point
 falls inside one of that subject's supplied `(start, stop]` records, and `NA` in the
 gaps and after the final stop. Each line therefore covers the range the forest was
-actually asked about.
+asked about.
 
 Count the legend and you get five, though we asked for six. Subject 22 has **no**
 grid point inside any of its records, so every one of its hazard values is `NA` and
 it draws nothing at all. That is the masking rule taken to its limit rather than a
-plotting failure, and it is worth knowing that a requested subject can disappear from
-this panel entirely. It comes back in the next one.
+plotting failure, and a requested subject can disappear from this panel entirely. It comes back in the next one.
 
 ### Cumulative hazard accumulates the local rates
 
@@ -263,7 +263,7 @@ carries no selection threshold. It ranks, and that is all.
 
 In this simulation `xtd` carries the largest early-window value while `x.1` leads
 several later windows, which is exactly the pattern a single whole-study importance
-number would have averaged away. Note also that the number at risk falls from
+number would have averaged away. The number at risk also falls from
 `r max(rhf_priority$n_risk)` to `r min(rhf_priority$n_risk)` across the five windows,
 so the late-window comparisons rest on much less information than the early ones. Any
 window-to-window story should be told with that in view.
@@ -272,7 +272,7 @@ window-to-window story should be told with that in view.
 
 `gg_tune_rhf()` reads a completed tuning path. It never reruns the search, and it
 preserves the upstream evaluation order, so the connecting line follows the order
-candidates were actually tried rather than a tidied-up sort.
+candidates were tried rather than a tidied-up sort.
 
 ```{r}
 #| label: fig-rhf-tune-risk
@@ -300,7 +300,7 @@ plot(iauc_tuning) + theme_hv_manuscript()
 
 This search evaluated `r paste(iauc_tuning$treesize, collapse = ", ")` and selected
 `r iauc_tuning$treesize[iauc_tuning$selected]`, where out-of-bag iAUC was largest. The
-two searches choose differently, which is the useful part: risk and discrimination are
+two searches choose differently, and that is the useful part. Risk and discrimination are
 not the same objective, and a tree size that minimises one need not maximise the
 other. Say which criterion you tuned on when you report a size. This path has
 `r sum(is.finite(iauc_tuning$se))` finite standard errors, so again no ribbon.
@@ -322,9 +322,8 @@ standardized integrated AUC, and `attr(x, "iauc")` is how you reach it for a tab
 
 ## Where ggRandomForests ends and randomForestRHF begins
 
-This chapter draws pictures of decisions made elsewhere, and it is worth being precise
-about which package owns what, so that an upstream modelling choice is not read as a
-plotting defect.
+This chapter draws pictures of decisions made elsewhere. Knowing which package owns
+what keeps an upstream modelling choice from being read as a plotting defect.
 
 `randomForestRHF` owns the model. It sets the working time grid, applies the
 no-lookahead routing, decides that the pointwise hazard exists only inside supplied

@@ -327,8 +327,6 @@ setdiff(o$xvar.names, names(housing))        # encoded level names
 varpro_feature_names(o$xvar.names, housing)  # mapped back to real columns
 ```
 
-That gap between what a fit reports and what your data frame actually holds is
-the same seam that runs through every extractor in this chapter: the score, the
-graph, and the ranked table all read straight from the fitted object, and
-`varpro_feature_names()` is the one step that translates its column names back
-into ones you can hand to `housing[, ...]`.
+The score, the graph, and the ranked table in this chapter all read straight
+from the fitted object, and `varpro_feature_names()` is the one step that
+translates its column names back into ones you can hand to `housing[, ...]`.

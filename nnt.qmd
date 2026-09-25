@@ -12,7 +12,7 @@ library(ggplot2)
 
 A hazard ratio is a relative comparison. It does not tell a patient how much
 survival changes at five years, and it can hide when that change occurs. The
-absolute survival difference answers that first question directly: how many
+absolute survival difference answers that first question: how many
 more patients out of 100 are alive in group 2 than group 1 at time $t$. Number
 needed to treat (NNT) asks a different question by inverting the benefit: how
 many patients must receive group 2 rather than group 1 to prevent one event by

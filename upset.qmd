@@ -32,8 +32,8 @@ a key, and it scales cleanly to seven sets or more.
 ## Venn diagrams
 
 For two or three overlapping groups, a Venn diagram is still the clearest
-display: the reader sees the intersections without a legend. A fourth set is
-the decision point: switch to the UpSet plot below, which is built to carry
+display: the reader sees the intersections without a legend. At a fourth set,
+switch to the UpSet plot below, which is built to carry
 larger intersections.
 
 `hv_venn()`, from hvtiPlotR [@R-hvtiPlotR], builds one from the same kind of
@@ -160,8 +160,7 @@ An UpSet plot is read from the top down, then from left to right. Look for:
   combinations.
 - **What is missing.** UpSet shows only the combinations that actually occur,
   and only the top ten by default. A combination you expected to see and do not
-  is genuinely absent (or rare enough to fall below the cutoff), which is itself
-  worth noticing.
+  is genuinely absent (or rare enough to fall below the cutoff).
 
 ## Variations
 
@@ -213,7 +212,7 @@ plot(hu_era, fill_col = "era", set_size = FALSE) +
   and `+` only when you have set `set_size = FALSE`.
 - **Reading the top-ten cutoff as the whole story.** The default shows the ten
   most frequent combinations. The long tail of rarer combinations is real and
-  may carry the unusual cases you care about; if so, raise the cutoff rather than
+  may carry the unusual cases you care about; if so, raise the cutoff with `n_intersections` rather than
   assuming the figure is exhaustive.
 - **Over-stuffing the Venn.** Two or three sets belong in a Venn. Four or more
   belong in an UpSet plot, not another ellipse.

@@ -32,8 +32,7 @@ case. As with the rest of the package, `plot()` on the `hv_eda` object hands
 back a bare ggplot. You finish it with colour scales, labels, and a house theme
 using the usual `+`.
 
-One detail that matters in practice: observations missing `y_col` are not
-silently dropped. They are drawn as rug ticks along the x-axis, so you can see
+Observations missing `y_col` are not silently dropped. They are drawn as rug ticks along the x-axis, so you can see
 where in time your measurement is missing rather than pretending the data are
 complete.
 

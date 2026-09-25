@@ -40,7 +40,7 @@ Where a single-figure recipe needs a data frame, a composition recipe needs the
 finished plots. So the "data" here is two hvtiPlotR [@R-hvtiPlotR] plots built
 the way the earlier chapters built them: a survival curve and a covariate
 balance panel. We assign each to a name (`p_km`, `p_cb`) and do nothing else to
-them yet. That naming is the whole trick, each panel is a self-contained object
+them yet. That naming is the whole trick. Each panel is a self-contained object
 we compose later.
 
 ```{r}

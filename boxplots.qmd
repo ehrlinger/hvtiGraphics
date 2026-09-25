@@ -16,7 +16,7 @@ library(ggplot2)
 
 When you want to compare a continuous measurement across a handful of groups,
 the box plot is the compact summary that fits in a single panel. It draws the
-five-number summary, the median, the two quartiles, and the whiskers, for each
+median, the two quartiles, and the whiskers for each
 group side by side, so the reader can scan across categories and see at once
 which group sits higher, which is more variable, and which has stragglers. Reach
 for it when the question is "does this number differ by group?" and the groups

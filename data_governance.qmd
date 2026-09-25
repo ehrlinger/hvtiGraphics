@@ -149,7 +149,7 @@ verify_manifest(manifest_path = mp, data_dir = ".", stop_on_error = FALSE)
 ```
 
 A representative manifest entry looks like this. The hash is the load-bearing
-field: it is what lets `verify_manifest()` catch a file that changed under you.
+field, the one that lets `verify_manifest()` catch a file that changed under you.
 
 ```yaml
 datasets:

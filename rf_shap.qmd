@@ -30,8 +30,7 @@ patient actually got. Every patient gets their own receipt, so a variable that
 lifts one patient's prediction can pull another's down.
 
 So reach for VIMP when the question is about the model and SHAP when it is about
-the individual. The two are not symmetric, which is worth knowing before you
-pick: average the SHAP receipts over patients and you get a ranking that reads a
+the individual. The two are not symmetric. Average the SHAP receipts over patients and you get a ranking that reads a
 lot like VIMP, but you cannot go the other way and recover a patient from a VIMP
 bar.
 
@@ -62,9 +61,10 @@ theme and the usual `+`.
 ## The data it needs
 
 A fitted `rfsrc` object, with one restriction that shapes the rest of this
-chapter: `gg_shap()` supports regression and classification forests. The `pbc`
-survival fit the other recipes in this part lean on will not work here, and
-handing one over gets you an error naming the family rather than a plot.
+chapter: `gg_shap()` supports regression and classification forests. A `pbc`
+survival fit like the one in [partial dependence](rf_dependence.qmd) will not
+work here, and handing one over gets you an error naming the family rather than
+a plot.
 
 So we switch to `breast`, the Wisconsin breast cancer data that ships with
 randomForestSRC and that both varPro chapters use: 32 predictors, thirty
@@ -199,8 +199,8 @@ top10 <- tail(levels(gs$vars), 10)
 shap_importance(droplevels(gs[gs$vars %in% top10, ])) + theme_hv_manuscript()
 ```
 
-Ten is the same cut the [variable importance](rf_vimp.qmd) chapter makes, for
-the same reason: it puts the eye on the predictors that matter and leaves the
+Ten is the cut the [variable importance](rf_vimp.qmd) chapter suggests with
+`gg_vimp(rf, nvar = 10)`, for the same reason: it puts the eye on the predictors that matter and leaves the
 full ranking available as a supplement.
 
 ### One variable across its range
@@ -232,7 +232,7 @@ worth interpreting.
 Not every variable comes back this way. Ask for `mean_radius`, nineteenth in the
 ranking, and the attributions scatter inside a couple of percentage points of
 zero with no trend against radius at all. That is an answer rather than a failed
-plot: on these patients, this forest was not using radius, which is consistent
+plot. On these patients, this forest was not using radius, which is consistent
 with where it sits in the ranking. Leave `xvar` off entirely and you get the
 top-ranked variable by default.
 
@@ -258,6 +258,6 @@ scatter, so the call does not change when the variable does.
   that variable for that patient. It does not say the variable caused the
   outcome, and it does not survive a change of model. Two correlated predictors
   will split their attributions the same way they split VIMP, so a variable can
-  look quiet simply because a collinear partner absorbed the credit. Present
+  look quiet because a collinear partner absorbed the credit. Present
   SHAP as an explanation of the model, which is all it is, not as an effect
   estimate.

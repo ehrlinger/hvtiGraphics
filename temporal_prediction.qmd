@@ -134,7 +134,7 @@ precisely under that Weibull model.
 
 ### Accumulated event intensity
 
-The Nelson-Aalen curve provides the corresponding empirical check for
+The Nelson-Aalen curve is the corresponding empirical check for
 cumulative hazard. $H(t)$ is dimensionless. Its slope, because time is in
 months, has units of events per patient-month.
 

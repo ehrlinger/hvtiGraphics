@@ -40,7 +40,7 @@ using the usual `+`.
 
 `hv_eda()` expects one row per observation with a reference axis in `x_col`
 (here the surgery `year`) and the variable of interest in `y_col`. It does not
-ask you to tell it whether that variable is categorical: `eda_classify_var()`
+ask you to tell it whether that variable is categorical; `eda_classify_var()`
 inspects the column and decides. Numeric 0/1 and small-integer columns come back
 as `"Cat_Num"`, character columns as `"Cat_Char"`, and continuous columns as
 `"Cont"`. The classifier is worth running on the whole frame before you build
@@ -206,18 +206,23 @@ effect or explain why practice changed.
 ### Ordinal and multi-level categorical
 
 Columns with more than two numeric levels render as stacked count bars, one
-level per fill colour. For an ordered grade such as NYHA class, a reversed
-diverging palette (`"RdYlGn"`) carries the severity ordering visually, from
+level per fill colour. For an ordered grade such as NYHA class, the colours of
+the diverging `"RdYlGn"` palette carry the severity ordering visually, from
 green at the mild end through yellow to red at the severe end, so the reader
-sees worsening case mix without reading the legend.
+sees worsening case mix without reading the legend. Pin each colour to its
+class by name with `scale_fill_manual()`. A positional palette such as
+`scale_fill_brewer(direction = -1)` assigns colours in the order of the factor
+levels, and hvtiPlotR 2.7.15 stacks those levels from IV down to I, so the same
+call that once made class IV red now makes it green.
 
 ```{r}
 #| label: fig-bar-ordinal
 #| fig-cap: "Stacked count bars of an ordinal NYHA class by year, with a diverging palette carrying the severity ordering"
 plot(hv_eda(dta_eda, x_col = "year", y_col = "nyha",
             y_label = "Preoperative NYHA Class")) +
-  scale_fill_brewer(
-    palette = "RdYlGn", direction = -1,
+  scale_fill_manual(
+    values  = c("1" = "#1A9641", "2" = "#A6D96A", "3" = "#FDAE61",
+                "4" = "#D7191C", "(Missing)" = "grey80"),
     labels  = c("1" = "I", "2" = "II", "3" = "III", "4" = "IV",
                 "(Missing)" = "Missing"),
     name    = "NYHA"
@@ -281,7 +286,7 @@ p_lc_tbl
 
 Stack the bar chart above the table with `patchwork`'s `/` operator, then use
 `plot_layout(heights = c(3, 1))` to give the bars three times the vertical space.
-This is the figure you actually publish: the bars carry the visual story and the
+This is the figure you publish. The bars carry the visual story and the
 table gives the reader the exact counts.
 
 ```{r}

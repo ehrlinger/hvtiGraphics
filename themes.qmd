@@ -26,8 +26,8 @@ background, grid. Two figures of the same cohort can need very different
 versions of that chrome depending on where they end up. A journal page is read
 from a foot away in a quiet office; a poster is read from across a hall; a slide
 is read for fifteen seconds in a dim room. The font and tick weights that work
-in one fail in the others, and the right time to deal with that is by swapping a
-single theme call rather than hand-tuning a dozen `theme()` elements per figure.
+in one fail in the others, and the fix is to swap a single theme call rather
+than hand-tune a dozen `theme()` elements per figure.
 
 The choice follows the destination, not your taste. Use `theme_hv_manuscript()`
 for anything headed to a journal: small text, white background, minimal chrome,

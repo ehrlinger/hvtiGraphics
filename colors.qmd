@@ -19,7 +19,7 @@ arguments. Set them together so the two scales stay in sync.
 Colour is the fastest way to separate groups on a figure, and the easiest to
 overuse. Reach for a manual colour scale when the groups have a convention you
 want to honour (a brand colour, red for the high-risk arm) or when you have one
-series and simply want it off the default grey. Reach for a ColorBrewer palette
+series and want it off the default grey. Reach for a ColorBrewer palette
 when the groups are arbitrary and you want a set of hues that stay distinct in
 print and for colour-blind readers. And reach for legend suppression whenever
 the figure already names its groups some other way, since a colour that needs no
@@ -154,7 +154,7 @@ p_base +
   theme_hv_manuscript()
 ```
 
-Notice that @fig-colors-no-legend pairs colour with a distinct point shape per
+@fig-colors-no-legend pairs colour with a distinct point shape per
 group. That redundancy is deliberate, and it is the heart of the first pitfall
 below.
 
@@ -174,5 +174,4 @@ below.
   four or five groups, distinct colours stop being distinct and the figure turns
   to confetti. When you have many series, consider showing fewer at once,
   faceting into small panels, or muting the background series in grey and
-  colouring only the one or two you are making a point about. Restraint reads as
-  confidence.
+  colouring only the one or two you are making a point about.

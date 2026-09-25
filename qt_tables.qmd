@@ -35,7 +35,7 @@ baseline-characteristics summary, the one journals number "Table 1." It
 describes who was in the study before any outcome is discussed: how old the
 patients were, how their risk factors split, and whether the comparison groups
 looked alike at the start. Reach for it whenever you need to convince a reader
-that two arms are comparable, or simply to put a face on the cohort a figure
+that two arms are comparable, or to put a face on the cohort a figure
 later summarises. The job is description, not inference. A good Table 1 lets a
 reader decide for themselves whether a later result is believable, because they
 can see what the groups were made of.
@@ -119,8 +119,8 @@ cat_summary
 ### Render with `gt()`
 
 We join the two summaries and present the result with a header, relabelled
-columns, and consistent numeric formatting. Mean ± SD pairs are formatted
-to one decimal place; the diabetes percentage to one decimal place.
+columns, and consistent numeric formatting. The means, the SDs, and the
+diabetes percentage all get one decimal place.
 
 ```{r}
 #| label: t1_gt

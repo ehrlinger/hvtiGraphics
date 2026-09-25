@@ -56,5 +56,4 @@ not a gap you missed.
 
 Treat the book as living. When you build a figure for a paper that is not here,
 or find a cleaner way to draw one that is, add it. The point of collecting these
-recipes was never to finish the list, it was to make the next figure easier than
-the last.
+recipes is to make the next figure easier than the last.

@@ -13,8 +13,8 @@ library(ggplot2)
 The [survival chapter](survival.qmd) starts with patient-level follow-up and asks
 what the observed cohort experienced. This chapter starts one step later: you
 already hold a grid of fitted values and want to show what a model says between
-the observed event times. That distinction matters. A smooth line is a model
-summary, not a more precise Kaplan-Meier curve.
+the observed event times. A smooth line is a model summary, not a more precise
+Kaplan-Meier curve.
 
 Name the quantity before you choose its column. Survival probability asks what
 proportion remains event-free beyond a time. Cumulative hazard asks how much
@@ -105,7 +105,7 @@ discrete points. Look for:
   late), the parametric form is the wrong shape and you should reconsider it.
 - **The error bars against the band.** The empirical error bars and the smooth
   confidence ribbon should tell a consistent story. Where the cohort thins, both
-  widen; a point with a huge error bar is a region the figure cannot really
+  widen; a point with a huge error bar is a region the figure cannot
   support.
 - **The curve shape itself.** A survival curve falls and flattens; a hazard
   curve often peaks early then settles; a cumulative hazard only rises. A shape
@@ -145,10 +145,9 @@ from `coh_hp`: refit a Kaplan-Meier to that cohort and you recover the overlay
 exactly. The smooth curve is the parametric model, and it sits up to about two
 percentage points away from those points across this range. So the table
 describes the observed cohort, which is the relationship you want. A risk table
-always counts patients, never model.
+always counts patients, never the model.
 
-That matters more than it sounds. The counts have to come from the data the
-figure is about; a table generated from some other cohort of the same size would
+The counts have to come from the data the figure is about; a table generated from some other cohort of the same size would
 look entirely plausible and be meaningless. If your own curve comes from a fitted
 model, take the risk table from the records you fitted it to.
 
@@ -469,7 +468,7 @@ plot(np_ord) +
 ```
 
 To collapse adjacent grades, add their probabilities at each time before
-passing the data to the constructor. Do not simply drop the middle rows; then
+passing the data to the constructor. Do not drop the middle rows; then
 the displayed levels no longer account for every patient and will not sum to
 one. Here we combine None with Mild and Moderate with Severe.
 

@@ -72,7 +72,7 @@ This book works through **85 of the 85** workflow-level functions in the contrac
 |`gg_error()`          |Out-of-bag error against the number of trees                |[rf_error](rf_error.qmd)         |Worked recipe |
 |`gg_rfsrc()`          |Predicted response or survival from a forest                |[rf_predicted](rf_predicted.qmd) |Worked recipe |
 |`gg_survival()`       |Empirical survival estimate for comparison                  |[rf_predicted](rf_predicted.qmd) |Worked recipe |
-|`gg_vimp()`           |Permutation variable importance                             |[rf_dependence](rf_dependence.qmd), [rf_vimp](rf_vimp.qmd)|Worked recipe |
+|`gg_vimp()`           |Permutation variable importance                             |[rf_dependence](rf_dependence.qmd), [rf_shap](rf_shap.qmd), [rf_vimp](rf_vimp.qmd)|Worked recipe |
 |`gg_shap()`           |Per-observation SHAP attributions                           |[packages](packages.qmd), [rf_dependence](rf_dependence.qmd), [rf_shap](rf_shap.qmd)|Worked recipe |
 |`gg_variable()`       |Predicted response against a predictor's own values         |[rf_dependence](rf_dependence.qmd)|Worked recipe |
 |`gg_partial_rfsrc()`  |Partial dependence with other predictors averaged out       |[rf_dependence](rf_dependence.qmd)|Worked recipe |

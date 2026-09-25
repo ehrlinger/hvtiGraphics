@@ -148,7 +148,7 @@ look for:
   concentrates at the none-or-mild end on the right is the story you want from a
   valve operation.
 - **Band width is a count, not a rate.** A wide band is a common pathway; a
-  hairline band is a rare one. Do not confuse a thin band for a small *effect*,
+  hairline band is a rare one. Do not confuse a thin band for a small *effect*;
   it is a small *number* of patients taking that route.
 - **Missing bands are missing combinations.** If there is no band from a given
   grade through a given procedure, that combination never occurred in the
@@ -207,7 +207,7 @@ flow goes, not the exact count at each stage. When that is the focus, dropping
 the count axis declutters the panel. It is a trade-off, though: as the pitfalls
 below note, the axis (or the node counts) is what lets a reader recover absolute
 numbers, so keep it whenever the denominators matter. Here the movement is the
-story, so we pass `show_yaxis = FALSE`. One wrinkle: a full house theme re-styles
+story, so we pass `show_yaxis = FALSE`. One wrinkle is that a full house theme re-styles
 the axes it would reinstate, so when you finish with `theme_hv_manuscript()` you
 blank the y elements again after it.
 
@@ -275,7 +275,7 @@ flows for you; node labels show the cluster letter and its patient count.
 
 `hv_sankey()` wants one row per patient and one column per value of K, each
 column holding that patient's cluster label at that K.
-`sample_cluster_sankey_data()` returns 300 patients with nine such columns,
+`sample_cluster_sankey_data()` returns 300 patients with eight such columns,
 `C2` through `C9`, where `C2` is the PAM (partitioning-around-medoids) label at
 K = 2 and so on up to K = 9. A quick `table()` on the last column confirms the
 marginal cluster sizes before you build the figure.
@@ -327,7 +327,7 @@ Read this figure left to right, watching what happens to each band as K
 increases:
 
 - **Clean forks mean stability.** When one cluster at K splits into two at
-  K + 1 and the two children stay intact afterward, that split is real. Bands
+  K + 1 and the two children stay intact afterward, that split is stable. Bands
   that hold their width across several columns are the partitions you can trust.
 - **Crossing and churn mean you have gone too far.** Once you see patients
   jumping between clusters that are not parent-and-child (bands crossing each
