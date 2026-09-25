@@ -78,7 +78,7 @@ The device matters, and the usual recommendation has a failure mode worth
 knowing. `cairo_pdf` embeds fonts and renders transparency and custom typefaces
 correctly, where the base `pdf` device substitutes them. But on a Mac without
 XQuartz it warns "failed to load cairo DLL", returns **without error**, and writes
-no file. Measured on this machine: `ggsave()` reported success and the target PDF
+no file. Measured on the machine that builds this book: `ggsave()` reported success and the target PDF
 did not exist. A silent no-op is worse than a failure you can see, so check that
 the file appeared before assuming a cairo export worked.
 
@@ -96,8 +96,8 @@ lands at the same slide position in a deck.
 
 ## PowerPoint export
 
-`save_ppt()` writes the plot into a PowerPoint slide as **editable DrawingML
-vector graphics** via the `officer` and `rvg` packages: shapes, lines, and
+`save_ppt()` writes the plot into a PowerPoint slide as editable DrawingML
+vector graphics via the `officer` and `rvg` packages: shapes, lines, and
 text remain selectable in PowerPoint, so co-authors can re-label or recolor
 without round-tripping back to R. It appends a slide to a template `.pptx`
 rather than overwriting it.

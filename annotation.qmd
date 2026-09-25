@@ -88,7 +88,7 @@ plot(km) +
 
 ## Naming series without a legend {#sec-annotation-series}
 
-A finished CORR figure carries no legend. Not in a manuscript, not on a slide.
+A finished CORR figure carries no legend, in a manuscript or on a slide.
 `theme_hv_manuscript()`, `theme_hv_poster()`, `theme_hv_ppt_light()` and
 `theme_hv_ppt_dark()` all set `legend.position = "none"`, so the groups get
 named on the panel instead, with `annotate()`, where the reader's eye already
@@ -158,8 +158,8 @@ Neither scale needs `guide = "none"` here. The theme has already switched the
 legend off, and that is the house default rather than something you opt into per
 figure.
 
-Colouring each label to match its curve looks like the helpful thing to do, so
-it is worth saying plainly why it is not. A coloured label reads as data. It
+Colouring each label to match its curve looks like the helpful thing to do, and
+it is not. A coloured label reads as data. It
 becomes one more series in the panel, and it inherits every weakness the colour
 already has: it flattens on a projector, and it collapses to a mid-grey in a
 black-and-white printout, which is exactly the case where the label was doing
@@ -261,7 +261,7 @@ make_footnote(
 )
 ```
 
-For publication, write the ggplot object directly with `ggsave()` and simply
+For publication, write the ggplot object directly with `ggsave()` and
 omit the `make_footnote()` call. The saved file carries no stamp.
 
 ## Pitfalls
@@ -282,7 +282,7 @@ omit the `make_footnote()` call. The saved file carries no stamp.
 - **A draft footnote left on a final figure.** `make_footnote()` stamps the
   device, not the ggplot object, which is the safe design: the stamp cannot
   survive into a `ggsave()` file unless you deliberately keep printing and
-  stamping. The failure mode is human, not technical. You screenshot a working
+  stamping. The failure mode is human. You screenshot a working
   figure mid-analysis, the file path and timestamp ride along, and it ends up in
   a slide deck. Keep draft stamps to the analysis session and let the publication
   path be the plain `ggsave()`.

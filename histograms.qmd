@@ -130,7 +130,7 @@ p +
 A mirrored matching histogram is read as a before-and-after, with the two halves
 of the figure carrying different jobs. Look for:
 
-- **Symmetric pre-match bars.** The light bars are the full distributions. Two
+- **Separated pre-match bars.** The light bars are the full distributions. Two
   groups that need adjusting will sit at different ends of the score axis: the
   SAVR patients piled toward low scores, the TF-TAVR patients toward high. That
   separation is exactly the confounding the matching is meant to fix.
@@ -140,7 +140,7 @@ of the figure carrying different jobs. Look for:
   evidence that matching balanced the groups.
 - **A region with no overlay.** Where one group has light bars but no dark ones,
   those patients had no match and were dropped. A lot of unmatched patients at
-  the extremes is the cost of matching, and worth noting.
+  the extremes is the cost of matching, and worth reporting.
 - **Identical-looking panels before and after.** If the matched overlay looks
   the same as the full bars, the `match_col` may not be mapping correctly.
 
@@ -198,7 +198,7 @@ weight_total_by_group
 mh_wt$tables$diagnostics[c("smd_before", "smd_weighted")]
 ```
 
-Despite the component name in hvtiPlotR 2.7.10,
+Despite the component name in hvtiPlotR 2.7.15,
 `effective_n_by_group` stores the **sum of weights** in each group. It is not the
 Kish effective sample size, $(\sum w)^2 / \sum w^2$. We give it the accurate
 local name `weight_total_by_group`; in this normalized example the totals are
@@ -361,7 +361,7 @@ the picture is not a substitute for that number.
 - **Mapping the wrong overlay column.** Pass `match_col` for matching and
   `weight_col` for weighting, not both. The overlay means something different in
   each mode, and a count overlay on a weighted analysis (or vice versa) is
-  simply wrong.
+  wrong.
 - **Confusing count and fill stacked bars.** A fill histogram hides volume: a
   category can hold a steady share while its raw count collapses. If the absolute
   numbers matter, show the count version too, or you will mislead a reader about

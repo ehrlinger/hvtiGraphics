@@ -180,9 +180,9 @@ Read down the rows, comparing the two points in each:
 - **Watch any covariate that stays imbalanced.** A blue point still well past
   ten percent is a variable matching did not fix. You either adjust for it in
   the outcome model or say so in the limitations.
-- **The annotations name the direction.** A positive SMD means one group has
-  more of that covariate; the panel labels tell the reader which. Without them a
-  reviewer cannot tell whether "More likely SAVR" sits left or right.
+- **The caption names the direction.** A positive SMD means one group has
+  more of that covariate; the caption tells the reader which. Without it a
+  reviewer cannot tell whether "more likely SAVR" sits left or right.
 
 ### Variations
 
@@ -322,7 +322,7 @@ gfup_final
 
 ### Read it
 
-The shape of the cloud tells the story:
+Read the shape of the cloud:
 
 - **A solid wedge under the diagonal is good news.** Points filling the triangle
   below the line mean patients across the whole span of operation dates were
@@ -405,7 +405,7 @@ plot(gf2, type = "event", alpha = 0.8) +
   combination. Hand `hv_balance()` a wide table and you get one point per
   covariate instead of the before-and-after pair; reshape first.
 - **Distinguish the groups.** If the before and after points sit on top of each
-  other for every covariate, check that the `group` column actually has two
+  other for every covariate, check that the `group` column has two
   distinct levels. Identical points usually mean a labelling slip, not perfect
   matching.
 - **A single threshold is a guide, not a verdict.** The ten-percent lines are a

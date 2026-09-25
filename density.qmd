@@ -122,7 +122,7 @@ depending on it. We come back to that in the pitfalls.
 
 Mapping the grouping variable to `fill` overlays one density curve per group,
 with transparency so the overlapping regions stay readable. This is the
-comparison you actually want most of the time: not "what does this variable look
+comparison you want most of the time: not "what does this variable look
 like" but "does it look different across valve morphologies?"
 
 ```{r}

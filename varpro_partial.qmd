@@ -14,7 +14,7 @@ library(survival)
 
 ## When to use it
 
-The varPro chapter ranks and selects variables; this one asks the next question
+The varPro chapter ranks and selects variables; this one asks the next question,
 *how* a selected variable moves the prediction. `gg_partial_varpro()` runs
 `varPro::partialpro()` on a fitted `varpro` object and tidies the result into
 marginal-effect curves: one panel per variable, the predicted response across

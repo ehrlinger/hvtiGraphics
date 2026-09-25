@@ -204,7 +204,7 @@ treat what it reports as a prompt to look rather than proof.
 
 ### Why not `gt::gtsave()`?
 
-The honest answer starts with a concession: `gt` writes Word, and writes it
+Start with what `gt` gets right. It writes Word, and writes it
 well. `gt::gtsave(as_gt(tbl_corr), "table1.docx")` hands you a `.docx` with the
 right numbers on an unmerged grid, and `hv_check_docx()` finds nothing wrong
 with it. The shortcut does not mangle the table.
@@ -252,13 +252,11 @@ rbind(hv_man_table_save = docx_scan(out_corr),
 
 Five rows against six. `gt`'s extra row is the footnote itself, merged across
 all three columns and sitting inside the table frame, which is the violation the
-package exists to route around, arriving by the shortest available path. The
-three paragraphs after `hv_man_table_save()`'s table are the two default
+package exists to route around. The three paragraphs after `hv_man_table_save()`'s table are the two default
 footnotes and the `Key:` line. `gt`'s file has nothing after its table, because
 in `gt` there is nowhere else for that text to go.
 
-That is the whole of the difference, and it is enough. The grid `gt` draws is
-fine. It is the material around the grid, which is most of what the CORR memo
+The grid `gt` draws is fine. It is the material around the grid, which is most of what the CORR memo
 legislates, that the house functions exist to place.
 
 ## Variations
@@ -299,8 +297,10 @@ throughout, so there is no per-variable normality decision to make or defend.
 
 `compare` adds the trailing comparison column: `"pvalue"`, `"smd"`, `"both"`, or
 `"none"`. The printed result is still a `gtsummary` table, so inspect it before
-conversion. Each group cell shows the non-missing N, the `|||` separator used by
-the JTCVS renderer, and then the statistic. The result also carries two
+conversion. Each group cell shows the non-missing N, the `|||` separator the
+renderers split on, and then the statistic. `hv_man_table_jtcvs()` turns the
+pair into sub-columns under a spanning header; `hv_man_table()` gives the N a
+flat `No.` column of its own. The result also carries two
 attributes that the renderer wants, and you pass them straight through.
 
 ```{r}
@@ -421,15 +421,14 @@ structural claim you get to make, so make it deliberately.
 
 ## Pitfalls
 
-- **`hv_tbl_summary()` output goes to `hv_man_table_jtcvs()`, not
-  `hv_man_table()`.** This is the one that will actually bite you, because it
-  fails silently rather than erroring. `hv_tbl_summary()` packs each cell as
-  `"{N_obs} ||| {stat}"`, and the `|||` is a sentinel that
-  `hv_man_table_jtcvs()` splits on to build its paired N and statistic
-  sub-columns. `hv_man_table()` does not split on it, so the cells render
-  literally as `77 ||| 46 (30, 62)` and you get a table that looks like a bug in
-  the package. Build the flat CORR table from a plain `tbl_summary()`, as the
-  first recipe above does, and keep `hv_tbl_summary()` for the JTCVS path.
+- **`hv_tbl_summary()` adds an Overall column, and the two renderers treat it
+  differently.** `overall` defaults to `TRUE`, matching the macro's
+  `TOTALCOL=1`, so the printed table above carries an Overall column beside
+  Female and Male. `hv_man_table()` shows it. `hv_man_table_jtcvs()` shows it
+  only when its `groups` names `stat_0`, which is why the JTCVS table above has
+  two spanning headers and not three. Pass `overall = FALSE` when the
+  manuscript wants the groups alone, rather than deleting the column by hand
+  afterwards.
 
 - **`groups` means two different things.** In `hv_tbl_summary()` it is a named
   *list* of section label to variable names, the row structure. In

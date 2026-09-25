@@ -65,7 +65,7 @@ association.
 ## Expect the numbers to move
 
 Run this chapter on your own machine and the VIMP values will not match the
-ones printed here. That is not a seeding mistake, and it is worth knowing
+ones printed here. That is not a seeding mistake, and you should know it
 before you quote a number from a forest into a manuscript.
 
 `set.seed()` fixes the forest for a given machine, and it holds. What it does
@@ -97,7 +97,7 @@ The size of the shift is the useful part. Petal length and petal width sit far
 above both sepal measurements in every run we have looked at, and that
 separation is what @fig-rf_vimp is for. The order *within* a close pair is not,
 at 300 trees. So read the grouping rather than the ranking. If an analysis
-genuinely needs the ranking, grow the forest until the ranking stops moving,
+needs the ranking, grow the forest until the ranking stops moving,
 and report how many trees that took.
 
 ## Use display labels at plot time

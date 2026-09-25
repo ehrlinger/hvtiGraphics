@@ -47,7 +47,7 @@ rf_class <- rfsrc(
 rf_class
 ```
 
-The teaching value keeps execution bounded. Before reporting a study AUC, we
+The 300-tree teaching fit keeps execution bounded. Before reporting a study AUC, we
 would verify the error trajectory with enough trees and evaluate the model on
 the intended validation population.
 

@@ -38,8 +38,7 @@ finish with a house theme.
 ## The data it needs
 
 Like VIMP, dependence plots read from a fitted `rfsrc` object, not a raw data
-frame. We reuse the `pbc` survival forest from the
-[variable importance](rf_vimp.qmd) chapter, fit on the primary biliary cirrhosis
+frame. We fit a survival forest to `pbc`, the primary biliary cirrhosis
 cohort: one row per patient, a follow-up time, an event indicator, and a panel
 of liver labs.
 
@@ -98,7 +97,7 @@ yourself on any survival dependence figure whose time is not in years.
 
 Reading the smooths: predicted survival at `r t_eval` days falls steeply as
 serum bilirubin rises, declines gently with age, and tracks upward with higher
-albumin. These are the marginal trends actually present in the data, scatter
+albumin. These are the marginal trends present in the data, scatter
 included, and that scatter is information: it warns you how much patient-to-patient
 spread underlies each trend.
 
@@ -140,9 +139,8 @@ plot(gg_p) + geom_point() + theme_hv_manuscript()
 
 The partial-dependence curve is the adjusted version of the bilirubin panel
 in @fig-rf_dependence: the same downward trend, but now free of the influence of age, albumin,
-and the rest. The flat scatter has collapsed into a single, interpretable
-dose-response line, the cleanest summary of how bilirubin moves predicted
-survival.
+and the rest. The scatter has collapsed into a single dose-response line for how bilirubin
+moves predicted survival.
 
 ## Variations
 
@@ -194,7 +192,7 @@ manuscript.
 Partial dependence refits predictions across the whole grid, so it scales with
 `n_eval`, the number of variables, and `ntree`. If a figure is too slow, lower
 `n_eval` first (a coarser grid still shows the shape), then restrict to the one
-or two variables you actually need to discuss, and only then reduce `ntree`.
+or two variables you need to discuss, and only then reduce `ntree`.
 
 ## Pitfalls
 

@@ -51,8 +51,8 @@ records the patient identifier and marks every patient as screened. Each
 `hv_consort_exclude()` call then adds one exclusion stage. The rules are
 two-sided formulas, `<condition> ~ "<reason>"`, evaluated against the data. The
 first matching rule wins, and patients dropped in an earlier stage are skipped in
-later ones, so each stage operates only on the survivors of the last. That last
-point is what keeps the counts honest: a patient is removed once, for the first
+later ones, so each stage operates only on the survivors of the last. That is what
+keeps the counts honest. A patient is removed once, for the first
 reason that applies, and is not counted again.
 
 The identifiers below are generated labels, not medical-record numbers. Keep
@@ -129,7 +129,7 @@ Look for:
   be ready to defend that rule, because it is doing most of the work of defining
   who you studied.
 - **The final n.** The bottom box is the number every later figure is built on.
-  It is worth carrying that number forward into the captions of the survival and
+  Carry that number forward into the captions of the survival and
   trend chapters so the reader never loses track of the denominator.
 
 ## Variations
