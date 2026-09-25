@@ -1,12 +1,12 @@
 {
-  "rendered": "2026-09-08",
+  "rendered": "2026-09-24",
   "r": "4.6.1",
   "packages": {
-    "hvtiR": "1.1.2",
-    "hvtiPlotR": "2.7.13",
-    "hvtiRutilities": "1.1.11",
-    "hvtiRtables": "1.0.0",
-    "TemporalHazard": "1.2.9",
+    "hvtiR": "1.2.1",
+    "hvtiPlotR": "2.7.15",
+    "hvtiRutilities": "1.4.0",
+    "hvtiRtables": "1.0.2",
+    "TemporalHazard": "1.2.11",
     "ggRandomForests": "4.0.0",
     "ggsankey": "0.0.99999"
   }
