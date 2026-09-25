@@ -116,6 +116,88 @@ time used for each reading. Look for:
   near zero. A capped axis (here 0 to 50) keeps the figure readable, but
   remember the curve is heading to infinity at time zero, not flattening.
 
+## Numbers at risk under the curve
+
+Read the curve above and the next question is how many patients stand behind
+the 20-year number. The helper cannot answer it. `sample_nnt_data()` computes
+its curves from a Weibull model, so no patients sit behind them, only a
+formula, and a risk table has to count people. So this recipe starts from
+records instead, which is also how you would build the figure from your own
+data.
+
+`sample_hazard_cohort()` draws one row per patient, a `time` and a `status`
+(`1` = event, `0` = censored), from the same model and the same hazard
+multipliers. We fit a Kaplan-Meier curve to each arm, take the ITA minus SVG
+difference on a quarter-year grid, and give it a normal interval from the two
+arms' Greenwood standard errors. Then we invert it to NNT the way the helper
+does, leaving NNT undefined wherever the difference is 0.1 percentage points or
+less. `hv_nnt()` takes the result like any other pre-computed data frame, and
+`hv_atrisk()` counts the same records.
+
+```{r}
+#| label: nnt_km_data
+coh_nnt <- sample_hazard_cohort(
+  n        = 500,
+  time_max = 20,
+  groups   = c("SVG" = 1.0, "ITA" = 0.75)
+)
+
+km_nnt <- survival::survfit(
+  survival::Surv(time, status) ~ group, data = coh_nnt
+)
+km_s <- summary(km_nnt, times = seq(0.25, 20, by = 0.25), extend = TRUE)
+svg  <- km_s$strata == "group=SVG"
+ita  <- km_s$strata == "group=ITA"
+
+z      <- stats::qnorm(0.975)
+arr    <- 100 * (km_s$surv[ita] - km_s$surv[svg])
+arr_se <- 100 * sqrt(km_s$std.err[ita]^2 + km_s$std.err[svg]^2)
+
+km_dat <- data.frame(
+  time      = km_s$time[svg],
+  arr       = arr,
+  arr_lower = arr - z * arr_se,
+  arr_upper = arr + z * arr_se
+)
+km_dat$nnt       <- ifelse(km_dat$arr > 0.1, 100 / km_dat$arr, NA_real_)
+km_dat$nnt_lower <- ifelse(km_dat$arr_upper > 0.1, 100 / km_dat$arr_upper, NA_real_)
+km_dat$nnt_upper <- ifelse(km_dat$arr_lower > 0.1, 100 / km_dat$arr_lower, NA_real_)
+
+round(km_dat[km_dat$time %in% c(5, 10, 20), ], 2)
+```
+
+```{r}
+#| label: fig-nnt-atrisk
+#| fig-cap: "Number needed to treat with ITA rather than SVG, estimated from Kaplan-Meier curves, with the numbers at risk in each arm counted from the same records"
+#| fig-height: 5.5
+km_nnt_obj <- hv_nnt(km_dat, lower_col = "nnt_lower", upper_col = "nnt_upper")
+
+curve_nnt <- plot(km_nnt_obj) +
+  scale_x_continuous(breaks = seq(0, 20, 5)) +
+  scale_y_continuous(breaks = seq(0, 50, 10)) +
+  coord_cartesian(xlim = c(0, 20), ylim = c(0, 50)) +
+  labs(x = "Years", y = "Number Needed to Treat") +
+  theme_hv_manuscript()
+
+risk_nnt <- hv_atrisk(coh_nnt, time = "time", status = "status",
+                      group = "group", report_times = seq(0, 20, 5))
+
+hv_atrisk_compose(curve_nnt, risk_nnt, heights = c(3, 1.2))
+```
+
+The curve tracks the model curve above, since the records were drawn from that
+model; the wobble is sampling noise, and it is what real data look like. The
+table changes how you read the right-hand end. Near 10 years, treating about 6
+patients with ITA rather than SVG prevents one death, and 99 SVG and 160 ITA patients are still at risk
+behind that estimate. At 20 years the curve reads about 16, but only 2 SVG
+patients remain. The interval widens there, to roughly 11 to 34, yet it still
+looks better determined than two patients can support. A Greenwood standard
+error shrinks as survival approaches zero, so the band reflects how small SVG
+survival has become (under 1%) rather than how few patients are left to
+estimate it. Quote NNT at a horizon where the table still shows a meaningful
+number in both arms, and keep the table under the figure so the reader can
+check that too.
+
 ## Variations
 
 ### Absolute risk reduction
@@ -197,14 +279,15 @@ plot(surv_diff) +
 ### Multiple comparisons
 
 Combine several two-group differences into one long data frame and use
-`group_col` to overlay them. This is how we put one reference arm against
-several alternatives in a single panel: each line is one contrast, and the ones
-that sit highest and clear zero earliest are the comparisons with the strongest
-benefit.
+`group_col` to overlay them. This is how we compare one arm against several
+alternatives in a single panel. Here TF-TAVR is group 2 in every contrast, so
+each line is TF-TAVR survival minus a different comparator's, and a positive
+value favors TF-TAVR. The lines that sit highest and clear zero earliest are the
+comparators TF-TAVR improves on most.
 
 ```{r}
 #| label: fig-nnt-survival-difference-multi
-#| fig-cap: "Several two-group survival differences overlaid in one panel, one line per contrast against a shared reference arm"
+#| fig-cap: "TF-TAVR minus each comparator's survival in percentage points, one line per contrast; positive values favor TF-TAVR"
 d1 <- sample_survival_difference_data(
   groups = c("Medical Mgmt" = 1.0, "TF-TAVR" = 0.70), seed = 1L
 )
@@ -250,6 +333,10 @@ plot(surv_diff_multi) +
   knows which survival curve was subtracted from which. Put “group 2 minus
   group 1” in the text or caption, and reverse the labels if you want positive
   values to mean benefit.
+- **A risk table from the wrong records.** The counts must come from the
+  records the curve was estimated from. The model curve at the top of this
+  chapter has no records, and pairing it with a cohort of the same size would
+  look entirely plausible and mean nothing.
 - **Forgetting the zero line.** The dashed reference at zero is what makes the
   survival-difference figure readable. Add the `geom_hline()` every time; without
   it the eye has no anchor for "no benefit".

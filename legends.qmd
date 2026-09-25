@@ -8,10 +8,15 @@ library(hvtiPlotR)
 library(ggplot2)
 ```
 
-ggplot2 [@R-ggplot2] places the legend outside the panel by default. For publication figures
-we often move it inside, drop it, or shrink it, since the axis labels frequently do
-the identification work already. Legend behaviour is controlled through
-`theme()` (or directly via a theme's `...`), and per-aesthetic via `guide =`.
+ggplot2 [@R-ggplot2] places the legend outside the panel by default. The house
+themes drop it. Every `theme_hv_*()` sets `legend.position = "none"`, because a
+CORR figure names its groups on the panel, the way the
+[annotation](annotation.qmd) chapter shows. This chapter is for the figures
+where that does not work: too many groups to label, or lines that cross exactly
+where the labels would go. There a key is the clearer choice, and the questions
+become where it sits and how much room it takes. Legend behaviour is controlled
+through `theme()` (or directly via a theme's `...`), and per-aesthetic via
+`guide =`.
 
 ## When to use it
 
