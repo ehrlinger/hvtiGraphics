@@ -100,9 +100,10 @@ argument_map[
 ]
 ```
 
-The general `PARMS` row remains marked as planned even though the translator
-can parse the small early-phase subset above. Treat that as a limit on the
-claim. The successful example is evidence for those statements, not blanket
+Two rows remain marked as planned. The general `PARMS` row is one, even though
+the translator can parse the small early-phase subset above. The early-phase
+`DELTA` time transform is the other: it drops out at `DELTA = 0`, and any other
+value is not implemented. Treat both as limits on the claim. The successful example is evidence for those statements, not blanket
 support for every historical parameter combination. For a new analysis, write
 the reviewed `hazard()` and `hzr_phase()` call directly rather than carrying
 legacy names forward.

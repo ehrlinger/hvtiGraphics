@@ -27,9 +27,11 @@ this chapter:
 - **Variable dependence** shows the forest's predicted value for every
   observation against that observation's actual predictor value. It is the raw,
   marginal picture, one point per patient, scatter and all.
-- **Partial dependence** averages out every other predictor to isolate the
-  effect of one variable. It is a smoother, model-level summary, the same trend
-  with the confounding from other variables removed.
+- **Partial dependence** sets every patient to the same value of one variable,
+  keeps their other predictors as observed, and averages the forest's
+  predictions, one grid value at a time. It is a smoother, model-level summary
+  of how the prediction moves with that one variable. It describes the model,
+  so it does not remove confounding or estimate a causal dose-response.
 
 Both come from ggRandomForests [@R-ggRandomForests]: `gg_variable()` for the
 first, `gg_partial_rfsrc()` for the second. Each hands back a bare ggplot you
@@ -106,16 +108,18 @@ spread underlies each trend.
 The two plots answer different questions, and reading them well means keeping
 the difference straight.
 
-- **Variable dependence shows the raw trend, confounding and all.** The
-  bilirubin panel in @fig-rf_dependence mixes bilirubin's own effect with the fact that
-  high-bilirubin patients also tend to differ in age, albumin, and the rest. The
+- **Variable dependence shows the raw trend.** The bilirubin panel in
+  @fig-rf_dependence mixes what the forest does with bilirubin and the fact
+  that high-bilirubin patients also tend to differ in age, albumin, and the rest. The
   scatter tells you how tight the relationship is once you account for that
   spread.
-- **Partial dependence shows the adjusted trend.** The partial-dependence plot
-  (@fig-rf_dependence-partial) holds the
-  other predictors at their observed distribution and varies bilirubin alone, so
-  the curve is bilirubin's marginal effect with the other variables averaged out.
-  When the two plots disagree, the gap is the confounding.
+- **Partial dependence shows the averaged model trend.** The partial-dependence
+  plot (@fig-rf_dependence-partial) keeps the other predictors at their observed
+  values and varies bilirubin alone, so the curve is how the forest's predicted
+  survival moves with bilirubin, averaged over everyone else's covariates. When
+  the two plots disagree, the gap comes from how bilirubin travels with the other
+  predictors in these data. The scatter carries that correlation and the average
+  does not. Neither plot is a causal estimate.
 - **The shape is the message.** Look for whether the curve is monotone (steady
   in one direction), thresholded (flat then steep, or steep then flat), or
   genuinely flat (the variable has little marginal pull at this time point even
@@ -131,16 +135,17 @@ modest evaluation grid (`n_eval`) to keep the render quick.
 
 ```{r}
 #| label: fig-rf_dependence-partial
-#| fig-cap: "Partial dependence for bilirubin at the median follow-up: the adjusted dose-response curve with the other predictors averaged out"
+#| fig-cap: "Partial dependence for bilirubin at the median follow-up: the forest's predicted survival averaged over the other predictors' observed values"
 gg_p <- gg_partial_rfsrc(rf, xvar.names = "bili",
                          partial.time = t_eval, n_eval = 25)
 plot(gg_p) + geom_point() + theme_hv_manuscript()
 ```
 
-The partial-dependence curve is the adjusted version of the bilirubin panel
-in @fig-rf_dependence: the same downward trend, but now free of the influence of age, albumin,
-and the rest. The scatter has collapsed into a single dose-response line for how bilirubin
-moves predicted survival.
+The partial-dependence curve is the averaged version of the bilirubin panel
+in @fig-rf_dependence: the same downward trend, with the scatter collapsed into a
+single line for how the forest's predicted survival moves with bilirubin. Read it
+as a summary of the model, not as what would happen to a patient whose bilirubin
+changed.
 
 ## Variations
 
