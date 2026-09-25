@@ -107,7 +107,9 @@ What now covers it, in two pieces that do different jobs:
 
 Job A compares `sibling-versions.json`, written by the render itself and
 described under "What this build used" in `packages.qmd`, against each sibling's `DESCRIPTION`
-on `main`. On divergence it opens or updates one reused tracking issue and
+on `main`, and the non-family packages it records under `cran` (randomForestSRC,
+varPro, mlbench) against CRAN's. Added 2026-09-25, after randomForestSRC changed
+three chapters' output while untracked. On divergence it opens or updates one reused tracking issue and
 **exits 0 regardless**. A red scheduled run on `main` would claim the book is
 broken, which is not what it learned; it learned that a re-render is due.
 

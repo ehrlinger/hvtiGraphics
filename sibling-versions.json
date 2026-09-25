@@ -9,5 +9,10 @@
     "TemporalHazard": "1.2.11",
     "ggRandomForests": "4.0.0",
     "ggsankey": "0.0.99999"
+  },
+  "cran": {
+    "randomForestSRC": "3.9.0",
+    "varPro": "3.3.0",
+    "mlbench": "2.1-11"
   }
 }
