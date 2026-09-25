@@ -212,8 +212,10 @@ green at the mild end through yellow to red at the severe end, so the reader
 sees worsening case mix without reading the legend. Pin each colour to its
 class by name with `scale_fill_manual()`. A positional palette such as
 `scale_fill_brewer(direction = -1)` assigns colours in the order of the factor
-levels, and hvtiPlotR 2.7.15 stacks those levels from IV down to I, so the same
-call that once made class IV red now makes it green.
+levels, so it depends on an order the package controls. hvtiPlotR 2.7.15 and
+2.7.16 reversed that order and the same call drew class IV green; 2.7.17
+restored it. Naming the colours keeps the figure right whichever way the levels
+run.
 
 ```{r}
 #| label: fig-bar-ordinal

@@ -1,13 +1,18 @@
 {
-  "rendered": "2026-09-24",
+  "rendered": "2026-09-25",
   "r": "4.6.1",
   "packages": {
     "hvtiR": "1.2.1",
-    "hvtiPlotR": "2.7.15",
-    "hvtiRutilities": "1.4.0",
+    "hvtiPlotR": "2.7.17",
+    "hvtiRutilities": "1.4.1",
     "hvtiRtables": "1.0.2",
     "TemporalHazard": "1.2.11",
     "ggRandomForests": "4.0.0",
     "ggsankey": "0.0.99999"
+  },
+  "cran": {
+    "randomForestSRC": "3.9.0",
+    "varPro": "3.3.0",
+    "mlbench": "2.1-11"
   }
 }

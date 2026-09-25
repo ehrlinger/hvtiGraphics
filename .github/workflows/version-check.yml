@@ -11,7 +11,8 @@ name: Sibling version check
 #
 # This job detects that the versions have MOVED. It cannot detect breakage; only
 # the deep re-render (deep-render.yml, manual) does that. It needs no R and no
-# render: it reads six DESCRIPTION files over HTTPS and compares strings.
+# render: it reads six sibling DESCRIPTION files over HTTPS, plus CRAN's for the
+# non-family packages recorded under "cran", and compares strings.
 #
 # It reports by opening or updating a tracking issue, and always exits 0. A red
 # scheduled workflow on main would say "the book is broken", which is not what
@@ -81,15 +82,34 @@ jobs:
             fi
           done <<< "$repos"
 
+          # Non-family CRAN packages whose releases have changed the book's output
+          # (randomForestSRC moved three chapters' printed output on 2026-09-25).
+          # packages.qmd records them under "cran" and is the one place that set is
+          # written down, so read it from the record rather than repeating it here.
+          # Compared against CRAN's own DESCRIPTION rather than a GitHub main.
+          for pkg in $(jq -r '(.cran // {}) | keys[]' sibling-versions.json); do
+            built=$(jq -r --arg p "$pkg" '.cran[$p]' sibling-versions.json)
+            latest=$(curl -fsSL "https://cran.r-project.org/web/packages/$pkg/DESCRIPTION" 2>/dev/null \
+                     | awk '/^Version:/ {print $2; exit}') || latest=""
+            [ -z "$latest" ] && latest="unreachable"
+
+            if [ "$built" = "$latest" ]; then
+              printf '| `%s` (CRAN) | %s | %s |\n' "$pkg" "$built" "$latest" >> rows.md
+            else
+              printf '| `%s` (CRAN) | %s | **%s** |\n' "$pkg" "$built" "$latest" >> rows.md
+              [ "$latest" != "unreachable" ] && drift=1
+            fi
+          done
+
           {
-            printf '| package | the book was built against | on `main` now |\n'
+            printf '| package | the book was built against | latest (`main`, or CRAN) |\n'
             printf '|---|---|---|\n'
             sort rows.md
           } > table.md
 
           rendered=$(jq -r '.rendered // "an unrecorded date"' sibling-versions.json)
           {
-            printf 'The committed `_freeze/` cache was built on **%s**. Since then, at least one family package has moved:\n\n' "$rendered"
+            printf 'The committed `_freeze/` cache was built on **%s**. Since then, at least one tracked package has moved:\n\n' "$rendered"
             cat table.md
             printf '\n**What this does and does not mean.** The versions have moved; that is all this check can see. It does not mean a figure is wrong. It means the published figures are output from package code that is no longer current, and nothing else in CI will notice.\n'
             printf '\nA divergence can also mean the last re-render ran against unreleased local code — a sibling checkout sitting on a feature branch — rather than against `main`. Worth ruling out before re-rendering.\n'

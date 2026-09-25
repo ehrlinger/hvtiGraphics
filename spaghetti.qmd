@@ -36,7 +36,7 @@ Both return a bare ggplot you finish with scales, labels, and a house theme.
 `hv_spaghetti()` expects long-format data: one row per measurement, with an id
 column identifying the patient, a time column, and the value being tracked.
 Optionally, a grouping column lets the smoother compare strata when
-`add_smooth = TRUE`. In hvtiPlotR 2.7.15 the individual trajectory layer remains
+`add_smooth = TRUE`. In hvtiPlotR 2.7.17 the individual trajectory layer remains
 black even when `colour_col` is set; the group colours apply to the smoother.
 `sample_spaghetti_data()` generates 150 patients with up to 6 observations each,
 split by a named proportion vector that stands in for a sex stratification. Build

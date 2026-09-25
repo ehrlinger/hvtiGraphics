@@ -198,7 +198,7 @@ weight_total_by_group
 mh_wt$tables$diagnostics[c("smd_before", "smd_weighted")]
 ```
 
-Despite the component name in hvtiPlotR 2.7.15,
+Despite the component name in hvtiPlotR 2.7.17,
 `effective_n_by_group` stores the **sum of weights** in each group. It is not the
 Kish effective sample size, $(\sum w)^2 / \sum w^2$. We give it the accurate
 local name `weight_total_by_group`; in this normalized example the totals are
