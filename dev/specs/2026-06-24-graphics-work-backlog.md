@@ -47,6 +47,16 @@ AVSD `09-publication-figures.qmd` `pub-sankey-full` + `_common.R`
 
 ## 3. Figure conventions (house rules — vault `figure-conventions.md`)
 
+**Closed, 2026-09-25: the theme-default half will not be done.** The house
+themes went the other way. All four `theme_hv_*()` set `legend.position =
+"none"` (checked against hvtiPlotR 2.7.15), and the book names groups on the
+panel with `annotate()`, as `annotation.qmd` and `legends.qmd` now state up
+front. The rule underneath this item still holds wherever a figure keeps a key:
+`hv_legend_inside()` places it inside the panel, in the corner the data leave
+emptiest, falling back to the right when no corner is clear. Six chapters use
+it. The per-figure items below were done in the June book session (`b5a6057`,
+`c6b322d`; see Status). Nothing further is owed here.
+
 Apply across book + packages; fold defaults into hvtiPlotR themes
 (`legend.position` inside).
 
@@ -205,7 +215,7 @@ family and out of scope for the pre-computed-curve chapters.
   `hv_atrisk_compose()`. The package side of these four is done — the design
   records read "Draft for review" because the status lines were never revisited,
   not because work is owed.
-- **hvtiPlotR session — still open:** #3 theme defaults + book-wide sweep. Left
+- **hvtiPlotR session — closed 2026-09-25 (see #3 above):** #3 theme defaults + book-wide sweep. Left
   as written and *not* verified here: house style has since moved toward direct
   annotation over legends, which cuts against this item's "legends inside the
   panel" framing. Needs a decision before it is actioned or closed.
