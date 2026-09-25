@@ -88,7 +88,7 @@ plot(km) +
 
 ## Naming series without a legend {#sec-annotation-series}
 
-A finished CORR figure carries no legend, in a manuscript or on a slide.
+By default a finished CORR figure carries no legend, in a manuscript or on a slide.
 `theme_hv_manuscript()`, `theme_hv_poster()`, `theme_hv_ppt_light()` and
 `theme_hv_ppt_dark()` all set `legend.position = "none"`, so the groups get
 named on the panel instead, with `annotate()`, where the reader's eye already
