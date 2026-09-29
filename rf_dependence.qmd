@@ -214,32 +214,46 @@ not a confidence band for the curve.
 To see how much the curve depends on the sample, you refit. We draw subsamples
 of patients without replacement, grow a forest on each, compute the same
 partial-dependence curve on each, and rescale the spread back to the full
-sample. This is the subsampling scheme randomForestSRC's `subsample()` uses
-for VIMP confidence intervals [@Ishwaran:2019]. With subsamples of `m` out of
-`n` patients, the standard error of the full-data curve is estimated as
-$\sqrt{m/n}$ times the standard deviation of the subsample curves.
-`subsample()` draws $e^{-1} \approx 37\%$ of the rows when `n` is under 1,000,
-and we use the same ratio.
+sample. We borrow the sampling and the rescaling from randomForestSRC's
+`subsample()`, which computes VIMP confidence intervals this way
+[@Ishwaran:2019]. With subsamples of `m` out of `n` patients, the standard
+error of the full-data curve is estimated as $\sqrt{m/n}$ times the standard
+deviation of the subsample curves. `subsample()` draws $e^{-1} \approx 37\%$
+of the rows when `n` is under 1,000, and for a survival forest it draws that
+share separately from the patients who had the event and those censored, so
+every subsample keeps the cohort's event rate. We do both.
 
-Two details keep the refits comparable. Pass the full-data predictors as
+Three details keep the refits comparable. Pass the full-data predictors as
 `newx`, so every refit evaluates bilirubin at the same grid points (the
-average is still taken over each refit's own training rows). And subsample
-the rows the forest actually trained on. `rfsrc()` drops incomplete cases, so
-`rf` holds `r nrow(rf$xvar)` of the `r nrow(pbc)` rows in `pbc`.
+average is still taken over each refit's own training rows). Subsample the
+rows the forest actually trained on: `rfsrc()` drops incomplete cases, so `rf`
+holds `r nrow(rf$xvar)` of the `r nrow(pbc)` rows in `pbc`. And read every
+refit at the same horizon. Each refit has its own event times, and
+`partial.time` snaps to the nearest of them, which can land on a different
+day from the full curve's. The forest's survival estimate is a step function
+that only moves at event times, so reading a refit at its last event time on
+or before the full curve's horizon gives its survival at exactly that
+horizon.
 
 ```{r}
 #| label: rf-dependence-band
-dat <- na.omit(pbc)              # the rows rf trained on
-n   <- nrow(dat)
-m   <- floor(exp(-1) * n)        # subsample()'s ratio below n = 1000
-B   <- 25
+dat    <- na.omit(pbc)                      # the rows rf trained on
+n      <- nrow(dat)
+strata <- split(seq_len(n), dat$status)     # events and censored, apart
+size   <- floor(exp(-1) * lengths(strata))  # subsample()'s ratio, n < 1000
+m      <- sum(size)
+B      <- 25
+t_full <- unique(gg_p$continuous$time)      # the horizon the curve was read at
 
 set.seed(20260929)
 draws <- sapply(seq_len(B), function(b) {
-  fit_b <- rfsrc(Surv(days, status) ~ ., data = dat[sample(n, m), ],
-                 ntree = 100)
+  idx   <- unlist(Map(function(i, k) i[sample.int(length(i), k)],
+                      strata, size))
+  fit_b <- rfsrc(Surv(days, status) ~ ., data = dat[idx, ], ntree = 100)
+  ti    <- fit_b$time.interest
   gg_partial_rfsrc(fit_b, xvar.names = "bili", newx = rf$xvar,
-                   partial.time = t_eval, n_eval = 25)$continuous$yhat
+                   partial.time = max(ti[ti <= t_full]),
+                   n_eval = 25)$continuous$yhat
 })
 
 se   <- sqrt(m / n) * apply(draws, 1, sd)
