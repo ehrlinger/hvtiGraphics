@@ -199,6 +199,99 @@ Partial dependence refits predictions across the whole grid, so it scales with
 `n_eval` first (a coarser grid still shows the shape), then restrict to the one
 or two variables you need to discuss, and only then reduce `ntree`.
 
+### How sure is the curve?
+
+The partial-dependence curve comes from one forest, and the forest is itself
+an estimate. Grow it on a slightly different sample of patients and the curve
+moves. ggRandomForests does not draw that movement. randomForestSRC's own
+`plot.variable(partial = TRUE)` draws dotted lines at two standard errors, but
+those measure something else. They are the spread of the per-patient
+predictions divided by the square root of the number of patients, which says
+how precisely the average over *these* patients is known for *this* forest.
+They narrow as the cohort grows, however unstable the forest is, so they are
+not a confidence band for the curve.
+
+To see how much the curve depends on the sample, you refit. We draw subsamples
+of patients without replacement, grow a forest on each, compute the same
+partial-dependence curve on each, and rescale the spread back to the full
+sample. We borrow the sampling and the rescaling from randomForestSRC's
+`subsample()`, which computes VIMP confidence intervals this way
+[@Ishwaran:2019]. With subsamples of `m` out of `n` patients, the standard
+error of the full-data curve is estimated as $\sqrt{m/n}$ times the standard
+deviation of the subsample curves. `subsample()` draws $e^{-1} \approx 37\%$
+of the rows when `n` is under 1,000, and for a survival forest it draws that
+share separately from the patients who had the event and those censored, so
+every subsample keeps the cohort's event rate. We do both.
+
+Three details keep the refits comparable. Pass the full-data predictors as
+`newx`, so every refit evaluates bilirubin at the same grid points (the
+average is still taken over each refit's own training rows). Subsample the
+rows the forest actually trained on: `rfsrc()` drops incomplete cases, so `rf`
+holds `r nrow(rf$xvar)` of the `r nrow(pbc)` rows in `pbc`. And read every
+refit at the same horizon. Each refit has its own event times, and
+`partial.time` snaps to the nearest of them, which can land on a different
+day from the full curve's. The forest's survival estimate is a step function
+that only moves at event times, so reading a refit at its last event time on
+or before the full curve's horizon gives its survival at exactly that
+horizon.
+
+```{r}
+#| label: rf-dependence-band
+dat    <- na.omit(pbc)                      # the rows rf trained on
+n      <- nrow(dat)
+strata <- split(seq_len(n), dat$status)     # events and censored, apart
+size   <- floor(exp(-1) * lengths(strata))  # subsample()'s ratio, n < 1000
+m      <- sum(size)
+B      <- 25
+t_full <- unique(gg_p$continuous$time)      # the horizon the curve was read at
+
+set.seed(20260929)
+draws <- sapply(seq_len(B), function(b) {
+  idx   <- unlist(Map(function(i, k) i[sample.int(length(i), k)],
+                      strata, size))
+  fit_b <- rfsrc(Surv(days, status) ~ ., data = dat[idx, ], ntree = 100)
+  ti    <- fit_b$time.interest
+  gg_partial_rfsrc(fit_b, xvar.names = "bili", newx = rf$xvar,
+                   partial.time = max(ti[ti <= t_full]),
+                   n_eval = 25)$continuous$yhat
+})
+
+se   <- sqrt(m / n) * apply(draws, 1, sd)
+band <- transform(gg_p$continuous,
+                  lower = pmax(yhat - 1.96 * se, 0),
+                  upper = pmin(yhat + 1.96 * se, 1))
+```
+
+`draws` has one column per refit and one row per grid point, the same rows as
+`gg_p$continuous`, so the band sits on the curve's own grid. The limits are
+clipped to $[0, 1]$ because the curve is a survival probability. The band then
+goes on the plot as one more layer. `inherit.aes = FALSE` keeps it from
+picking up the plot's own mappings, and it lands in the right panel because
+`band` carries the same `name` column the plot facets on.
+
+```{r}
+#| label: fig-rf_dependence-band
+#| fig-cap: "Partial dependence for bilirubin at the median follow-up with a pointwise 95% band from 25 subsample refits, showing how far the curve moves when the forest is grown on a different sample of patients"
+plot(gg_p) +
+  geom_ribbon(data = band, aes(x = x, ymin = lower, ymax = upper),
+              inherit.aes = FALSE, alpha = 0.2) +
+  theme_hv_manuscript()
+```
+
+Read the band as a statement about the forest. It is narrow where most
+patients sit and widens to the right, where few patients carry a bilirubin
+that high and each refit sees only a handful of them. A change in the curve
+larger than the band is wide survives resampling. A wiggle smaller than that
+does not, and should not be described in a manuscript. The band is pointwise,
+so it bounds the curve one grid point at a time, not the whole curve at once.
+
+The cost is `B` forests plus `B` partial-dependence runs. Here that is quick,
+because `pbc` is small and each refit trains on `r m` patients; we used 25
+draws to keep the render fast, where `subsample()` defaults to 100. On a
+registry cohort, time one refit before choosing `B`. The levers from the
+previous section apply to every refit, so a coarser `n_eval` and fewer
+variables pay off `B` times over.
+
 ## Pitfalls
 
 - **Set the horizon on `gg_variable()`, not on `plot()`.** Predicted survival is

@@ -149,6 +149,77 @@ score, where higher is worse, the opposite direction from the two bounded scales
 It is the right choice only when you are comparing against other random-forest
 mortality outputs; for a figure a reviewer reads, prefer `surv` or `rmst`.
 
+## How sure is the curve?
+
+These curves come from one varPro fit, and a different sample of patients
+would give a different curve. Neither `gg_partial_varpro()` nor
+`varPro::plot.partialpro()` shows how different. `plot.partialpro()` does draw
+dotted lines at two standard errors, but they measure the spread across
+patients for this one fit, and they come out narrower still here because
+`partialpro()` returns every patient's curve at the cohort-mean level. The
+*Variable and partial dependence* chapter sets out the reasoning. The recipe
+is the same here: refit on subsamples, recompute the curve, and rescale the
+spread by $\sqrt{m/n}$ [@Ishwaran:2019].
+
+Two things change for varPro. Each refit reruns both `varpro()` and
+`partialpro()`, so it is slower than a forest refit. And `partialpro()` builds
+its grid from each refit's own training data, with no argument to fix it, so
+we interpolate every refit's curve onto the full fit's grid with `approx()`.
+A refit whose data do not reach the extremes of the full grid leaves `NA`
+there, which `sd(na.rm = TRUE)` skips. We take one variable, the regression
+fit's top-ranked `Gr.Liv.Area`, and subsample the rows `varpro()` kept after
+dropping incomplete cases. With `n` above 1,000, `subsample()`'s ratio
+shrinks to $e^{-1}\sqrt{1000/n}$.
+
+```{r}
+#| label: varpro-partial-band
+pd_liv <- gg_partial_varpro(object = o_reg, xvar.names = "Gr.Liv.Area",
+                            method = "rnd")
+grid   <- pd_liv$continuous$variable
+
+dat <- data.frame(SalePrice = o_reg$y, o_reg$x)   # the rows varpro kept
+n   <- nrow(dat)
+m   <- floor(exp(-1) * sqrt(1000 / n) * n)        # subsample()'s ratio, n >= 1000
+B   <- 25
+
+set.seed(20260929)
+draws <- sapply(seq_len(B), function(b) {
+  o_b <- varpro(SalePrice ~ ., data = dat[sample(n, m), ], ntree = 100)
+  p_b <- gg_partial_varpro(object = o_b, xvar.names = "Gr.Liv.Area",
+                           method = "rnd")$continuous
+  approx(p_b$variable, p_b$parametric, xout = grid)$y
+})
+
+se   <- sqrt(m / n) * apply(draws, 1, sd, na.rm = TRUE)
+band <- transform(pd_liv$continuous,
+                  lower = parametric - 1.96 * se,
+                  upper = parametric + 1.96 * se)
+```
+
+`plot()` returns a patchwork when a fit has categorical panels too, and `+`
+would then reach only the last of them. `which = "continuous"` asks for the
+single ggplot, which takes the ribbon like any other layer. `type =
+"parametric"` draws only the curve the band was built from; on a regression
+fit the default also draws the `causal` contrast, which sits on its own
+scale starting at zero.
+
+```{r}
+#| label: fig-varpro_partial-band
+#| fig-cap: "Partial dependence of sale price on above-ground living area for the housing regression fit, with a pointwise 95% band from 25 subsample refits"
+plot(pd_liv, which = "continuous", type = "parametric") +
+  geom_ribbon(data = band, aes(x = variable, ymin = lower, ymax = upper),
+              inherit.aes = FALSE, alpha = 0.2) +
+  labs(y = "Sale price (USD)") +
+  theme_hv_manuscript()
+```
+
+Read it the way you read the forest band: a rise wider than the band survives
+resampling, and the band widens where few houses are that large. Budget for
+it. The full fit and one partial-dependence run take seconds each here, and
+the 25 refits in this chunk repeat both on `r m` of the `r n` houses. The
+chunk is frozen after its first render, but on your own cohort, time one
+refit before choosing `B`.
+
 ## Pitfalls
 
 - **`partialpro` is the expensive step.** It recomputes for every variable you
