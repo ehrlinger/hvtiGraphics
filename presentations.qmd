@@ -155,3 +155,78 @@ not executed during the book build. Pair the dark theme with a dark `template`
 and the light theme with a light one, and keep `theme_hv_ppt_dark()` at its 32 pt
 default here, since the template is laid out for that size. Pass `panel_box` to move or
 resize the plot rectangle, and `slide_titles` to set the slide heading.
+
+### The same panel position on every slide
+
+Flip between two slides of a deck and the eye catches any frame that jumps. It
+jumps when the placeholder is sized to the whole figure, because one figure's
+axis labels are wider than the next one's and the data region moves to make
+room. What you want fixed is the *panel*, the rectangle the data are drawn in.
+Everything outside it, the axis text and titles, should take whatever room it
+needs.
+
+`hv_ph_location()` does that arithmetic. Give it a plot and the panel rectangle
+you want on the slide, and it returns the placeholder that puts the panel
+there. Here are the two figures from this chapter, asked for the same panel.
+
+```{r}
+#| label: ph-location
+deck <- list(
+  Survival = p + theme_hv_ppt_dark(),
+  Trends   = p_trends + theme_hv_ppt_dark()
+)
+
+placeholders <- lapply(deck, function(plot) {
+  hv_ph_location(
+    plot,
+    panel_width = 8.79, panel_height = 4.422,
+    panel_left  = 2.67, panel_top    = 1.29
+  )
+})
+round(do.call(rbind, lapply(placeholders, unlist)), 2)
+```
+
+The four arguments are the panel's width and height and its distance from the
+left and top edges of the slide, in inches unless you pass `units`. These are
+the values `save_ppt()` uses for its own `panel_box` default, sized for the
+13.33 by 7.5 inch slide of the package's default template.
+
+Read the two rows against each other. `height` and `top` agree, and `width` and
+`left` do not. The survival figure's y-axis labels are wider, so its
+placeholder starts further left and is wider by the same amount. Both
+placeholders end at the same right edge, and on both slides the panel's left
+edge sits 2.67 inches in. The figures themselves depend on how the graphics
+device measures the fonts, so expect them to differ a little between machines
+and between this page and the PDF. A `left` that comes back negative means the labels do
+not fit beside a panel that far left: move the panel right or shorten the
+labels.
+
+`save_ppt()` runs this for you, once per slide, whenever it is given a
+`panel_box`. Call `hv_ph_location()` yourself when you build the deck with
+`officer` directly, for example to put two plots on one slide.
+
+```{r}
+#| label: ph-location-officer
+#| eval: false
+# `deck` and `placeholders` come from the chunk above.
+doc <- officer::read_pptx("RD-dark.pptx")
+
+for (nm in names(deck)) {
+  doc <- officer::add_slide(doc, layout = "Title and Content")
+  doc <- officer::ph_with(
+    doc, nm,
+    location = officer::ph_location_type("title")
+  )
+  doc <- officer::ph_with(
+    doc, rvg::dml(ggobj = deck[[nm]]),
+    location = do.call(officer::ph_location, placeholders[[nm]])
+  )
+}
+
+print(doc, target = "deck.pptx")
+```
+
+Each element of `placeholders` is a list of `width`, `height`, `left` and
+`top`, which is what `officer::ph_location()` takes, so `do.call()` passes it
+straight through. This chunk is `eval: false` for the same reason as the one
+above: it writes a `.pptx`.
