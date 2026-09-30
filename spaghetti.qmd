@@ -36,8 +36,8 @@ Both return a bare ggplot you finish with scales, labels, and a house theme.
 `hv_spaghetti()` expects long-format data: one row per measurement, with an id
 column identifying the patient, a time column, and the value being tracked.
 Optionally, a grouping column lets the smoother compare strata when
-`add_smooth = TRUE`. In hvtiPlotR 2.7.17 the individual trajectory layer remains
-black even when `colour_col` is set; the group colours apply to the smoother.
+`add_smooth = TRUE`. When `colour_col` is set, the individual trajectories and the
+smoother both take the group colour.
 `sample_spaghetti_data()` generates 150 patients with up to 6 observations each,
 split by a named proportion vector that stands in for a sex stratification. Build
 both the plain and the group-aware objects up front so the variants below can
@@ -131,12 +131,13 @@ Look for:
 
 When the bundle is too dense to read by eye, pass `add_smooth = TRUE` to overlay
 a LOESS trend line per group (locally weighted regression, a flexible curve that
-follows the data without assuming a straight line). The individual trajectories
-stay as neutral context while the coloured smooths carry the group comparison.
+follows the data without assuming a straight line). The thin trajectories and
+the heavier smooths share each group's colour, so the eye pairs every patient
+with their stratum's trend.
 
 ```{r}
 #| label: fig-spaghetti-smooth
-#| fig-cap: "Black patient trajectories with coloured group-specific LOESS smoothers carrying the comparison"
+#| fig-cap: "Patient trajectories and group-specific LOESS smoothers, both coloured by group"
 plot(sp_col, add_smooth = TRUE) +
   scale_colour_manual(
     values = c(Female = "firebrick", Male = "steelblue"),
