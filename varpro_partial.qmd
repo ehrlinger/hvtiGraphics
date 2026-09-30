@@ -105,13 +105,15 @@ plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "prob", method = "rnd"
 
 Setting `scale = "logodds"` plots the same effect on the log-odds scale, which is
 linear in the model's own terms and is the only scale on which the `causal`
-(virtual-twins) contrast is shown. Use probability to communicate and log-odds to
-diagnose.
+(virtual-twins) contrast can be shown. The default draws only the parametric and
+nonparametric curves, so ask for `causal` by name in `type`. Use probability to
+communicate and log-odds to diagnose.
 
 ```{r}
 #| label: fig-varpro_partial-logodds
 #| fig-cap: "The same classification partial dependence on the log-odds scale, linear in the model's own terms and the only scale showing the causal contrast"
-plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "logodds", method = "rnd")) &
+plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "logodds", method = "rnd"),
+     type = c("parametric", "nonparametric", "causal")) &
   theme_hv_manuscript()
 ```
 
@@ -199,9 +201,8 @@ band <- transform(pd_liv$continuous,
 `plot()` returns a patchwork when a fit has categorical panels too, and `+`
 would then reach only the last of them. `which = "continuous"` asks for the
 single ggplot, which takes the ribbon like any other layer. `type =
-"parametric"` draws only the curve the band was built from; on a regression
-fit the default also draws the `causal` contrast, which sits on its own
-scale starting at zero.
+"parametric"` draws only the curve the band was built from, since the default
+adds the nonparametric curve, which the band says nothing about.
 
 ```{r}
 #| label: fig-varpro_partial-band
@@ -241,9 +242,10 @@ refit before choosing `B`.
 - **`tau` must be in the fit's time units.** For `surv`/`rmst`, a `time` beyond
   the largest event time truncates to the full restricted mean; omit `time` to
   let it default to the median follow-up.
-- **The `causal` contrast only shows on `logodds`.** On the bounded probability
-  and survival scales it is hidden by design, so do not expect the virtual-twins
-  estimate there.
+- **The `causal` contrast only shows on `logodds`, and only when you ask for
+  it.** The default `type` leaves it out on every scale; on the bounded
+  probability and survival scales it is hidden by design, so do not expect the
+  virtual-twins estimate there.
 - **Set `method` to `"rnd"` on every `gg_partial_varpro()` call.** Its `...`
   forwards straight to `varPro::partialpro()`, which grows its own isolation
   forest for the partial-dependence draws; leave `method` unset and that forest
