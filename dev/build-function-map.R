@@ -165,10 +165,29 @@ roles <- c(
 ## every function in the contract above, so including it would mark everything
 ## covered by itself.
 qmd <- setdiff(list.files(".", pattern = "[.]qmd$"), "function_map.qmd")
-bodies <- setNames(
-  lapply(qmd, function(f) paste(readLines(f, warn = FALSE), collapse = "\n")),
-  sub("[.]qmd$", "", qmd)
-)
+## Only code inside a fenced R block counts, executed (```{r}) or displayed
+## (```r, which is how install and export calls that cannot run in a render are
+## shown). A function named in prose, or in an inline code span, is a mention
+## and not a worked recipe: scanning the whole file once listed `packages` as a
+## recipe for `gg_udependent()` on the strength of a bullet that described it.
+chunk_code <- function(f) {
+  x      <- readLines(f, warn = FALSE)
+  opens  <- grepl("^\\s*```+\\s*\\{?r\\b", x)
+  closes <- grepl("^\\s*```+\\s*$", x)
+  keep   <- logical(length(x))
+  inside <- FALSE
+  for (i in seq_along(x)) {
+    if (!inside && opens[i]) {
+      inside <- TRUE
+    } else if (inside && closes[i]) {
+      inside <- FALSE
+    } else {
+      keep[i] <- inside
+    }
+  }
+  paste(x[keep], collapse = "\n")
+}
+bodies <- setNames(lapply(qmd, chunk_code), sub("[.]qmd$", "", qmd))
 
 chapters_calling <- function(fn) {
   pattern <- paste0("\\b", gsub("[.]", "[.]", fn), "\\(")
