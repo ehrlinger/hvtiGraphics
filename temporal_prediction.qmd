@@ -58,10 +58,11 @@ grid <- data.frame(
 With `se.fit = TRUE`, current `predict.hazard()` returns the estimate, its
 delta-method standard error, and confidence limits. `se.fit` is the standard
 error of `fit` on its own scale, so on the survival path it is in survival
-units. The limits are built separately, on the transform `conf.type` names
-(log-log by default), which keeps survival limits between 0 and 1 and means
-they are not `fit` plus or minus a multiple of `se.fit`. Cumulative-hazard
-limits stay positive. Both predictions refer to the same fitted curve on the
+units. The survival limits are built separately, on the transform `conf.type`
+names (log-log by default), which keeps them between 0 and 1 and means they
+are not `fit` plus or minus a multiple of `se.fit`. `conf.type` does not touch
+the cumulative-hazard limits: those are always built on the log scale, which
+keeps them positive. Both predictions refer to the same fitted curve on the
 same grid.
 
 ```{r}
