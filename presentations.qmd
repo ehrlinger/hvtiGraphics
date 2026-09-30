@@ -208,6 +208,7 @@ labels.
 ```{r}
 #| label: ph-location-officer
 #| eval: false
+# `deck` and `placeholders` come from the chunk above.
 doc <- officer::read_pptx("RD-dark.pptx")
 
 for (nm in names(deck)) {
