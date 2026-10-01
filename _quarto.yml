@@ -67,6 +67,7 @@ book:
         - figure_tables.qmd
         - manuscripts.qmd
         - researchday.qmd
+        - slide_design.qmd
         - presentations.qmd
     - function_map.qmd
     - summary.qmd

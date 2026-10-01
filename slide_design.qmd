@@ -1,0 +1,226 @@
+# Designing slides
+
+The rest of this part of the book is about the figure: the theme, the colors,
+the legend, the saved file. This chapter steps back to the slide the figure
+lands on, and to the people in the room reading it while you talk. There is no
+code here. The recipes for building a slide-ready plot are in
+[slides and presentations](presentations.qmd); this chapter is the reasoning
+behind them.
+
+The short version: state each finding as a one-sentence headline, show the
+evidence as a figure, and remove everything else.
+
+## When to use it
+
+Read this before you build a deck, not after. Most of what goes wrong on a
+clinical slide is decided when the talk is planned (a topic title, six bullets,
+a table pasted from the manuscript) and no theme argument fixes it later.
+
+It is also the place to settle an argument. Each recommendation below names
+the study or standard it rests on, so "the guidelines say so" can be checked
+rather than taken on trust.
+
+## The central principle
+
+A slide is not a document projected on a wall. The speaker, the slide and the
+audience work as one system, so we design them together. Ask one question of
+every slide: what work is this asking the audience to do?
+
+A manuscript figure has a reader who can stop, go back and read the legend
+twice. A slide has a listener who hears the talk once, in order, while you keep
+talking. Everything that follows comes from taking that difference seriously.
+
+## How audiences process slides
+
+An audience holds only about four chunks in working memory at once
+[@Cowan:2001], so every element on a slide competes with what you are saying.
+Mayer and Fiorella's review of controlled experiments [@MayerFiorella:2014] and
+Mayer and Pilegard's companion review [@MayerPilegard:2014] give eight design
+rules that cut this load.
+
+| Principle | What to do on a slide | Tests supporting it | Median effect size (d) |
+|---|---|---|---|
+| Temporal contiguity | Show the figure while you talk about it, not before or after | 9 of 9 | 1.22 |
+| Spatial contiguity | Put labels on or beside what they describe, not in a legend or footnote | 22 of 22 | 1.10 |
+| Coherence | Remove decoration, logos, background images and side facts | 23 of 23 | 0.86 |
+| Redundancy | Don't put your spoken sentences on screen as text; show the graphic and say the words | 16 of 16 | 0.86 |
+| Segmenting | Break a complex figure or process into steps and build it up | 10 of 10 | 0.79 |
+| Modality | Explain a figure in speech rather than in printed text beside it | 53 of 61 | 0.76 |
+| Pre-training | Define key terms, groups and abbreviations before the results that use them | 13 of 16 | 0.75 |
+| Signaling | Cue structure: headline, highlight the series or number that matters, section dividers | 24 of 28 | 0.41 |
+
+: Eight multimedia-learning principles, the slide practice each implies, and the evidence behind it. {#tbl-slide-mayer}
+
+The two contiguity principles, coherence, redundancy and signaling are from
+Mayer and Fiorella; segmenting, modality and pre-training are from Mayer and
+Pilegard.
+
+Two caveats before you lean on those numbers. Most of these experiments tested
+students learning unfamiliar material, and none tested clinical conference
+audiences specifically. And the segmenting experiments let learners set the
+pace; in a talk, the speaker sets it.
+
+## Slide structure: assertion-evidence
+
+Replace the topic title and bullet list with a one-sentence headline that
+states the finding, supported by a figure. Garner and Alley tested this
+directly [@GarnerAlley:2013]. 110 engineering students heard the same recorded
+talk with either default topic-and-bullet slides or assertion-evidence slides.
+The assertion-evidence group showed better comprehension, fewer
+misconceptions, lower perceived cognitive load and stronger recall a week
+later.
+
+On a slide that works out as follows.
+
+- **Headline.** A short full sentence that states the result: "[Exposure]
+  doubled [outcome] at 30 days", not "[Exposure] and [outcome]".
+- **Body.** A figure, image or diagram as the evidence. Text only where a
+  figure can't carry it.
+- **One task at a time.** Give the audience one coherent task per visual
+  state. Several ideas can share a slide when the relationship between them is
+  the point; when you need two headlines, you need two slides.
+- **Signals.** Use the headline, a highlighted series or an arrow to point at
+  what matters, rather than making the audience search.
+- **Self-contained slides.** Don't make the audience remember an earlier slide
+  to read this one. Repeat the key number, group name or definition, since
+  working memory holds about four chunks.
+- **Text when it earns its place.** A quotation, a definition or eligibility
+  criteria the audience must inspect can carry real text. Show it and pause, or
+  point to the line; don't read it aloud over the audience reading it
+  (redundancy). The problem is a competing verbal channel, not word count.
+
+Examples and templates are at
+[assertion-evidence.com](https://www.assertion-evidence.com/).
+
+## Color and accessibility
+
+WCAG 2.2 sets the contrast thresholds we hold slides to [@WCAG22:2023]: 4.5:1
+for normal text, 3:1 for large text (18 pt, or 14 pt bold), and 3:1 for the
+chart elements a viewer needs to read the data. About 1 in 12 men have a color
+vision deficiency, most often red-green
+([National Eye Institute](https://www.nei.nih.gov/learn-about-eye-health/eye-conditions-and-diseases/color-blindness)),
+so in a room of 100 clinicians several will not see a red-green contrast.
+
+For data series, use the Okabe-Ito color-vision-safe palette [@OkabeIto:CUD],
+which is built into R as `palette.colors(palette = "Okabe-Ito")` and is the
+source of `hv_ppt_palette()`. The light ordering there swaps orange for a
+darkened yellow so that all six colors clear 3:1 on white (see
+[colors](colors.qmd)). Color-vision-safe is not the same as high contrast,
+though. On white, only some of the stock colors reach 3:1.
+
+| Okabe-Ito color | Hex | Contrast on white |
+|---|---|---|
+| Blue | `#0072B2` | 5.19:1 |
+| Vermilion | `#D55E00` | 3.87:1 |
+| Bluish green | `#009E73` | 3.42:1 |
+| Reddish purple | `#CC79A7` | 3.06:1 |
+| Orange | `#E69F00` | 2.25:1 |
+| Sky blue | `#56B4E9` | 2.31:1 |
+| Yellow | `#F0E442` | 1.32:1 |
+
+: Contrast of each Okabe-Ito color against a white background, computed with the WCAG relative-luminance formula. {#tbl-slide-okabe-ito}
+
+- Use blue, vermilion, bluish green and reddish purple for lines and points on
+  white. Orange, sky blue and yellow need a dark outline or a dark background;
+  a direct label does not raise their contrast. WCAG does exempt a mark that is
+  not needed to read the data, so when every series carries a text label the
+  line itself need not reach 3:1
+  ([Understanding SC 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html); @WCAG22:2023).
+- Never use color as the only cue. Add a direct label, line type or marker
+  shape, which is also what WCAG asks for [@WCAG22:2023].
+- Avoid red against green. For a two-group contrast, pair vermilion with blue.
+
+## Charts
+
+Put the comparison that matters on a common scale. People read position along
+a shared axis more accurately than length, angle or area
+[@ClevelandMcGill:1984], and a crowdsourced replication preserved that ranking
+[@HeerBostock:2010].
+
+- **Pie charts.** Replace them with a sorted bar or dot chart, since angle and
+  area are read less accurately than position. Keep a pie only for a two- or
+  three-part share where the exact values are labeled.
+- **Labels.** Label lines and bars directly at their ends instead of using a
+  legend (spatial contiguity, above).
+- **Highlight.** Draw the series or estimate that carries the message in a
+  strong color and the rest in gray, and state it in the headline (signaling).
+- **Strip.** Drop 3-D effects, background grids beyond light reference lines,
+  and decoration (coherence).
+- **Tables.** Convert to a figure when the point is a comparison. Keep a table
+  only when the audience needs exact values, and cut it to the rows you will
+  discuss.
+
+## Directing attention
+
+The eye finds a single item that differs in color, size or orientation within
+about 200 to 250 ms, before the viewer has time to search [@HealeyEnns:2012].
+Spend that on the one thing you want seen.
+
+- **One pop-out per slide.** A single strong color or size difference marks
+  the target; several compete for the same glance.
+- **Hierarchy.** Headline largest, evidence next, labels smallest. Align
+  elements to a grid and leave white space around the evidence.
+- **Comparisons across slides.** Keep axes, scales and positions fixed when
+  stepping between two figures. Viewers routinely miss changes they were not
+  directed to ("change blindness", from the same review), so point to what
+  changed.
+- **Build-ups.** Add one layer per click and say what it adds (segmenting).
+
+The hierarchy, grid and white-space advice is established design practice
+rather than a tested effect. Treat it as a house convention, not a finding.
+
+## What this changes from the older group rules
+
+The group's slide rules go back to Blackstone's *Physiologic Approach to
+Presentations* talk, the Research Day guides and the "Yahoo" slide templates.
+Most of them hold up against the evidence above, and stay: nothing
+extraneous, write the talk first, open and close with bookends, leave out
+methods and statistics unless they are central, and convert tables to graphs.
+
+What changes is narrower than it might look.
+
+- **Sentence headlines** replace the one-line topic title.
+- **Fewer bullets.** Prefer a figure; if bullets are needed, one level only.
+  The old "no complete sentences" rule is revised rather than kept, because the
+  problem is text that competes with your voice, not word count, and the
+  headline itself is a sentence.
+- **Direct labels** replace the hand-built legend.
+- **Measured color contrast** replaces colors judged by eye. Check against
+  4.5:1 and 3:1, and use Okabe-Ito for series.
+- **Sorted bar or dot charts** replace pie charts.
+- **16:9** is the standard; the 4:3 template is retired.
+
+The 32 pt minimum type size stays as a house rule, but read it as a house rule.
+No study we found sets a minimum font size for a room. Fixed word limits such as
+"7x7" are folklore with no evidence behind them; ask what work the slide asks
+of the audience instead.
+
+## Delivery and talk structure
+
+These carry over from the older rules unchanged. A listener hears the talk
+once, in order, and relies on the signposts you give; a reader can skim, and a
+listener cannot. Write the talk first (for a short talk, the two- or
+three-sentence message, often the conclusions), then build slides to support
+it.
+
+- **Bookends.** A clear opening and a clear ending. Say "thank you" so the
+  audience knows you are done.
+- **Order.** Objectives as the roadmap, then "nuggets" of discovery in the same
+  order (methods only if needed, results, discussion), then the take-home
+  message.
+- **Threes.** Group points in threes.
+- **Easy listening.** One idea per sentence, semi-conversational, active voice.
+- **Delivery.** Face the audience, not the slides. Keep a laser pointer steady;
+  simple slides need none.
+
+## Pitfalls
+
+- **Reading the evidence as settled for your room.** The effect sizes above
+  come mostly from students learning unfamiliar material, not clinicians at a
+  conference. They are the best evidence available, and they are not a
+  measurement of your audience.
+- **Trusting a color-vision-safe palette for contrast.** Okabe-Ito separates
+  hues for color-blind viewers; three of its seven colors still fall below 3:1
+  on white.
+- **Treating the font-size floor as a finding.** It is a sensible house rule
+  with no study behind the number.

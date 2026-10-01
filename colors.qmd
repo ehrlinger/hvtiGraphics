@@ -94,8 +94,8 @@ hv_ppt_palette("dark")
 hv_ppt_palette("light", n = 4)
 ```
 
-These are the Okabe-Ito colourblind-safe hues, reordered for the background the
-figure will sit on. The high-luminance ones lead on a dark slide, where yellow
+These are Okabe-Ito colourblind-safe hues, with one exception in the light
+ordering (below), reordered for the background the figure will sit on. The high-luminance ones lead on a dark slide, where yellow
 sits at more than 15:1 against a black panel, and the darker ones lead on a
 light slide. So the first two or three series, the ones a figure most often
 needs, separate hardest from the surface behind them.
@@ -108,6 +108,31 @@ positions is worth it, because a black series on a light panel reads as axis ink
 rather than as data, which is the same reason annotation takes black there. They
 are not CORR brand colours either, and nothing stops a project from handing its
 own set to `scale_colour_manual()` instead.
+
+Contrast is a separate question from order. WCAG 2.2 asks for 3:1 against the
+background for any chart mark a viewer needs to read the data [@WCAG22:2023],
+and as of hvtiPlotR 2.8.3 every color in the light ordering clears it on white.
+
+| Position | Color | Hex | Contrast on white |
+|---|---|---|---|
+| 1 | Blue | `#0072B2` | 5.19:1 |
+| 2 | Vermilion | `#D55E00` | 3.87:1 |
+| 3 | Bluish green | `#009E73` | 3.42:1 |
+| 4 | Reddish purple | `#CC79A7` | 3.06:1 |
+| 5 | Darkened yellow | `#9D952B` | 3.10:1 |
+| 6 | Black | `#000000` | 21:1 |
+
+: Contrast on white of `hv_ppt_palette("light")` as of hvtiPlotR 2.8.3, in palette order, computed with the WCAG relative-luminance formula. {#tbl-colors-ppt-light-contrast}
+
+The fifth color is the one departure from stock Okabe-Ito: their yellow,
+darkened at the same hue to `#9D952B`. Orange used to sit there at 2.25:1, and
+orange darkened far enough to reach 3:1 came out too close to vermilion under a
+deuteranopia simulation. The guarantee assumes a white slide.
+`theme_hv_ppt_light()` leaves the figure background transparent, so it holds on
+the white house template and not on a tinted one. The dark ordering is
+unchanged and clears 3:1 on the black panel of `theme_hv_ppt_dark()`. Why
+contrast matters on a projected slide, and how the stock Okabe-Ito set fares on
+white, is in [designing slides](slide_design.qmd).
 
 Six colours are the entire supply, which covers a grouping variable up to six
 levels. Ask for a seventh and you get an error rather than a quietly recycled

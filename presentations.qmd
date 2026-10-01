@@ -16,6 +16,11 @@ handout or a light template. hvtiPlotR ships a pair of PowerPoint themes for
 exactly this, plus `save_ppt()`, which drops the finished plot onto a slide as an
 *editable* vector graphic rather than a flat image.
 
+This chapter is the how. The why, meaning what belongs on the slide around the
+figure, which colors hold up on a projector, and the evidence behind each rule,
+is in [designing slides](slide_design.qmd). Read that one first if you are
+planning a deck rather than finishing one figure.
+
 ## A slide-styled plot
 
 `theme_hv_ppt_dark()` styles a plot for a projected deck: white ink, no
