@@ -94,8 +94,8 @@ hv_ppt_palette("dark")
 hv_ppt_palette("light", n = 4)
 ```
 
-These are the Okabe-Ito colourblind-safe hues, reordered for the background the
-figure will sit on. The high-luminance ones lead on a dark slide, where yellow
+These are Okabe-Ito colourblind-safe hues, with one exception in the light
+ordering (below), reordered for the background the figure will sit on. The high-luminance ones lead on a dark slide, where yellow
 sits at more than 15:1 against a black panel, and the darker ones lead on a
 light slide. So the first two or three series, the ones a figure most often
 needs, separate hardest from the surface behind them.
