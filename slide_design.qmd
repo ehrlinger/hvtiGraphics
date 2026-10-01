@@ -103,9 +103,10 @@ so in a room of 100 clinicians several will not see a red-green contrast.
 
 For data series, use the Okabe-Ito color-vision-safe palette [@OkabeIto:CUD],
 which is built into R as `palette.colors(palette = "Okabe-Ito")` and is the
-source of `hv_ppt_palette()` (see [colors](colors.qmd)). Color-vision-safe is
-not the same as high contrast, though. On white, only some of its colors reach
-3:1.
+source of `hv_ppt_palette()`. The light ordering there swaps orange for a
+darkened yellow so that all six colors clear 3:1 on white (see
+[colors](colors.qmd)). Color-vision-safe is not the same as high contrast,
+though. On white, only some of the stock colors reach 3:1.
 
 | Okabe-Ito color | Hex | Contrast on white |
 |---|---|---|
@@ -120,8 +121,11 @@ not the same as high contrast, though. On white, only some of its colors reach
 : Contrast of each Okabe-Ito color against a white background, computed with the WCAG relative-luminance formula. {#tbl-slide-okabe-ito}
 
 - Use blue, vermilion, bluish green and reddish purple for lines and points on
-  white. Orange, sky blue and yellow need a dark outline, a dark background or
-  a direct label.
+  white. Orange, sky blue and yellow need a dark outline or a dark background;
+  a direct label does not raise their contrast. WCAG does exempt a mark that is
+  not needed to read the data, so when every series carries a text label the
+  line itself need not reach 3:1
+  ([Understanding SC 1.4.11](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html); @WCAG22:2023).
 - Never use color as the only cue. Add a direct label, line type or marker
   shape, which is also what WCAG asks for [@WCAG22:2023].
 - Avoid red against green. For a two-group contrast, pair vermilion with blue.
