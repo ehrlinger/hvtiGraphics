@@ -109,6 +109,28 @@ rather than as data, which is the same reason annotation takes black there. They
 are not CORR brand colours either, and nothing stops a project from handing its
 own set to `scale_colour_manual()` instead.
 
+Contrast is the other thing the ordering does not guarantee. WCAG 2.2 asks for
+3:1 against the background for any chart mark a viewer needs to read the data
+[@WCAG22:2023], and here is where the light ordering stands on white.
+
+| Position | Color | Hex | Contrast on white |
+|---|---|---|---|
+| 1 | Blue | `#0072B2` | 5.19:1 |
+| 2 | Vermilion | `#D55E00` | 3.87:1 |
+| 3 | Bluish green | `#009E73` | 3.42:1 |
+| 4 | Reddish purple | `#CC79A7` | 3.06:1 |
+| 5 | Orange | `#E69F00` | 2.25:1 |
+| 6 | Black | `#000000` | 21:1 |
+
+: Contrast on white of `hv_ppt_palette("light")`, in palette order, computed with the WCAG relative-luminance formula. {#tbl-colors-ppt-light-contrast}
+
+The first four clear 3:1. Orange, fifth, does not, so a figure with five or
+more series puts one of them below the minimum for chart marks. Until that is
+fixed, give the orange series a direct label or a dark outline, or keep the
+figure to four series. A fix to the light ordering is in progress in hvtiPlotR.
+Why contrast matters on a projected slide, and how the rest of the Okabe-Ito
+set fares on white, is in [designing slides](slide_design.qmd).
+
 Six colours are the entire supply, which covers a grouping variable up to six
 levels. Ask for a seventh and you get an error rather than a quietly recycled
 palette, on the reasoning that two series sharing a colour is worse than a
