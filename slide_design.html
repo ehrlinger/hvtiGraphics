@@ -1,0 +1,1354 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>43&nbsp; Designing slides – HVTI Recipes</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./presentations.html" rel="next">
+<link href="./researchday.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-b85bc7c33db8c58e0ec93c3465666fed.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-a76bd774b396f76c92293cc739e6410e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-dark-575cc983d099c2006a09acd750314d81.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-a76bd774b396f76c92293cc739e6410e.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./publications.html">Finish and deliver the result</a></li><li class="breadcrumb-item"><a href="./slide_design.html"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Designing slides</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">HVTI Recipes</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./gettingstarted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Start a reproducible analysis</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Packages</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./usingR.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Using R for figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_governance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Data governance and reproducibility</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./describe.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Describe the cohort</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./data_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Describing a dataset</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./qt_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Publication tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hv_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Manuscript tables</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./histograms.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Histogram plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./density.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Density plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./boxplots.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Box plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./bar.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Bar chart plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./scatter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Scatter plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./spaghetti.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Spaghetti plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./postagestamp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Postage stamp plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./consort.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">CONSORT patient-flow diagrams</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./upset.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Venn diagrams and UpSet plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./sankey.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Alluvial and Sankey plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./balance.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Covariate balance and follow-up</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./timetoevent.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Analyze time-to-event outcomes</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./survival.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Survival plots</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./hazard.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Hazard and nonparametric curves</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./nnt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Number needed to treat and survival difference</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_fit.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Fit additive hazard models</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_prediction.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Predict from a hazard model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Check a hazard model</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./temporal_migration.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Move a legacy HAZARD analysis into R</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./randomforests.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Explain predictive models</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_error.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Did the forest stabilize?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_predicted.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">What does the forest predict?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_vimp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Which variables contribute to prediction?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_shap.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">SHAP attribution</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_dependence.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Variable and partial dependence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_roc.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">How well does the forest predict?</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./varpro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">32</span>&nbsp; <span class="chapter-title">Variable priority with varPro</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./varpro_partial.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">33</span>&nbsp; <span class="chapter-title">varPro partial dependence</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rf_rhf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">34</span>&nbsp; <span class="chapter-title">What if a predictor changes during follow-up?</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./publications.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Finish and deliver the result</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./themes.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">35</span>&nbsp; <span class="chapter-title">Themes for consistency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./colors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">36</span>&nbsp; <span class="chapter-title">Color templates for consistency</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./annotation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">37</span>&nbsp; <span class="chapter-title">Annotating figures and formatting axes</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./legends.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">38</span>&nbsp; <span class="chapter-title">Using legends</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./combination.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">39</span>&nbsp; <span class="chapter-title">Combination figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./figure_tables.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">40</span>&nbsp; <span class="chapter-title">Tables that accompany figures</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./manuscripts.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">41</span>&nbsp; <span class="chapter-title">Preparing figures for manuscripts</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./researchday.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Posters and research day</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./slide_design.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Designing slides</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./presentations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Slides and presentations</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./function_map.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">45</span>&nbsp; <span class="chapter-title">Function-to-recipe map</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./summary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">46</span>&nbsp; <span class="chapter-title">Summary</span></span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./references.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">References</span></a>
+  </div>
+</li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#when-to-use-it" id="toc-when-to-use-it" class="nav-link active" data-scroll-target="#when-to-use-it"><span class="header-section-number">43.1</span> When to use it</a></li>
+  <li><a href="#the-central-principle" id="toc-the-central-principle" class="nav-link" data-scroll-target="#the-central-principle"><span class="header-section-number">43.2</span> The central principle</a></li>
+  <li><a href="#how-audiences-process-slides" id="toc-how-audiences-process-slides" class="nav-link" data-scroll-target="#how-audiences-process-slides"><span class="header-section-number">43.3</span> How audiences process slides</a></li>
+  <li><a href="#slide-structure-assertion-evidence" id="toc-slide-structure-assertion-evidence" class="nav-link" data-scroll-target="#slide-structure-assertion-evidence"><span class="header-section-number">43.4</span> Slide structure: assertion-evidence</a></li>
+  <li><a href="#color-and-accessibility" id="toc-color-and-accessibility" class="nav-link" data-scroll-target="#color-and-accessibility"><span class="header-section-number">43.5</span> Color and accessibility</a></li>
+  <li><a href="#charts" id="toc-charts" class="nav-link" data-scroll-target="#charts"><span class="header-section-number">43.6</span> Charts</a></li>
+  <li><a href="#directing-attention" id="toc-directing-attention" class="nav-link" data-scroll-target="#directing-attention"><span class="header-section-number">43.7</span> Directing attention</a></li>
+  <li><a href="#what-this-changes-from-the-older-group-rules" id="toc-what-this-changes-from-the-older-group-rules" class="nav-link" data-scroll-target="#what-this-changes-from-the-older-group-rules"><span class="header-section-number">43.8</span> What this changes from the older group rules</a></li>
+  <li><a href="#building-the-talk" id="toc-building-the-talk" class="nav-link" data-scroll-target="#building-the-talk"><span class="header-section-number">43.9</span> Building the talk</a></li>
+  <li><a href="#slide-habits-from-the-session" id="toc-slide-habits-from-the-session" class="nav-link" data-scroll-target="#slide-habits-from-the-session"><span class="header-section-number">43.10</span> Slide habits from the session</a></li>
+  <li><a href="#delivery" id="toc-delivery" class="nav-link" data-scroll-target="#delivery"><span class="header-section-number">43.11</span> Delivery</a></li>
+  <li><a href="#questions-and-answers" id="toc-questions-and-answers" class="nav-link" data-scroll-target="#questions-and-answers"><span class="header-section-number">43.12</span> Questions and answers</a></li>
+  <li><a href="#claims-from-the-session-checked" id="toc-claims-from-the-session-checked" class="nav-link" data-scroll-target="#claims-from-the-session-checked"><span class="header-section-number">43.13</span> Claims from the session, checked</a></li>
+  <li><a href="#pitfalls" id="toc-pitfalls" class="nav-link" data-scroll-target="#pitfalls"><span class="header-section-number">43.14</span> Pitfalls</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./publications.html">Finish and deliver the result</a></li><li class="breadcrumb-item"><a href="./slide_design.html"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Designing slides</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span class="chapter-number">43</span>&nbsp; <span class="chapter-title">Designing slides</span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>The rest of this part of the book is about the figure: the theme, the colors, the legend, the saved file. This chapter steps back to the slide the figure lands on, and to the people in the room reading it while you talk. There is no code here. The recipes for building a slide-ready plot are in <a href="./presentations.html">slides and presentations</a>; this chapter is the reasoning behind them.</p>
+<p>The short version: state each finding as a one-sentence headline, show the evidence as a figure, and remove everything else.</p>
+<section id="when-to-use-it" class="level2" data-number="43.1">
+<h2 data-number="43.1" class="anchored" data-anchor-id="when-to-use-it"><span class="header-section-number">43.1</span> When to use it</h2>
+<p>Read this before you build a deck, not after. Most of what goes wrong on a clinical slide is decided when the talk is planned (a topic title, six bullets, a table pasted from the manuscript) and no theme argument fixes it later.</p>
+<p>It is also the place to settle an argument. Each recommendation below names the study, standard or experience it rests on, so “the guidelines say so” can be checked rather than taken on trust.</p>
+</section>
+<section id="the-central-principle" class="level2" data-number="43.2">
+<h2 data-number="43.2" class="anchored" data-anchor-id="the-central-principle"><span class="header-section-number">43.2</span> The central principle</h2>
+<p>A slide is not a document projected on a wall. The speaker, the slide and the audience work as one system, so we design them together. Ask one question of every slide: what work is this asking the audience to do?</p>
+<p>A manuscript figure has a reader who can stop, go back and read the legend twice. A slide has a listener who hears the talk once, in order, while you keep talking. Everything that follows comes from taking that difference seriously.</p>
+</section>
+<section id="how-audiences-process-slides" class="level2" data-number="43.3">
+<h2 data-number="43.3" class="anchored" data-anchor-id="how-audiences-process-slides"><span class="header-section-number">43.3</span> How audiences process slides</h2>
+<p>An audience holds only about four chunks in working memory at once <span class="citation" data-cites="Cowan:2001">(<a href="references.html#ref-Cowan:2001" role="doc-biblioref">Cowan 2001</a>)</span>, so every element on a slide competes with what you are saying. Mayer and Fiorella’s review of controlled experiments <span class="citation" data-cites="MayerFiorella:2014">(<a href="references.html#ref-MayerFiorella:2014" role="doc-biblioref">Mayer and Fiorella 2014</a>)</span> and Mayer and Pilegard’s companion review <span class="citation" data-cites="MayerPilegard:2014">(<a href="references.html#ref-MayerPilegard:2014" role="doc-biblioref">Mayer and Pilegard 2014</a>)</span> give eight design rules that cut this load.</p>
+<div id="tbl-slide-mayer" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-slide-mayer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;43.1: Eight multimedia-learning principles, the slide practice each implies, and the evidence behind it.
+</figcaption>
+<div aria-describedby="tbl-slide-mayer-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Principle</th>
+<th>What to do on a slide</th>
+<th>Tests supporting it</th>
+<th>Median effect size (d)</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Temporal contiguity</td>
+<td>Show the figure while you talk about it, not before or after</td>
+<td>9 of 9</td>
+<td>1.22</td>
+</tr>
+<tr class="even">
+<td>Spatial contiguity</td>
+<td>Put labels on or beside what they describe, not in a legend or footnote</td>
+<td>22 of 22</td>
+<td>1.10</td>
+</tr>
+<tr class="odd">
+<td>Coherence</td>
+<td>Remove decoration, logos, background images and side facts</td>
+<td>23 of 23</td>
+<td>0.86</td>
+</tr>
+<tr class="even">
+<td>Redundancy</td>
+<td>Don’t put your spoken sentences on screen as text; show the graphic and say the words</td>
+<td>16 of 16</td>
+<td>0.86</td>
+</tr>
+<tr class="odd">
+<td>Segmenting</td>
+<td>Break a complex figure or process into steps and build it up</td>
+<td>10 of 10</td>
+<td>0.79</td>
+</tr>
+<tr class="even">
+<td>Modality</td>
+<td>Explain a figure in speech rather than in printed text beside it</td>
+<td>53 of 61</td>
+<td>0.76</td>
+</tr>
+<tr class="odd">
+<td>Pre-training</td>
+<td>Define key terms, groups and abbreviations before the results that use them</td>
+<td>13 of 16</td>
+<td>0.75</td>
+</tr>
+<tr class="even">
+<td>Signaling</td>
+<td>Cue structure: headline, highlight the series or number that matters, section dividers</td>
+<td>24 of 28</td>
+<td>0.41</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<p>The two contiguity principles, coherence, redundancy and signaling are from Mayer and Fiorella; segmenting, modality and pre-training are from Mayer and Pilegard.</p>
+<p>Two caveats before you lean on those numbers. Most of these experiments tested students learning unfamiliar material, and none tested clinical conference audiences specifically. And the segmenting experiments let learners set the pace; in a talk, the speaker sets it.</p>
+</section>
+<section id="slide-structure-assertion-evidence" class="level2" data-number="43.4">
+<h2 data-number="43.4" class="anchored" data-anchor-id="slide-structure-assertion-evidence"><span class="header-section-number">43.4</span> Slide structure: assertion-evidence</h2>
+<p>Replace the topic title and bullet list with a one-sentence headline that states the finding, supported by a figure. Garner and Alley tested this directly <span class="citation" data-cites="GarnerAlley:2013">(<a href="references.html#ref-GarnerAlley:2013" role="doc-biblioref">Garner and Alley 2013</a>)</span>. 110 engineering students heard the same recorded talk with either default topic-and-bullet slides or assertion-evidence slides. The assertion-evidence group showed better comprehension, fewer misconceptions, lower perceived cognitive load and stronger recall a week later.</p>
+<p>On a slide that works out as follows.</p>
+<ul>
+<li><strong>Headline.</strong> A short full sentence that states the result: “[Exposure] doubled [outcome] at 30 days”, not “[Exposure] and [outcome]”.</li>
+<li><strong>Body.</strong> A figure, image or diagram as the evidence. Text only where a figure can’t carry it.</li>
+<li><strong>One task at a time.</strong> Give the audience one coherent task per visual state. Several ideas can share a slide when the relationship between them is the point; when you need two headlines, you need two slides.</li>
+<li><strong>Signals.</strong> Use the headline, a highlighted series or an arrow to point at what matters, rather than making the audience search.</li>
+<li><strong>Self-contained slides.</strong> Don’t make the audience remember an earlier slide to read this one. Repeat the key number, group name or definition, since working memory holds about four chunks.</li>
+<li><strong>Text when it earns its place.</strong> A quotation, a definition or eligibility criteria the audience must inspect can carry real text. Show it and pause, or point to the line; don’t read it aloud over the audience reading it (redundancy). The problem is a competing verbal channel, not word count.</li>
+</ul>
+<p>Examples and templates are at <a href="https://www.assertion-evidence.com/">assertion-evidence.com</a>.</p>
+</section>
+<section id="color-and-accessibility" class="level2" data-number="43.5">
+<h2 data-number="43.5" class="anchored" data-anchor-id="color-and-accessibility"><span class="header-section-number">43.5</span> Color and accessibility</h2>
+<p>WCAG 2.2 sets the contrast thresholds we hold slides to <span class="citation" data-cites="WCAG22:2023">(<a href="references.html#ref-WCAG22:2023" role="doc-biblioref">World Wide Web Consortium 2023</a>)</span>: 4.5:1 for normal text, 3:1 for large text (18 pt, or 14 pt bold), and 3:1 for the chart elements a viewer needs to read the data. About 1 in 12 men have a color vision deficiency, most often red-green (<a href="https://www.nei.nih.gov/learn-about-eye-health/eye-conditions-and-diseases/color-blindness">National Eye Institute</a>), so in a room of 100 clinicians several will not see a red-green contrast.</p>
+<p>For data series, use the Okabe-Ito color-vision-safe palette <span class="citation" data-cites="OkabeIto:CUD">(<a href="references.html#ref-OkabeIto:CUD" role="doc-biblioref">Okabe and Ito, n.d.</a>)</span>, which is built into R as <code>palette.colors(palette = "Okabe-Ito")</code> and is the source of <code>hv_ppt_palette()</code>. The light ordering there swaps orange for a darkened yellow so that all six colors clear 3:1 on white (see <a href="./colors.html">colors</a>). Color-vision-safe is not the same as high contrast, though. On white, only some of the stock colors reach 3:1.</p>
+<div id="tbl-slide-okabe-ito" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-slide-okabe-ito-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;43.2: Contrast of each Okabe-Ito color against a white background, computed with the WCAG relative-luminance formula.
+</figcaption>
+<div aria-describedby="tbl-slide-okabe-ito-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Okabe-Ito color</th>
+<th>Hex</th>
+<th>Contrast on white</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Blue</td>
+<td><code>#0072B2</code></td>
+<td>5.19:1</td>
+</tr>
+<tr class="even">
+<td>Vermilion</td>
+<td><code>#D55E00</code></td>
+<td>3.87:1</td>
+</tr>
+<tr class="odd">
+<td>Bluish green</td>
+<td><code>#009E73</code></td>
+<td>3.42:1</td>
+</tr>
+<tr class="even">
+<td>Reddish purple</td>
+<td><code>#CC79A7</code></td>
+<td>3.06:1</td>
+</tr>
+<tr class="odd">
+<td>Orange</td>
+<td><code>#E69F00</code></td>
+<td>2.25:1</td>
+</tr>
+<tr class="even">
+<td>Sky blue</td>
+<td><code>#56B4E9</code></td>
+<td>2.31:1</td>
+</tr>
+<tr class="odd">
+<td>Yellow</td>
+<td><code>#F0E442</code></td>
+<td>1.32:1</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+<ul>
+<li>Use blue, vermilion, bluish green and reddish purple for lines and points on white. Orange, sky blue and yellow need a dark outline or a dark background; a direct label does not raise their contrast. WCAG does exempt a mark that is not needed to read the data, so when every series carries a text label the line itself need not reach 3:1 (<a href="https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html">Understanding SC 1.4.11</a>; <span class="citation" data-cites="WCAG22:2023">World Wide Web Consortium (<a href="references.html#ref-WCAG22:2023" role="doc-biblioref">2023</a>)</span>).</li>
+<li>Never use color as the only cue. Add a direct label, line type or marker shape, which is also what WCAG asks for <span class="citation" data-cites="WCAG22:2023">(<a href="references.html#ref-WCAG22:2023" role="doc-biblioref">World Wide Web Consortium 2023</a>)</span>.</li>
+<li>Avoid red against green. For a two-group contrast, pair vermilion with blue.</li>
+</ul>
+</section>
+<section id="charts" class="level2" data-number="43.6">
+<h2 data-number="43.6" class="anchored" data-anchor-id="charts"><span class="header-section-number">43.6</span> Charts</h2>
+<p>Put the comparison that matters on a common scale. People read position along a shared axis more accurately than length, angle or area <span class="citation" data-cites="ClevelandMcGill:1984">(<a href="references.html#ref-ClevelandMcGill:1984" role="doc-biblioref">Cleveland and McGill 1984</a>)</span>, and a crowdsourced replication preserved that ranking <span class="citation" data-cites="HeerBostock:2010">(<a href="references.html#ref-HeerBostock:2010" role="doc-biblioref">Heer and Bostock 2010</a>)</span>.</p>
+<ul>
+<li><strong>Pie charts.</strong> Replace them with a sorted bar or dot chart, since angle and area are read less accurately than position. Keep a pie only for a two- or three-part share where the exact values are labeled.</li>
+<li><strong>Labels.</strong> Label lines and bars directly at their ends instead of using a legend (spatial contiguity, above).</li>
+<li><strong>Highlight.</strong> Draw the series or estimate that carries the message in a strong color and the rest in gray, and state it in the headline (signaling).</li>
+<li><strong>Strip.</strong> Drop 3-D effects, background grids beyond light reference lines, and decoration (coherence).</li>
+<li><strong>Tables.</strong> Convert to a figure when the point is a comparison. Keep a table only when the audience needs exact values, and cut it to the rows you will discuss.</li>
+</ul>
+</section>
+<section id="directing-attention" class="level2" data-number="43.7">
+<h2 data-number="43.7" class="anchored" data-anchor-id="directing-attention"><span class="header-section-number">43.7</span> Directing attention</h2>
+<p>The eye finds a single item that differs in color, size or orientation within about 200 to 250 ms, before the viewer has time to search <span class="citation" data-cites="HealeyEnns:2012">(<a href="references.html#ref-HealeyEnns:2012" role="doc-biblioref">Healey and Enns 2012</a>)</span>. Spend that on the one thing you want seen.</p>
+<ul>
+<li><strong>One pop-out per slide.</strong> A single strong color or size difference marks the target; several compete for the same glance.</li>
+<li><strong>Hierarchy.</strong> Headline largest, evidence next, labels smallest. Align elements to a grid and leave white space around the evidence.</li>
+<li><strong>Comparisons across slides.</strong> Keep axes, scales and positions fixed when stepping between two figures. Viewers routinely miss changes they were not directed to (“change blindness”, from the same review), so point to what changed.</li>
+<li><strong>Build-ups.</strong> Add one layer per click and say what it adds (segmenting).</li>
+</ul>
+<p>The hierarchy, grid and white-space advice is established design practice rather than a tested effect. Treat it as a house convention, not a finding.</p>
+</section>
+<section id="what-this-changes-from-the-older-group-rules" class="level2" data-number="43.8">
+<h2 data-number="43.8" class="anchored" data-anchor-id="what-this-changes-from-the-older-group-rules"><span class="header-section-number">43.8</span> What this changes from the older group rules</h2>
+<p>The group’s slide rules go back to Blackstone’s <em>Physiologic Approach to Presentations</em> talk, the Research Day guides and the “Yahoo” slide templates. The Yahoo rules themselves came from about three months of audience-response and eye-tracking testing that Yahoo ran for the Cleveland Clinic, commissioned by Toby Cosgrove (Eugene Blackstone, unpublished lecture, April 8, 2026). The Yahoo report has not been found, so we cannot check its methods or its numbers.</p>
+<p>Most of the rules hold up against the evidence above, and stay: nothing extraneous, write the talk first, open and close with bookends, leave out methods and statistics unless they are central, and convert tables to graphs.</p>
+<p>What changes is narrower than it might look.</p>
+<ul>
+<li><strong>Sentence headlines</strong> replace the one-line topic title.</li>
+<li><strong>Fewer bullets.</strong> Prefer a figure; if bullets are needed, one level only. The old “no complete sentences” rule is revised rather than kept, because the problem is text that competes with your voice, not word count, and the headline itself is a sentence.</li>
+<li><strong>Direct labels</strong> replace the hand-built legend.</li>
+<li><strong>Measured color contrast</strong> replaces colors judged by eye. Check against 4.5:1 and 3:1, and use Okabe-Ito for series.</li>
+<li><strong>Sorted bar or dot charts</strong> replace pie charts.</li>
+<li><strong>16:9</strong> is the standard; the 4:3 template is retired.</li>
+<li><strong>Background shading</strong> (darker at the top, lighter at the bottom) is dropped. Yahoo’s unpublished testing reportedly favored it, but we found no published evidence for it (see the checked claims at the end of this chapter).</li>
+</ul>
+<p>The 32 pt minimum type size stays as a house rule, but read it as a house rule. No study we found sets a minimum font size for a room. Fixed word limits such as “7x7” are folklore with no evidence behind them; ask what work the slide asks of the audience instead.</p>
+</section>
+<section id="building-the-talk" class="level2" data-number="43.9">
+<h2 data-number="43.9" class="anchored" data-anchor-id="building-the-talk"><span class="header-section-number">43.9</span> Building the talk</h2>
+<p>This section and the three after it come from Dr.&nbsp;Eugene Blackstone’s resident education session on Research Day talks (unpublished lecture, April 8, 2026), which updates his <em>Physiologic Approach to Presentations</em> deck. Its core argument is the one this chapter opened with. A listener hears the talk once, in order, cannot go back, and thinks faster than you speak, so the talk has to keep listening easy. The sections above rest on published experiments; these rest on experience at the podium. Where the two overlap, we say how they fit.</p>
+<ol type="1">
+<li><strong>Know the frame.</strong> Find out the time limit and the audience. Research Day is 6 minutes, enforced, and many national meetings allow 5. A mixed room of cardiac, thoracic and congenital surgeons shares little vocabulary, so define your terms and drop abbreviations and jargon.</li>
+<li><strong>Write the message first.</strong> Two or three sentences, usually your conclusions. A good abstract already contains the whole talk. The message sets the order, and anything that doesn’t serve it comes out.</li>
+<li><strong>Tell a story, not IMRD.</strong> Introduction, methods, results, discussion is built for a reader who skips around strategically; a listener takes the talk serially. Reveal each piece just in time, so a method or an endpoint sits next to the result that needs it rather than in a methods block up front. It fits pre-training (<a href="#tbl-slide-mayer" class="quarto-xref">Table&nbsp;<span>43.1</span></a>) as well: define a term before the result that uses it, and as close to that result as you can.</li>
+<li><strong>Announce the structure and keep it.</strong> If you say X, Y and Z, cover them in that order and use the same words for them every time.</li>
+<li><strong>Chapters.</strong> Turn each objective into a chapter with a one-second heading slide (“Early outcomes”, then “Late outcomes”), so the audience always knows where they are. These are the section dividers that signaling asks for.</li>
+<li><strong>Bookends.</strong> Open by setting the context quickly, and close by returning to it with the clinical perspective. Use a motif in threes when it fits.</li>
+<li><strong>End on the message, not a summary.</strong> A 6-minute talk is already a summary. State the take-home message, then say “Thank you.”</li>
+</ol>
+</section>
+<section id="slide-habits-from-the-session" class="level2" data-number="43.10">
+<h2 data-number="43.10" class="anchored" data-anchor-id="slide-habits-from-the-session"><span class="header-section-number">43.10</span> Slide habits from the session</h2>
+<ul>
+<li><strong>Pace, not slide count.</strong> Plan on about 3 slides a minute, so at least a dozen for a 5-minute talk. A minute per slide means too much on each slide. What makes that pace possible is the Cosgrove rule, one idea per slide. Read it alongside “one task at a time” above: one idea is the default, and two ideas share a slide only when the relationship between them is the idea.</li>
+<li><strong>Slides support the talk.</strong> They are not a script to read, and they need not be on all the time. A blank or black slide puts the attention back on you.</li>
+<li><strong>Meeting templates.</strong> Use the meeting’s template for the title and disclosure slides only. Drop watermarks and logos everywhere else, which is what coherence asks for too.</li>
+<li><strong>Room light sets the background.</strong> Light background in a lit room, dark background in a dark room. Ask about the room before the meeting; it can change the day before. The contrast table above is measured against white, so check a dark-background deck against the same 4.5:1 and 3:1 thresholds.</li>
+<li><strong>Same place every time.</strong> Keep titles, figures and labels in the same positions across slides so the eye knows where to land. Break the pattern only on purpose, such as a chapter heading.</li>
+<li><strong>Speak in reading order.</strong> Lay the items out top to bottom and left to right, and present them in that order. Don’t count on the eye following a fixed path, though; the session’s scan order did not hold up (see the checked claims below). The headline and the highlight are what direct attention.</li>
+<li><strong>Orient first.</strong> The first sentence on a new slide tells the audience how to read it (“Fungal is red, non-fungal is yellow”), before any result. That is pre-training at the scale of one slide.</li>
+<li><strong>Labels at full size.</strong> Labels inside a figure (RCA, LCA) follow the same 32 pt floor as the rest of the text.</li>
+<li><strong>Order follows the talk.</strong> The charts section says to replace a pie with a sorted bar or dot chart. If you must keep a pie, order the slices the way you will discuss them, not largest to smallest.</li>
+<li><strong>Bar direction.</strong> Consider horizontal bars with the category labels on the left when the labels are long. They fit, and each is read next to its bar. The claim that lay viewers read horizontal bars more easily did not hold up, so choose the direction for the labels, not for the audience.</li>
+<li><strong>No jumping slides.</strong> Test the deck on the room’s projector so the slides don’t visibly jump between transitions. The Research Day team can help. A brief blank between slides hides the jump, but it also hides changes you want seen, so never put one between the steps of a build-up.</li>
+<li><strong>Images face into the slide.</strong> A person in a photograph should look toward the slide’s content or the other image, not off the edge.</li>
+</ul>
+</section>
+<section id="delivery" class="level2" data-number="43.11">
+<h2 data-number="43.11" class="anchored" data-anchor-id="delivery"><span class="header-section-number">43.11</span> Delivery</h2>
+<p>Reading a short talk is fine. Most senior speakers do it because of the time limits; what matters is that it doesn’t sound read.</p>
+<ul>
+<li><strong>The speech box.</strong> This is the presidential “blue box” format, used from FDR through Clinton. Every sentence is its own paragraph, in large type, with an arrow marking where it continues, and you slide each page down as you go. The group has four boxes to lend for Research Day.</li>
+<li><strong>Eyes up at both ends.</strong> Look up at the start and at the end of each sentence, and down only in the middle. The audience reads that as speaking, and it slows you to a pace they can follow.</li>
+<li><strong>Voice.</strong> Active and first person (“I did X; this is what I found”), semi-conversational, with energy and a good attitude. The audience is on your side.</li>
+<li><strong>Keep the audience in the present.</strong> Pair ideas (“on the one hand … on the other”), set up comparisons so they anticipate the result, pause or change pace to reset attention, and repeat the key point.</li>
+<li><strong>Face the audience, not the slides.</strong> Keep a laser pointer steady; simple slides need none.</li>
+</ul>
+</section>
+<section id="questions-and-answers" class="level2" data-number="43.12">
+<h2 data-number="43.12" class="anchored" data-anchor-id="questions-and-answers"><span class="header-section-number">43.12</span> Questions and answers</h2>
+<p>Treat the question period as part of the talk. Its purpose is to get the message across again, and it is often the last impression people take away. Research Day judges reward speakers who clearly know their work.</p>
+<p><strong>Prepare.</strong></p>
+<ul>
+<li>Anticipate the questions with your sponsor and other knowledgeable people beforehand. You are not doing this alone.</li>
+<li>Know your study’s limitations: what you did not study, and what you cannot conclude.</li>
+<li>Go in as the expert. On this subject, in this room, you know the data best.</li>
+</ul>
+<p><strong>Avoid.</strong></p>
+<ul>
+<li>Answering with a paragraph when a sentence will do. It wanders off the message.</li>
+<li>Promissory notes (“we’ll run that study and report back”).</li>
+<li>Passing the question to your staff in the audience. If you don’t know, say so and move on.</li>
+<li>Losing control to a hostile questioner.</li>
+</ul>
+<p><strong>Steer back to the message.</strong></p>
+<ul>
+<li>Answer the question the questioner should have asked, ideally with something you already said, so the message repeats. Bridges such as “what may not be apparent here is …” or “I’d like to return to what matters most” do this.</li>
+<li><strong>Silence.</strong> If no one asks anything, ask yourself one (“You may be wondering …”). It keeps the message going and often starts real questions.</li>
+<li><strong>Someone shares their own experience.</strong> Thank them and tie it to your message.</li>
+<li><strong>A hostile question.</strong> Correct a false statement plainly, use non-inflammatory words (“limitation”, not “flaw”), skip sarcasm, and say only what you know to be true.</li>
+</ul>
+</section>
+<section id="claims-from-the-session-checked" class="level2" data-number="43.13">
+<h2 data-number="43.13" class="anchored" data-anchor-id="claims-from-the-session-checked"><span class="header-section-number">43.13</span> Claims from the session, checked</h2>
+<p>Some of the advice above rests on specific claims, from the session or from Yahoo’s original testing, which has not been published. We checked each one against published evidence. Most did not hold up as stated. The habits above stay, adjusted where a claim they leaned on failed, and the claims stay out of the evidence sections.</p>
+<div id="tbl-slide-claims" class="quarto-float quarto-figure quarto-figure-center anchored" data-tbl-colwidths="[28,14,58]">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-slide-claims-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;43.3: Claims from the April 2026 session and the unpublished Yahoo testing, checked against published evidence.
+</figcaption>
+<div aria-describedby="tbl-slide-claims-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<table class="caption-top table">
+<colgroup>
+<col style="width: 28%">
+<col style="width: 14%">
+<col style="width: 57%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Claim</th>
+<th>Source</th>
+<th>Verdict</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Speakers talk at about 114 words a minute while listeners think at about 300, leaving two-thirds of attention free</td>
+<td>Session</td>
+<td>Not supported as stated. It traces to <a href="https://ombuds.columbia.edu/sites/default/files/content/pics/30%20Anniv/Listening%20to%20People.pdf">Nichols and Stevens (1957, <em>Harvard Business Review</em>, “Listening to People”)</a>, who give speech as about 125 words a minute and thought as “much higher”; the 300 and the two-thirds were added in retellings. Spare listening capacity is plausible but unmeasured.</td>
+</tr>
+<tr class="even">
+<td>Viewers scan a slide top to bottom, left to right, then clockwise</td>
+<td>Yahoo eye tracking (unpublished)</td>
+<td>Not supported. No Yahoo study was found. Eye tracking shows an F-shaped pattern only for unformatted text being skimmed, not a clockwise one, and headings and cues override it (<a href="https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/">Nielsen Norman Group</a>).</td>
+</tr>
+<tr class="odd">
+<td>Shading darker at the top and lighter at the bottom reads more easily</td>
+<td>Yahoo audience response (unpublished)</td>
+<td>No evidence found. Dropped.</td>
+</tr>
+<tr class="even">
+<td>Lay viewers read horizontal bar charts more easily than vertical ones</td>
+<td>Session</td>
+<td>Not supported. <a href="https://arxiv.org/abs/2310.13713">Koesten and colleagues (2023)</a> found vertical bars rated more readable; earlier work is mixed. Horizontal bars are still useful for long labels.</td>
+</tr>
+<tr class="odd">
+<td>Blue backgrounds keep audiences alert</td>
+<td>Session</td>
+<td>Not supported. The alerting effect of blue light comes from hours of intense short-wavelength light (<a href="https://pubmed.ncbi.nlm.nih.gov/15585546/">Cajochen and colleagues, 2005, <em>J Clin Endocrinol Metab</em> 90(3):1311</a>). No study has tested slide background color and alertness.</td>
+</tr>
+<tr class="even">
+<td>Pure black on white is fatiguing</td>
+<td>Session</td>
+<td>Not supported. Reading speed rises with contrast and then plateaus (<a href="https://legge.dl8.umn.edu/sites/legge.psych.umn.edu/files/files/media/legge90_psychophysics_of_reading._xi._comparing_luminance_and_color_contrast.pdf">Legge and colleagues, 1990, <em>J Opt Soc Am A</em> 7(10):2002</a>), and dark text on a light ground beats the reverse for acuity and proofreading (<a href="https://pubmed.ncbi.nlm.nih.gov/23654206/">Piepenbrock and colleagues, 2013, <em>Ergonomics</em> 56(7)</a>). Both are monitor studies, not projection.</td>
+</tr>
+<tr class="odd">
+<td>Aptos reads more easily than Arial</td>
+<td>Session</td>
+<td>No evidence found. Aptos replaced Calibri as the Office default on design grounds.</td>
+</tr>
+<tr class="even">
+<td>A brief blank between slides hides the visible jump</td>
+<td>Session</td>
+<td>Partly supported. In <a href="https://homepage.villanova.edu/diego.fernandezduque/Teaching/CognitivePsychology/Lectures_and_Labs/s3Attention/sReading/Rensink_etal_97.pdf">Rensink, O’Regan and Clark (1997, <em>Psychological Science</em> 8:368-373)</a>, a change took about 11 s to spot with a blank between images and under 1 s without. A blank hides jumps, and it also hides changes you want seen.</td>
+</tr>
+</tbody>
+</table>
+</div>
+</figure>
+</div>
+</section>
+<section id="pitfalls" class="level2" data-number="43.14">
+<h2 data-number="43.14" class="anchored" data-anchor-id="pitfalls"><span class="header-section-number">43.14</span> Pitfalls</h2>
+<ul>
+<li><strong>Reading the evidence as settled for your room.</strong> The effect sizes above come mostly from students learning unfamiliar material, not clinicians at a conference. They are the best evidence available, and they are not a measurement of your audience.</li>
+<li><strong>Trusting a color-vision-safe palette for contrast.</strong> Okabe-Ito separates hues for color-blind viewers; three of its seven colors still fall below 3:1 on white.</li>
+<li><strong>Treating the font-size floor as a finding.</strong> It is a sensible house rule with no study behind the number.</li>
+<li><strong>Citing session experience as evidence.</strong> The habits from the session are experience, and worth following. Most of the specific claims behind them did not survive checking (<a href="#tbl-slide-claims" class="quarto-xref">Table&nbsp;<span>43.3</span></a>), so don’t quote them as findings.</li>
+</ul>
+
+
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-ClevelandMcGill:1984" class="csl-entry" role="listitem">
+Cleveland, William S., and Robert McGill. 1984. <span>“Graphical Perception: Theory, Experimentation, and Application to the Development of Graphical Methods.”</span> <em>Journal of the American Statistical Association</em> 79 (387): 531–54. <a href="https://doi.org/10.1080/01621459.1984.10478080">https://doi.org/10.1080/01621459.1984.10478080</a>.
+</div>
+<div id="ref-Cowan:2001" class="csl-entry" role="listitem">
+Cowan, Nelson. 2001. <span>“The Magical Number 4 in Short-Term Memory: A Reconsideration of Mental Storage Capacity.”</span> <em>Behavioral and Brain Sciences</em> 24 (1): 87–114. <a href="https://doi.org/10.1017/S0140525X01003922">https://doi.org/10.1017/S0140525X01003922</a>.
+</div>
+<div id="ref-GarnerAlley:2013" class="csl-entry" role="listitem">
+Garner, Joanna K., and Michael Alley. 2013. <span>“How the Design of Presentation Slides Affects Audience Comprehension: A Case for the Assertion-Evidence Approach.”</span> <em>International Journal of Engineering Education</em> 29 (6): 1564–79. <a href="https://www.ijee.ie/articles/Vol29-6/23_ijee2791ns.pdf">https://www.ijee.ie/articles/Vol29-6/23_ijee2791ns.pdf</a>.
+</div>
+<div id="ref-HealeyEnns:2012" class="csl-entry" role="listitem">
+Healey, Christopher G., and James T. Enns. 2012. <span>“Attention and Visual Memory in Visualization and Computer Graphics.”</span> <em>IEEE Transactions on Visualization and Computer Graphics</em> 18 (7): 1170–88.
+</div>
+<div id="ref-HeerBostock:2010" class="csl-entry" role="listitem">
+Heer, Jeffrey, and Michael Bostock. 2010. <span>“Crowdsourcing Graphical Perception: Using <span>Mechanical Turk</span> to Assess Visualization Design.”</span> <em>Proceedings of the SIGCHI Conference on Human Factors in Computing Systems (CHI 2010)</em>. <a href="https://homes.cs.washington.edu/~jheer/files/2010-MTurk-CHI.pdf">https://homes.cs.washington.edu/~jheer/files/2010-MTurk-CHI.pdf</a>.
+</div>
+<div id="ref-MayerFiorella:2014" class="csl-entry" role="listitem">
+Mayer, Richard E., and Logan Fiorella. 2014. <span>“Principles for Reducing Extraneous Processing in Multimedia Learning: Coherence, Signaling, Redundancy, Spatial Contiguity, and Temporal Contiguity Principles.”</span> In <em>The Cambridge Handbook of Multimedia Learning</em>, 2nd ed., edited by Richard E. Mayer. Cambridge University Press.
+</div>
+<div id="ref-MayerPilegard:2014" class="csl-entry" role="listitem">
+Mayer, Richard E., and Celeste Pilegard. 2014. <span>“Principles for Managing Essential Processing in Multimedia Learning: Segmenting, Pretraining, and Modality Principles.”</span> In <em>The Cambridge Handbook of Multimedia Learning</em>, 2nd ed., edited by Richard E. Mayer. Cambridge University Press.
+</div>
+<div id="ref-OkabeIto:CUD" class="csl-entry" role="listitem">
+Okabe, Masataka, and Kei Ito. n.d. <em>Color Universal Design</em>. <a href="https://jfly.uni-koeln.de/color/">https://jfly.uni-koeln.de/color/</a>.
+</div>
+<div id="ref-WCAG22:2023" class="csl-entry" role="listitem">
+World Wide Web Consortium. 2023. <em>Web Content Accessibility Guidelines (<span>WCAG</span>) 2.2</em>. W3C Recommendation. <a href="https://www.w3.org/TR/WCAG22/">https://www.w3.org/TR/WCAG22/</a>.
+</div>
+</div>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./researchday.html" class="pagination-link" aria-label="Posters and research day">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">42</span>&nbsp; <span class="chapter-title">Posters and research day</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./presentations.html" class="pagination-link" aria-label="Slides and presentations">
+        <span class="nav-page-text"><span class="chapter-number">44</span>&nbsp; <span class="chapter-title">Slides and presentations</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>Copyright 2025, John Ehrlinger</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    </div>
+    <div class="nav-footer-right">
+      <ul class="footer-items list-unstyled">
+    <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/ehrlinger/hvtiGraphics">
+      <i class="bi bi-github" role="img">
+</i> 
+    </a>
+  </li>  
+</ul>
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
