@@ -17,8 +17,8 @@ clinical slide is decided when the talk is planned (a topic title, six bullets,
 a table pasted from the manuscript) and no theme argument fixes it later.
 
 It is also the place to settle an argument. Each recommendation below names
-the study or standard it rests on, so "the guidelines say so" can be checked
-rather than taken on trust.
+the study, standard or experience it rests on, so "the guidelines say so" can
+be checked rather than taken on trust.
 
 ## The central principle
 
@@ -173,7 +173,12 @@ rather than a tested effect. Treat it as a house convention, not a finding.
 
 The group's slide rules go back to Blackstone's *Physiologic Approach to
 Presentations* talk, the Research Day guides and the "Yahoo" slide templates.
-Most of them hold up against the evidence above, and stay: nothing
+The Yahoo rules themselves came from about three months of audience-response
+and eye-tracking testing that Yahoo ran for the Cleveland Clinic, commissioned
+by Toby Cosgrove (Eugene Blackstone, unpublished lecture, April 8, 2026). The
+Yahoo report has not been found, so we cannot check its methods or its numbers.
+
+Most of the rules hold up against the evidence above, and stay: nothing
 extraneous, write the talk first, open and close with bookends, leave out
 methods and statistics unless they are central, and convert tables to graphs.
 
@@ -189,29 +194,171 @@ What changes is narrower than it might look.
   4.5:1 and 3:1, and use Okabe-Ito for series.
 - **Sorted bar or dot charts** replace pie charts.
 - **16:9** is the standard; the 4:3 template is retired.
+- **Background shading** (darker at the top, lighter at the bottom) is
+  dropped. Yahoo's unpublished testing reportedly favored it, but we found no
+  published evidence for it (see the checked claims at the end of this
+  chapter).
 
 The 32 pt minimum type size stays as a house rule, but read it as a house rule.
 No study we found sets a minimum font size for a room. Fixed word limits such as
 "7x7" are folklore with no evidence behind them; ask what work the slide asks
 of the audience instead.
 
-## Delivery and talk structure
+## Building the talk
 
-These carry over from the older rules unchanged. A listener hears the talk
-once, in order, and relies on the signposts you give; a reader can skim, and a
-listener cannot. Write the talk first (for a short talk, the two- or
-three-sentence message, often the conclusions), then build slides to support
-it.
+This section and the three after it come from Dr. Eugene Blackstone's resident
+education session on Research Day talks (unpublished lecture, April 8, 2026),
+which updates his *Physiologic Approach to Presentations* deck. Its core
+argument is the one this chapter opened with. A listener hears the talk once,
+in order, cannot go back, and thinks faster than you speak, so the talk has to
+keep listening easy. The sections above rest on published experiments; these
+rest on experience at the podium. Where the two overlap, we say
+how they fit.
 
-- **Bookends.** A clear opening and a clear ending. Say "thank you" so the
-  audience knows you are done.
-- **Order.** Objectives as the roadmap, then "nuggets" of discovery in the same
-  order (methods only if needed, results, discussion), then the take-home
+1. **Know the frame.** Find out the time limit and the audience. Research Day
+   is 6 minutes, enforced, and many national meetings allow 5. A mixed room of
+   cardiac, thoracic and congenital surgeons shares little vocabulary, so
+   define your terms and drop abbreviations and jargon.
+2. **Write the message first.** Two or three sentences, usually your
+   conclusions. A good abstract already contains the whole talk. The message
+   sets the order, and anything that doesn't serve it comes out.
+3. **Tell a story, not IMRD.** Introduction, methods, results, discussion is
+   built for a reader who skips around strategically; a listener takes the talk
+   serially. Reveal each piece just in time, so a method or an endpoint sits
+   next to the result that needs it rather than in a methods block up front.
+   It fits pre-training (@tbl-slide-mayer) as well: define a term before the
+   result that uses it, and as close to that result as you can.
+4. **Announce the structure and keep it.** If you say X, Y and Z, cover them
+   in that order and use the same words for them every time.
+5. **Chapters.** Turn each objective into a chapter with a one-second heading
+   slide ("Early outcomes", then "Late outcomes"), so the audience always knows
+   where they are. These are the section dividers that signaling asks for.
+6. **Bookends.** Open by setting the context quickly, and close by returning to
+   it with the clinical perspective. Use a motif in threes when it fits.
+7. **End on the message, not a summary.** A 6-minute talk is already a
+   summary. State the take-home message, then say "Thank you."
+
+## Slide habits from the session
+
+- **Pace, not slide count.** Plan on about 3 slides a minute, so at least a
+  dozen for a 5-minute talk. A minute per slide means too much on each slide.
+  What makes that pace possible is the Cosgrove rule, one idea per slide. Read
+  it alongside "one task at a time" above: one idea is the default, and two
+  ideas share a slide only when the relationship between them is the idea.
+- **Slides support the talk.** They are not a script to read, and they need
+  not be on all the time. A blank or black slide puts the attention back on
+  you.
+- **Meeting templates.** Use the meeting's template for the title and
+  disclosure slides only. Drop watermarks and logos everywhere else, which is
+  what coherence asks for too.
+- **Room light sets the background.** Light background in a lit room, dark
+  background in a dark room. Ask about the room before the meeting; it can
+  change the day before. The contrast table above is measured against white, so
+  check a dark-background deck against the same 4.5:1 and 3:1 thresholds.
+- **Same place every time.** Keep titles, figures and labels in the same
+  positions across slides so the eye knows where to land. Break the pattern
+  only on purpose, such as a chapter heading.
+- **Speak in reading order.** Lay the items out top to bottom and left to
+  right, and present them in that order. Don't count on the eye following a
+  fixed path, though; the session's scan order did not hold up (see the
+  checked claims below). The headline and the highlight are what direct
+  attention.
+- **Orient first.** The first sentence on a new slide tells the audience how to
+  read it ("Fungal is red, non-fungal is yellow"), before any result. That is
+  pre-training at the scale of one slide.
+- **Labels at full size.** Labels inside a figure (RCA, LCA) follow the same
+  32 pt floor as the rest of the text.
+- **Order follows the talk.** The charts section says to replace a pie with a
+  sorted bar or dot chart. If you must keep a pie, order the slices the way you
+  will discuss them, not largest to smallest.
+- **Bar direction.** Consider horizontal bars with the category labels on the
+  left when the labels are long. They fit, and each is read next to its bar.
+  The claim that lay viewers read horizontal bars more easily did not hold up,
+  so choose the direction for the labels, not for the audience.
+- **No jumping slides.** Test the deck on the room's projector so the slides
+  don't visibly jump between transitions. The Research Day team can help. A
+  brief blank between slides hides the jump, but it also hides changes you
+  want seen, so never put one between the steps of a build-up.
+- **Images face into the slide.** A person in a photograph should look toward
+  the slide's content or the other image, not off the edge.
+
+## Delivery
+
+Reading a short talk is fine. Most senior speakers do it because of the time
+limits; what matters is that it doesn't sound read.
+
+- **The speech box.** This is the presidential "blue box" format, used from
+  FDR through Clinton. Every sentence is its own paragraph, in large type, with
+  an arrow marking where it continues, and you slide each page down as you go.
+  The group has four boxes to lend for Research Day.
+- **Eyes up at both ends.** Look up at the start and at the end of each
+  sentence, and down only in the middle. The audience reads that as speaking,
+  and it slows you to a pace they can follow.
+- **Voice.** Active and first person ("I did X; this is what I found"),
+  semi-conversational, with energy and a good attitude. The audience is on your
+  side.
+- **Keep the audience in the present.** Pair ideas ("on the one hand ... on the
+  other"), set up comparisons so they anticipate the result, pause or change
+  pace to reset attention, and repeat the key point.
+- **Face the audience, not the slides.** Keep a laser pointer steady; simple
+  slides need none.
+
+## Questions and answers
+
+Treat the question period as part of the talk. Its purpose is to get the
+message across again, and it is often the last impression people take away.
+Research Day judges reward speakers who clearly know their work.
+
+**Prepare.**
+
+- Anticipate the questions with your sponsor and other knowledgeable people
+  beforehand. You are not doing this alone.
+- Know your study's limitations: what you did not study, and what you cannot
+  conclude.
+- Go in as the expert. On this subject, in this room, you know the data best.
+
+**Avoid.**
+
+- Answering with a paragraph when a sentence will do. It wanders off the
   message.
-- **Threes.** Group points in threes.
-- **Easy listening.** One idea per sentence, semi-conversational, active voice.
-- **Delivery.** Face the audience, not the slides. Keep a laser pointer steady;
-  simple slides need none.
+- Promissory notes ("we'll run that study and report back").
+- Passing the question to your staff in the audience. If you don't know, say
+  so and move on.
+- Losing control to a hostile questioner.
+
+**Steer back to the message.**
+
+- Answer the question the questioner should have asked, ideally with something
+  you already said, so the message repeats. Bridges such as "what may not be
+  apparent here is ..." or "I'd like to return to what matters most" do this.
+- **Silence.** If no one asks anything, ask yourself one ("You may be
+  wondering ..."). It keeps the message going and often starts real questions.
+- **Someone shares their own experience.** Thank them and tie it to your
+  message.
+- **A hostile question.** Correct a false statement plainly, use
+  non-inflammatory words ("limitation", not "flaw"), skip sarcasm, and say only
+  what you know to be true.
+
+## Claims from the session, checked
+
+Some of the advice above rests on specific claims, from the session or from
+Yahoo's original testing, which has not been published. We checked each one
+against published evidence. Most did not hold up as stated. The habits above
+stay, adjusted where a claim they leaned on failed, and the claims stay out of
+the evidence sections.
+
+| Claim | Source | Verdict |
+|--------------|------|------------------------|
+| Speakers talk at about 114 words a minute while listeners think at about 300, leaving two-thirds of attention free | Session | Not supported as stated. It traces to [Nichols and Stevens (1957, *Harvard Business Review*, "Listening to People")](https://ombuds.columbia.edu/sites/default/files/content/pics/30%20Anniv/Listening%20to%20People.pdf), who give speech as about 125 words a minute and thought as "much higher"; the 300 and the two-thirds were added in retellings. Spare listening capacity is plausible but unmeasured. |
+| Viewers scan a slide top to bottom, left to right, then clockwise | Yahoo eye tracking (unpublished) | Not supported. No Yahoo study was found. Eye tracking shows an F-shaped pattern only for unformatted text being skimmed, not a clockwise one, and headings and cues override it ([Nielsen Norman Group](https://www.nngroup.com/articles/f-shaped-pattern-reading-web-content/)). |
+| Shading darker at the top and lighter at the bottom reads more easily | Yahoo audience response (unpublished) | No evidence found. Dropped. |
+| Lay viewers read horizontal bar charts more easily than vertical ones | Session | Not supported. [Koesten and colleagues (2023)](https://arxiv.org/abs/2310.13713) found vertical bars rated more readable; earlier work is mixed. Horizontal bars are still useful for long labels. |
+| Blue backgrounds keep audiences alert | Session | Not supported. The alerting effect of blue light comes from hours of intense short-wavelength light ([Cajochen and colleagues, 2005, *J Clin Endocrinol Metab* 90(3):1311](https://pubmed.ncbi.nlm.nih.gov/15585546/)). No study has tested slide background color and alertness. |
+| Pure black on white is fatiguing | Session | Not supported. Reading speed rises with contrast and then plateaus (Legge and colleagues, 1990, *J Opt Soc Am A* 7(10):2002), and dark text on a light ground beats the reverse for acuity and proofreading ([Piepenbrock and colleagues, 2013, *Ergonomics* 56(7)](https://pubmed.ncbi.nlm.nih.gov/23654206/)). Both are monitor studies, not projection. |
+| Aptos reads more easily than Arial | Session | No evidence found. Aptos replaced Calibri as the Office default on design grounds. |
+| A brief blank between slides hides the visible jump | Session | Partly supported. In Rensink, O'Regan and Clark (1997, *Psychological Science* 8:368-373), a change took about 11 s to spot with a blank between images and under 1 s without. A blank hides jumps, and it also hides changes you want seen. |
+
+: Claims from the April 2026 session and the unpublished Yahoo testing, checked against published evidence. {#tbl-slide-claims tbl-colwidths="[28,14,58]"}
 
 ## Pitfalls
 
@@ -224,3 +371,6 @@ it.
   on white.
 - **Treating the font-size floor as a finding.** It is a sensible house rule
   with no study behind the number.
+- **Citing session experience as evidence.** The habits from the session are
+  experience, and worth following. Most of the specific claims behind them did
+  not survive checking (@tbl-slide-claims), so don't quote them as findings.
