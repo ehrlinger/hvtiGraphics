@@ -15,6 +15,7 @@ receives it.
 | When does the figure need a legend and how should it read? | [Using legends](legends.qmd) | Builds legends that explain the visual encoding without taking over the plot. |
 | How do I arrange several panels into one figure? | [Combination figures](combination.qmd) | Combines plots into a manuscript-ready layout. |
 | Which table belongs beside this figure? | [Tables that accompany figures](figure_tables.qmd) | Builds the small supporting tables a figure needs. |
+| How do I make every figure and table citable by number? | [Numbering figures and tables](numbering.qmd) | Labels and captions that Quarto numbers, including one figure per item in a loop. |
 | How do I export at the right size for submission? | [Preparing figures for manuscripts](manuscripts.qmd) | Handles panel dimensions and submission formats. |
 | How do I make the figure readable on a poster? | [Posters and research day](researchday.qmd) | Uses the scale and text size needed at a distance. |
 | How do I prepare the figure for a talk? | [Slides and presentations](presentations.qmd) | Finishes the plot for a presentation audience. |

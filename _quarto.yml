@@ -65,6 +65,7 @@ book:
         - legends.qmd
         - combination.qmd
         - figure_tables.qmd
+        - numbering.qmd
         - manuscripts.qmd
         - researchday.qmd
         - slide_design.qmd

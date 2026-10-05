@@ -1,0 +1,116 @@
+# Numbering figures and tables
+
+A reviewer who writes "the second survival curve in the eligibility section"
+has already lost a minute finding it; one who writes "Figure 5.2" has not.
+Quarto will number every figure and table in a report or a book, and keep the
+numbers right as chapters grow, but only for the ones it recognizes. This
+recipe is about making sure it recognizes all of them.
+
+## When to use it
+
+Always, in anything longer than a page that someone will read and discuss: an
+analysis report for co-authors, a research notebook, a job built from an
+`hvtiRtemplates` template. A figure without a number cannot be cited in a
+comment, a slide, or an email, and a table caption that prints without a
+number looks finished when it is not.
+
+## The rule
+
+Quarto numbers a figure when its chunk label starts with `fig-` **and** the
+chunk has a `fig-cap`, and a table when its label starts with `tbl-` and the
+chunk has a `tbl-cap`. Both halves matter. A caption alone prints, unnumbered,
+and a `fig-` label with no caption is not numbered either.
+
+```{{r}}
+#| label: fig-km-repair
+#| fig-cap: "Freedom from death or transplant by repair, with the number at risk."
+plot(km)
+```
+
+```{{r}}
+#| label: tbl-cohort
+#| tbl-cap: "Preoperative characteristics by repair: median (15th, 85th percentile) or n (%)."
+knitr::kable(cohort_table)
+```
+
+Refer to them as `@fig-km-repair` and `@tbl-cohort`; Quarto writes "Figure
+2.1" and "Table 3.4" and links to them. In a book the chapter number comes
+first, so renumbering a chapter renumbers its figures without your help.
+
+## Table captions go in `tbl-cap`
+
+`knitr::kable(caption = "...")` is the habit most of us bring from R Markdown,
+and it still prints a caption. But Quarto does not see it as a table caption,
+so the table gets no number and `@tbl-` cannot reach it. Move the text into
+`tbl-cap` and drop the argument; leaving both prints the caption twice. A
+caption built from data works too:
+
+```{{r}}
+#| label: tbl-designs
+#| tbl-cap: !expr paste0("The four designs. ", primary_design, " is the primary analysis.")
+knitr::kable(designs)
+```
+
+The objects the expression uses must exist before the chunk runs, so compute
+them in an earlier chunk.
+
+## One output, one chunk
+
+A chunk carries one label, so it can carry one number. A chunk that prints a
+table and then a figure needs splitting into two, each with its own label and
+caption; keep the shared computation and any file writes in the first. The
+exception is a chunk whose `kable()` calls are alternatives, an `if`/`else`
+that prints one table or the other: it still shows one table and keeps one
+label.
+
+## A figure per item
+
+The awkward case is a loop that draws one figure per variable, say a
+partial-dependence figure for each predictor a forest selected. One chunk
+cannot label twenty figures. Instead, build the plots in the loop and emit
+each one as its own child chunk with `knitr::knit_child()`, inside a chunk
+with `results: asis`:
+
+```{{r}}
+#| results: asis
+fence <- strrep("`", 3)
+children <- vapply(seq_along(plots), function(i) knitr::knit_child(text = paste(c(
+  paste0("\n\n#### ", headings[i], "\n"),
+  paste0(fence, "{r}"),
+  paste0("#| label: fig-partial-", keys[i]),
+  paste0('#| fig-cap: "', headings[i], ': partial dependence."'),
+  sprintf("print(plots[[%d]])", i),
+  fence, ""), collapse = "\n"), envir = environment(), quiet = TRUE), character(1))
+cat(children, sep = "\n")
+```
+
+Each figure gets its heading, its number and a label you can cite
+(`@fig-partial-lv-size`). The keys go into labels, so keep them to lowercase
+letters, digits and hyphens, and stop if two collide. The fence is built with
+`strrep()` so that the three backticks inside the chunk do not close it early.
+
+## Where the caption sits
+
+Quarto puts a figure's caption below it and a table's caption above it, and we
+keep those defaults. They are the journals' convention too: a table's title
+is read before its rows, and a figure's legend after the picture. The house
+JTCVS table export, `hvtiRtables::hv_man_table_save_jtcvs()` (see [Manuscript
+tables](hv_tables.qmd)), puts the bold caption above the table for
+the same reason.
+
+## Pitfalls
+
+- **A caption with no number.** The caption is there, so the figure looks
+  done. Check the rendered page for "Figure" in front of the caption, or let a
+  test check the source (below).
+- **A rename that breaks a test.** Renaming `km-repair` to `fig-km-repair` is
+  harmless to Quarto, but a test that extracts the chunk by its label will no
+  longer find it. Search the tests before renaming.
+- **A `fig-` chunk that draws nothing.** Quarto expects a figure from a
+  `fig-` chunk. A chunk that only fits a model or prints a summary is not a
+  figure; leave it unlabelled.
+- **Hand-written numbers.** "As Figure 3 shows" goes stale the first time a
+  figure is added above it. Write `@fig-...` and let Quarto count.
+
+`hvtiRtemplates` checks every template against this rule in
+`test-template-numbering.R`, so a job built from a template starts numbered.
