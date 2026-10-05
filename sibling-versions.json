@@ -1,9 +1,9 @@
 {
-  "rendered": "2026-10-02",
+  "rendered": "2026-10-05",
   "r": "4.6.1",
   "packages": {
     "hvtiR": "1.2.5",
-    "hvtiPlotR": "2.8.4",
+    "hvtiPlotR": "2.8.5",
     "hvtiRutilities": "1.4.4",
     "hvtiRtables": "1.0.3",
     "TemporalHazard": "1.2.12",
