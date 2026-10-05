@@ -55,8 +55,10 @@ o <- varpro(SalePrice ~ ., data = housing, ntree = 100)
 plot(gg_varpro(o, nvar = 20)) + theme_hv_manuscript()
 ```
 
-`gg_varpro()` returns an honest 15/85 boxplot for each variable. With 80
-predictors we pass `nvar = 20` to show the top-ranked; the box spans the
+`gg_varpro()` returns a percentile boxplot for each variable: hinges at the
+15th and 85th percentiles, whiskers at the 5th and 95th, and no outlier points.
+It is not a Tukey box; [box plots](boxplots.qmd) builds the same box by hand.
+With 80 predictors we pass `nvar = 20` to show the top-ranked; the box spans the
 importance values obtained when the variable is released across the rule
 ensemble, and the dashed reference line at the `cutoff` (default 0.79 of the top
 score on the local-standardized scale) separates selected from unselected
@@ -86,7 +88,7 @@ plot(gg_varpro(o, nvar = 8)) + theme_hv_manuscript()
 
 ## Read it
 
-The 15/85 boxplot is the figure to learn to read, and the cutoff line is what
+The percentile boxplot is the figure to learn to read, and the cutoff line is what
 makes it a *selection* rather than just a ranking.
 
 - **The cutoff line decides membership.** Boxes to the right of the dashed line
