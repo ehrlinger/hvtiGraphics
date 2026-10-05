@@ -172,7 +172,7 @@ with `guide = "none"` rather than spend panel space on it.
 #| fig-cap: "Box plot with each box filled by group from a palette, with the redundant legend dropped"
 ggplot(dat, aes(x = .data[[grp]], y = .data[[num]], fill = .data[[grp]])) +
   geom_boxplot() +
-  scale_fill_brewer(palette = "Set1", guide = "none") +
+  scale_fill_manual(values = hv_ppt_palette("light"), guide = "none") +
   labs(
     title = "Numeric distribution by group, filled",
     x = "Valve morphology",

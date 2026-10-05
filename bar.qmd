@@ -207,8 +207,8 @@ effect or explain why practice changed.
 
 Columns with more than two numeric levels render as stacked count bars, one
 level per fill colour. For an ordered grade such as NYHA class, the colours of
-the diverging `"RdYlGn"` palette carry the severity ordering visually, from
-green at the mild end through yellow to red at the severe end, so the reader
+the diverging `"RdBu"` palette carry the severity ordering visually, from
+blue at the mild end through pale tints to red at the severe end, so the reader
 sees worsening case mix without reading the legend. Pin each colour to its
 class by name with `scale_fill_manual()`. A positional palette such as
 `scale_fill_brewer(direction = -1)` assigns colours in the order of the factor
@@ -223,8 +223,8 @@ run.
 plot(hv_eda(dta_eda, x_col = "year", y_col = "nyha",
             y_label = "Preoperative NYHA Class")) +
   scale_fill_manual(
-    values  = c("1" = "#1A9641", "2" = "#A6D96A", "3" = "#FDAE61",
-                "4" = "#D7191C", "(Missing)" = "grey80"),
+    values  = c("1" = "#0571B0", "2" = "#92C5DE", "3" = "#F4A582",
+                "4" = "#CA0020", "(Missing)" = "grey80"),
     labels  = c("1" = "I", "2" = "II", "3" = "III", "4" = "IV",
                 "(Missing)" = "Missing"),
     name    = "NYHA"

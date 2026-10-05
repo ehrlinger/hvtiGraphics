@@ -17,7 +17,7 @@ obj <- hv_survival(data, time_col = "time", event_col = "status")
 
 # 2. Plot: get a bare ggplot, then decorate it with the usual + operator.
 plot(obj) +
-  scale_colour_brewer(palette = "Set1") +
+  scale_colour_manual(values = hv_ppt_palette("light")) +
   labs(x = "Years", y = "Survival") +
   theme_hv_manuscript()
 ```

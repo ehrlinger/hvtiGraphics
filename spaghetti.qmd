@@ -233,7 +233,7 @@ calendar time caused the outcome to change.
 
 When `group_col` is set, the constructor computes per-group annual means for the
 points and `plot()` fits a raw-observation smoother within each group. Pairing
-`scale_colour_brewer()` with
+`scale_colour_manual()` with the house palette and
 `scale_shape_manual()` gives each group both a distinct colour and a distinct
 marker, so the figure stays readable when it is printed or photocopied in
 greyscale.
@@ -245,7 +245,7 @@ tr <- hv_trends(dta_tr)
 tr$meta
 head(tr$tables$summary)
 plot(tr) +
-  scale_colour_brewer(palette = "Set1", name = "Group") +
+  scale_colour_manual(values = hv_ppt_palette("light"), name = "Group") +
   scale_shape_manual(
     values = c("Group I" = 15L, "Group II" = 19L,
                "Group III" = 17L, "Group IV" = 18L),
