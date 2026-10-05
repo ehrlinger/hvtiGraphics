@@ -185,6 +185,48 @@ When the fill encodes a *second* variable the boxes are dodged by, not the
 x-axis group, the legend earns its place; keep it then, placed inside the panel
 so it does not crowd the boxes.
 
+### The house percentile box
+
+Everything above is a Tukey box, which is what `geom_boxplot()` draws. Our
+house box is a different one. Its hinges sit at the 15th and 85th percentiles,
+its whiskers run to the 5th and 95th, and it draws no outlier points. The
+percentiles match the median (15th, 85th) summary our
+[manuscript tables](hv_tables.qmd) report, so a figure and its table describe
+a group with the same numbers. It is also the box `gg_varpro()` draws in the
+[variable priority](varpro.qmd) chapter, whose plot carries the caption "Not a
+Tukey boxplot".
+
+`geom_boxplot()` has no argument for other percentiles, so we compute the five
+numbers per group and hand them over with `stat = "identity"`.
+
+```{r}
+#| label: fig-boxplots-percentile
+#| fig-cap: "House percentile box: the median line, hinges at the 15th and 85th percentiles, and whiskers to the 5th and 95th, with no outlier points"
+pct <- do.call(rbind, lapply(split(dat[[num]], dat[[grp]]), function(y) {
+  q <- quantile(y, c(0.05, 0.15, 0.50, 0.85, 0.95), na.rm = TRUE)
+  data.frame(ymin = q[1], lower = q[2], middle = q[3], upper = q[4], ymax = q[5])
+}))
+pct$group <- rownames(pct)
+
+ggplot(pct, aes(x = group, ymin = ymin, lower = lower, middle = middle,
+                upper = upper, ymax = ymax)) +
+  geom_boxplot(stat = "identity") +
+  labs(
+    title = "Percentile box by group",
+    x = "Valve morphology",
+    y = "Ejection fraction (%)",
+    caption = "Hinges: 15th/85th percentiles; whiskers: 5th/95th. Not a Tukey boxplot."
+  ) +
+  theme_hv_manuscript()
+```
+
+Two things change in how you read it. The box now holds the middle 70% of the
+group rather than the middle half, so it is taller than a Tukey box drawn from
+the same data. The whiskers are fixed percentiles with no outlier rule behind
+them, so 10% of the group lies beyond them by construction, and nothing past
+the whiskers is singled out. Say so in the caption every time, as the
+`caption` here does, because a reader will assume Tukey otherwise.
+
 ## Deliver it
 
 When the group definition and box rule are clear in the caption, continue to
@@ -207,6 +249,10 @@ jittered or variable-width version rather than the bare box alone.
   are flagged as outliers by that rule. A long whisker does not mean the data run
   exactly that far, and an "outlier" point is a statistical flag, not a verdict
   that the value is wrong.
+- **Mixing box rules without saying so.** This book draws two kinds of box: the
+  Tukey box from `geom_boxplot()` and the house percentile box. They look the
+  same and summarise different things. State the rule in every caption, and
+  keep to one rule within a figure.
 - **Too many or unordered groups.** Past five or six categories the boxes get too
   narrow to compare; and leaving them in alphabetical order when the variable has
   a natural order (severity, era) makes the trend harder to see than reordering
