@@ -190,7 +190,7 @@ dta_trends <- sample_trends_data(n = 600, seed = 42)
 p_base     <- plot(hv_trends(dta_trends))
 
 p_base +
-  scale_colour_brewer(palette = "Set1", name = "Group") +
+  scale_colour_manual(values = hv_ppt_palette("light"), name = "Group") +
   scale_shape_manual(
     values = c("Group I" = 15, "Group II" = 19,
                "Group III" = 17, "Group IV" = 18),

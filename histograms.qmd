@@ -290,12 +290,12 @@ sh$meta[c("x_col", "group_col", "binwidth", "position", "n_obs", "n_groups")]
 p_count <- plot(sh)
 
 p_count +
-  scale_fill_brewer(
-    palette = "Set1",
+  scale_fill_manual(
+    values = hv_ppt_palette("light"),
     labels = c("1" = "Group A", "2" = "Group B", "3" = "Group C"),
     name = "Category"
   ) +
-  scale_color_brewer(palette = "Set1", guide = "none") +
+  scale_colour_manual(values = hv_ppt_palette("light"), guide = "none") +
   labs(x = "Year", y = "Count") +
   theme_hv_manuscript() +
   theme(legend.position = "right")

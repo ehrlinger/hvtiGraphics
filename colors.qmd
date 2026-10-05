@@ -60,17 +60,31 @@ plot(km) +
   theme_hv_manuscript()
 ```
 
-## ColorBrewer palettes
+## Choosing a palette
 
-`scale_colour_brewer()` applies a perceptually uniform, print-safe palette,
-which matters when figures go to black-and-white PDF. Use `palette = "Set1"`
-for categorical data, `"RdYlGn"` for diverging, `"Blues"` for sequential.
+Every figure in this book uses a colour-blind-safe palette, and so should
+yours. About one man in twelve has some red-green colour deficiency, which is
+enough that a reviewer, a co-author or a conference audience will include one.
+The house rule has three parts.
+
+- **Categorical groups** take the house palette, `hv_ppt_palette("light")`:
+  the Okabe-Ito hues, ordered for a white background. The `ppt` in the name is
+  history. It serves manuscripts as well as slides, and the
+  [next section](#the-house-slide-palette) explains the order.
+- **Ordered or diverging scales** take ColorBrewer's `"RdBu"` or `"PuOr"`, and
+  **sequential** scales take `"Blues"`, through `scale_fill_brewer()`.
+- **Avoid `"Set1"` and `"RdYlGn"`.** Both put red against green, the one
+  contrast colour blindness most often erases.
+
+Colour is still not enough on its own, because none of these palettes survive a
+greyscale printer. Pair it with a second channel, point shape or line type, as
+the figure below does.
 
 ```{r}
 #| label: fig-colors
-#| fig-cap: "Grouped trends plot coloured by a print-safe ColorBrewer Set1 palette, with a matched point shape per group"
+#| fig-cap: "Grouped trends plot coloured by the colour-blind-safe house palette, with a matched point shape per group"
 p_base +
-  scale_colour_brewer(palette = "Set1", name = "Group") +
+  scale_colour_manual(values = hv_ppt_palette("light"), name = "Group") +
   scale_shape_manual(
     values = c("Group I" = 15, "Group II" = 19,
                "Group III" = 17, "Group IV" = 18),
@@ -169,7 +183,7 @@ legend does not eat panel space.
 #| label: fig-colors-no-legend
 #| fig-cap: "The grouped plot with both colour and shape legends suppressed via guide = \"none\", relying on redundant colour and shape channels"
 p_base +
-  scale_colour_brewer(palette = "Dark2", guide = "none") +
+  scale_colour_manual(values = hv_ppt_palette("light"), guide = "none") +
   scale_shape_manual(
     values = c("Group I" = 15, "Group II" = 19,
                "Group III" = 17, "Group IV" = 18),

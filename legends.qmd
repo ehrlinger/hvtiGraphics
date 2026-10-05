@@ -51,7 +51,7 @@ over data.
 #| label: fig-legends
 #| fig-cap: "Grouped trends plot with the legend moved inside the panel via fractional coordinates and given a light background box"
 p_base +
-  scale_colour_brewer(palette = "Set1", name = NULL) +
+  scale_colour_manual(values = hv_ppt_palette("light"), name = NULL) +
   scale_shape_manual(
     values = c("Group I" = 15, "Group II" = 19,
                "Group III" = 17, "Group IV" = 18),
@@ -79,7 +79,7 @@ when no corner is clear. Apply it last, after the theme (which sets
 #| label: fig-legends-auto
 #| fig-cap: "The grouped trends plot with hv_legend_inside() choosing the emptiest corner automatically"
 p_auto <- p_base +
-  scale_colour_brewer(palette = "Set1", name = NULL) +
+  scale_colour_manual(values = hv_ppt_palette("light"), name = NULL) +
   scale_shape_manual(
     values = c("Group I" = 15, "Group II" = 19,
                "Group III" = 17, "Group IV" = 18),
@@ -108,7 +108,7 @@ multi-group figures where a corner legend would crowd the panel.
 #| label: fig-legends-bottom
 #| fig-cap: "The same plot with the legend placed horizontally below the panel, the common choice for multi-group figures"
 p_base +
-  scale_colour_brewer(palette = "Set1", name = "Group") +
+  scale_colour_manual(values = hv_ppt_palette("light"), name = "Group") +
   scale_shape_manual(
     values = c("Group I" = 15, "Group II" = 19,
                "Group III" = 17, "Group IV" = 18),
@@ -154,7 +154,7 @@ the colour/shape swatch.
 ```{r}
 #| label: text
 p_base +
-  scale_colour_brewer(palette = "Set1", name = "Group") +
+  scale_colour_manual(values = hv_ppt_palette("light"), name = "Group") +
   scale_shape_manual(
     values = c("Group I" = 15, "Group II" = 19,
                "Group III" = 17, "Group IV" = 18),

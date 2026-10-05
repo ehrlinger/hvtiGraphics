@@ -162,8 +162,9 @@ look for:
 When you only need to compare two time points, drop the middle axis and pass
 just two columns to `axes`. Use `axis_labels` to replace the raw column names
 with readable stage labels, and `annotate()` to call out the direction of
-change directly on the panel. A diverging Brewer palette (`RdYlGn`, reversed)
-maps naturally onto an ordered grade where green is good.
+change directly on the panel. A diverging Brewer palette (`RdBu`, reversed)
+maps naturally onto an ordered grade, blue for good and red for bad. Blue
+against red survives colour blindness; the familiar green against red does not.
 
 ```{r}
 #| label: fig-sankey-alluvial-twoaxis
@@ -186,9 +187,9 @@ plot(al2, show_labels = FALSE) +
     )),
     size = 3
   ) +
-  scale_fill_brewer(palette = "RdYlGn", direction = -1,
+  scale_fill_brewer(palette = "RdBu", direction = -1,
                     name = "AR Grade") +
-  scale_colour_brewer(palette = "RdYlGn", direction = -1,
+  scale_colour_brewer(palette = "RdBu", direction = -1,
                       guide = "none") +
   scale_y_continuous(expand = expansion(mult = c(0.02, 0.02))) +
   annotate("text", x = 1.5, y = 250,
@@ -240,8 +241,8 @@ plot(al_ms, show_labels = FALSE, show_yaxis = FALSE) +
     aes(label = after_stat(stratum)),
     size = 3
   ) +
-  scale_fill_brewer(palette = "Set1", name = NULL) +
-  scale_colour_brewer(palette = "Set1", guide = "none") +
+  scale_fill_manual(values = hv_ppt_palette("light"), name = NULL) +
+  scale_colour_manual(values = hv_ppt_palette("light"), guide = "none") +
   labs(title = "Mechanical circulatory support across the device course") +
   theme_hv_manuscript() +
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(),
