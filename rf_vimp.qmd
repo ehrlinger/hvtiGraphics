@@ -64,34 +64,23 @@ association.
 
 ## Expect the numbers to move
 
-Run this chapter on your own machine and the VIMP values will not match the
-ones printed here. That is not a seeding mistake, and you should know it
+Run this chapter on your own machine and the VIMP values may not match the
+ones printed here. That is not a seeding mistake, and you should know why
 before you quote a number from a forest into a manuscript.
 
-`set.seed()` fixes the forest for a given machine, and it holds. What it does
-not survive is a change of platform. Rebuilding the book on a Linux runner
-moved petal width's global score from 0.619 to 0.633 and reordered the rows
-beneath it, with the same seed, the same `randomForestSRC` version and the same
-R.
+`set.seed()` fixes the forest only when `randomForestSRC` grows it on one
+thread. On Linux it grows trees in parallel with OpenMP, and the order in which
+the threads finish feeds into the forest, so the same seed gives a different
+forest on every run. We measured this fit in a four-core Linux container: three
+runs in a row put petal width's global score at 0.630, 0.624 and 0.629. Set
+`options(rf.cores = 1)` and every run gives 0.619, the value printed here. The
+CRAN build for macOS has no OpenMP, so a Mac always grows on one thread.
 
-What moves is the forest, not the importance calculation. The plainest evidence
-is [Did the forest stabilize?](rf_error.qmd), which grows the same iris
-forest on the same seed and never asks for importance at all, and whose
-out-of-bag error still shifts in the third decimal across the same two
-machines. Nor is this a property of classification forests, since the
-classification forest in [How well does the forest predict?](rf_roc.qmd)
-reproduces exactly.
-
-Past that we are describing an association rather than a cause. When the whole
-book was rebuilt on Linux and each chapter's output compared against the cache
-this Mac had produced, the only forest chapters that moved were the two that
-fit on `iris`. The six other chapters that fit forests, between them using
-`pbc`, `veteran`, `SynthDiabetes`, `breast` and `housing`, came back unchanged.
-That is a comparison of chapter output rather than an audit of every forest a
-chapter grows, and several of them grow more than one. `iris` is measured to
-the nearest millimetre, so its 150 rows carry a great many exactly tied values
-and a split has to break those ties somehow. That is where we would look
-first.
+Nothing about `iris` or about classification causes this. The breast-cancer
+forest in [Variable priority with varPro](varpro.qmd) moves the same way, by
+enough to change which variables clear the selection cutoff. Put
+`options(rf.cores = 1)` at the top of any analysis whose numbers you need to
+reproduce, and expect the fit to take longer.
 
 The size of the shift is the useful part. Petal length and petal width sit far
 above both sepal measurements in every run we have looked at, and that
