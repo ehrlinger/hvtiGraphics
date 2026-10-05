@@ -283,6 +283,33 @@ against `main`; rule that out before re-rendering.
   invalidated every `tex.json` at a stroke, 42 of them: the next `--to pdf` re-executes
   the whole book, while `--to html` reads its cache untouched, verified with R
   off `PATH`.
+- **HTML figures are drawn by `ragg`, and the CI deep render is their
+  reference.** Until 2026-10-05 `_quarto.yml` named no HTML device, so a Mac
+  render went through `quartz` png, which embeds a colour profile and shifts
+  every colour it writes: `bar.qmd`'s `"firebrick"` (#B22222) was published as
+  #A0111A, and a #888888 grey as #757575. `ragg` writes the exact sRGB values on
+  both platforms. It does not make them identical. The themes ask for the empty
+  font family, which resolves to the system sans (Helvetica on the Mac, Nimbus
+  Sans on the runner), so a Mac render differs from CI in typeface and in the
+  layout that follows from it. Pinning one font was considered and deferred:
+  `base_family = ""` bypasses `systemfonts::register_font()`, so the fix belongs
+  in the theme defaults, not here. Treat the HTML cache adopted from a deep
+  render as the reference. A local re-render of one chapter is colour-exact but
+  set in a different typeface, and that is expected rather than drift.
+
+  Changing the device does not by itself re-execute anything locally. Measured
+  2026-10-05: with `dev: ragg_png` added under `format: html:`, `quarto render
+  --to html` executed 0 chapters and kept every quartz figure. Deleting the
+  HTML caches forces it and leaves the PDF ones alone:
+
+  ```
+  rm -f _freeze/*/execute-results/html.json
+  rm -rf _freeze/*/figure-html .quarto _book *_files
+  ```
+
+  That contradicts the `quartz_pdf` entry above, which records a device change
+  invalidating every PDF cache. It has not been re-tested, so do not rely on
+  either result without measuring.
 
 ## Git and versioning
 

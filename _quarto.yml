@@ -86,6 +86,14 @@ format:
     number-sections: true
     toc: true
     toc-depth: 3
+    # Figures go through ragg, not R's default png() device. On macOS that
+    # default is quartz, which embeds a colour profile and shifts every value
+    # it writes: "firebrick" (#B22222) came out #A0111A and a #888888 grey
+    # #757575, while a Linux render wrote them exactly. ragg writes the exact
+    # sRGB values on both, so a figure no longer depends on where it was drawn.
+    knitr:
+      opts_chunk:
+        dev: ragg_png
   pdf:
     documentclass: scrreprt
     keep-tex: true
