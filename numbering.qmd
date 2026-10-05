@@ -74,6 +74,7 @@ with `results: asis`:
 
 ```r
 #| results: asis
+stopifnot(!anyDuplicated(keys))   # each key becomes a label; two alike would collide
 fence <- strrep("`", 3)
 children <- vapply(seq_along(plots), function(i) knitr::knit_child(text = paste(c(
   paste0("\n\n#### ", headings[i], "\n"),
@@ -87,7 +88,8 @@ cat(children, sep = "\n")
 
 Each figure gets its heading, its number and a label you can cite
 (`@fig-partial-lv-size`). The keys go into labels, so keep them to lowercase
-letters, digits and hyphens, and stop if two collide. The fence is built with
+letters, digits and hyphens; the `stopifnot()` at the top halts the render
+if two collide, rather than letting `@fig-` point at the wrong figure. The fence is built with
 `strrep()` so that the three backticks inside the chunk do not close it early.
 
 ## Where the caption sits
