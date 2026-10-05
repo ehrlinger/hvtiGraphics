@@ -170,16 +170,25 @@ oc <- varpro(status ~ ., data = breast, ntree = 100)
 plot(gg_ivarpro(oc)) + theme_hv_manuscript()
 ```
 
-Each panel summarises how strongly individual observations rely on a given
-variable. You can focus on a single outcome level with `which_class`, here the
-recurrence class:
+Each row shows how strongly individual patients' predictions rely on one
+variable, one point per patient. On a two-level outcome `gg_ivarpro()` explains
+the last level, here `R`, so each point is a local slope in the predicted
+probability of recurrence, and for positive nodes (`pnodes`) the slopes are
+mostly positive: the forest's recurrence probability rises with node count.
+
+The other level adds nothing new. The two class probabilities sum to one, so
+the slopes for `N` are the same slopes with the sign reversed, which
+`which_class` shows:
 
 ```{r}
 #| label: fig-varpro-ivarpro-class
-#| fig-cap: "Individual variable priority focused on the recurrence class of the breast fit via the which_class argument"
+#| fig-cap: "Individual variable priority for the no-recurrence class of the breast fit, chosen with which_class: the recurrence slopes with their sign reversed"
 #| fig-height: 5.5
-plot(gg_ivarpro(oc, which_class = "R")) + theme_hv_manuscript()
+plot(gg_ivarpro(oc, which_class = "N")) + theme_hv_manuscript()
 ```
+
+`which_class` earns its keep on an outcome with three or more levels, where each
+class has a profile of its own.
 
 ### Conditional priority by class
 
@@ -194,6 +203,11 @@ the regression fit.
 #| fig-height: 5.5
 plot(gg_varpro(oc, conditional = TRUE, nvar = 15)) + theme_hv_manuscript()
 ```
+
+Every facet keeps the overall ranking, ordered by each variable's median
+importance, so within a class a row can carry a longer bar than the row above
+it. `pnodes` does that here: it scores higher than `worst_smoothness` in both
+classes, although `worst_smoothness` leads overall.
 
 ### Anomaly / isolation scores
 
