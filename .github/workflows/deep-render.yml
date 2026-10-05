@@ -29,6 +29,13 @@ jobs:
   deep-render:
     runs-on: ubuntu-latest
     timeout-minutes: 90
+    env:
+      # randomForestSRC grows trees with OpenMP on Linux, and a multithreaded
+      # forest ignores set.seed(): the same seed gives a different forest on
+      # every run. One thread makes the render reproducible and identical to a
+      # Mac render, whose CRAN build has no OpenMP. get.rf.cores() reads this
+      # whenever options(rf.cores) is unset. Measured 2026-10-05.
+      RF_CORES: "1"
 
     steps:
       - name: Check out repository
