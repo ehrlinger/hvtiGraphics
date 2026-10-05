@@ -67,9 +67,10 @@ yours. About one man in twelve has some red-green colour deficiency, which is
 enough that a reviewer, a co-author or a conference audience will include one.
 The house rule has three parts.
 
-- **Categorical groups** take the house palette, `hv_ppt_palette("light")`:
-  the Okabe-Ito hues, ordered for a white background. The `ppt` in the name is
-  history. It serves manuscripts as well as slides, and the
+- **Categorical groups** take the house palette, `hv_palette()`: the
+  Okabe-Ito hues, ordered for a white background. It returns the same six
+  colours as `hv_ppt_palette("light")` under a name that does not tie a
+  manuscript figure to slides, and the
   [next section](#the-house-slide-palette) explains the order.
 - **Ordered or diverging scales** take ColorBrewer's `"RdBu"` or `"PuOr"`, and
   **sequential** scales take `"Blues"`, through `scale_fill_brewer()`.
@@ -84,7 +85,7 @@ the figure below does.
 #| label: fig-colors
 #| fig-cap: "Grouped trends plot coloured by the colour-blind-safe house palette, with a matched point shape per group"
 p_base +
-  scale_colour_manual(values = hv_ppt_palette("light"), name = "Group") +
+  scale_colour_manual(values = hv_palette(), name = "Group") +
   scale_shape_manual(
     values = c("Group I" = 15, "Group II" = 19,
                "Group III" = 17, "Group IV" = 18),
@@ -183,7 +184,7 @@ legend does not eat panel space.
 #| label: fig-colors-no-legend
 #| fig-cap: "The grouped plot with both colour and shape legends suppressed via guide = \"none\", relying on redundant colour and shape channels"
 p_base +
-  scale_colour_manual(values = hv_ppt_palette("light"), guide = "none") +
+  scale_colour_manual(values = hv_palette(), guide = "none") +
   scale_shape_manual(
     values = c("Group I" = 15, "Group II" = 19,
                "Group III" = 17, "Group IV" = 18),

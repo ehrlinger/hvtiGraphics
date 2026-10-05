@@ -241,8 +241,8 @@ plot(al_ms, show_labels = FALSE, show_yaxis = FALSE) +
     aes(label = after_stat(stratum)),
     size = 3
   ) +
-  scale_fill_manual(values = hv_ppt_palette("light"), name = NULL) +
-  scale_colour_manual(values = hv_ppt_palette("light"), guide = "none") +
+  scale_fill_manual(values = hv_palette(), name = NULL) +
+  scale_colour_manual(values = hv_palette(), guide = "none") +
   labs(title = "Mechanical circulatory support across the device course") +
   theme_hv_manuscript() +
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(),
@@ -310,7 +310,10 @@ The constructor finds the `C2` through `C9` columns on its own, so the default
 build is a single call. It derives the node order from the data, seating each
 cluster next to the parent it splits from, so the flows stay uncrossed and no
 empty placeholder boxes appear, without you naming an order. We add a title and
-the manuscript theme; the Set1 palette gives each cluster letter its own colour.
+the manuscript theme. The default palette, Paul Tol's muted nine, gives each
+cluster letter its own colour, and every one of the nine survives red-green
+colour blindness. They are ordered so that clusters a few places apart in the
+stack stay distinct.
 
 ```{r}
 #| label: fig-sankey
@@ -342,20 +345,17 @@ increases:
 
 #### Custom colour palette
 
-Replace the default Set1 colours with a named vector. The names must match the
-node labels (the cluster letters) in the data, so every letter from A through I
-needs an entry.
+Pass `node_colours` a vector named by cluster letter. Name only the clusters
+you want to pull out, and the rest keep their default colour; this is how a
+paper makes the two clusters its argument turns on stand out. Name every letter
+from A through I to replace the palette outright.
 
 ```{r}
 #| label: fig-sankey-custom-cols
-#| fig-cap: "Cluster-stability Sankey with a custom named colour palette mapped to the cluster letters"
+#| fig-cap: "Cluster-stability Sankey with clusters F and G recoloured and the other clusters left at the default palette"
 #| fig-width: 8
 #| fig-height: 5
-my_cols <- c(
-  A = "#1f77b4", B = "#ff7f0e", C = "#2ca02c", D = "#d62728",
-  E = "#9467bd", F = "#8c564b", G = "#e377c2", H = "#7f7f7f",
-  I = "#bcbd22"
-)
+my_cols <- c(F = "#E69F00", G = "#D55E00")
 sk_custom <- hv_sankey(dta_san, node_colours = my_cols)
 plot(sk_custom) +
   labs(title = "Cluster Stability: K = 2 to 9") +
