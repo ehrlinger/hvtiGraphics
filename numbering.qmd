@@ -18,16 +18,17 @@ number looks finished when it is not.
 
 Quarto numbers a figure when its chunk label starts with `fig-` **and** the
 chunk has a `fig-cap`, and a table when its label starts with `tbl-` and the
-chunk has a `tbl-cap`. Both halves matter. A caption alone prints, unnumbered,
+chunk has a `tbl-cap`. The labels and captions are the `#|` option lines at
+the top of each chunk. Both halves matter. A caption alone prints, unnumbered,
 and a `fig-` label with no caption is not numbered either.
 
-```{{r}}
+```r
 #| label: fig-km-repair
 #| fig-cap: "Freedom from death or transplant by repair, with the number at risk."
 plot(km)
 ```
 
-```{{r}}
+```r
 #| label: tbl-cohort
 #| tbl-cap: "Preoperative characteristics by repair: median (15th, 85th percentile) or n (%)."
 knitr::kable(cohort_table)
@@ -45,7 +46,7 @@ so the table gets no number and `@tbl-` cannot reach it. Move the text into
 `tbl-cap` and drop the argument; leaving both prints the caption twice. A
 caption built from data works too:
 
-```{{r}}
+```r
 #| label: tbl-designs
 #| tbl-cap: !expr paste0("The four designs. ", primary_design, " is the primary analysis.")
 knitr::kable(designs)
@@ -71,7 +72,7 @@ cannot label twenty figures. Instead, build the plots in the loop and emit
 each one as its own child chunk with `knitr::knit_child()`, inside a chunk
 with `results: asis`:
 
-```{{r}}
+```r
 #| results: asis
 fence <- strrep("`", 3)
 children <- vapply(seq_along(plots), function(i) knitr::knit_child(text = paste(c(
