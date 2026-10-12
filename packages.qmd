@@ -136,10 +136,11 @@ rendered a while ago.
 
 Every figure in this book is served from a cached render, so the versions that
 produced it are a property of the cache rather than of your session. The table
-below is written by the render itself. It records the family and four CRAN
-packages. Three have changed this book's output before: `randomForestSRC` (the
-forests every forest chapter grows), `varPro` (variable priority) and `mlbench`
-(the `SynthDiabetes` data behind the ROC recipe). The fourth, `ggsci`, has not,
+below is written by the render itself. It records the family and five CRAN
+packages. Four have changed this book's output before: `randomForestSRC` (the
+forests every forest chapter grows), `varPro` (variable priority), `mlbench`
+(the `SynthDiabetes` data behind the ROC recipe) and `consort` (the layout of
+the CONSORT diagram, which moved in 1.2.4). The fifth, `ggsci`, has not,
 but its palettes are hex codes the colour chapter prints directly, so a release
 that retunes one changes those figures with nothing else to show for it.
 Anything else the render loads is not tracked here.
@@ -153,7 +154,7 @@ siblings <- c(
   "hvtiR", "hvtiPlotR", "hvtiRutilities", "hvtiRtables",
   "TemporalHazard", "ggRandomForests", "ggsankey"
 )
-engines <- c("randomForestSRC", "varPro", "mlbench", "ggsci")
+engines <- c("randomForestSRC", "varPro", "mlbench", "consort", "ggsci")
 # The DESCRIPTION string as written: packageVersion() turns mlbench's "2.1-11"
 # into "2.1.11", which would never match CRAN's copy in the weekly check.
 version_of <- function(p) utils::packageDescription(p, fields = "Version")

@@ -1,12 +1,12 @@
 84b6ef3f41848b47104927ec5743058a  annotation.qmd
 221472e2f83ab65e19369961aefee141  balance.qmd
 519f503d7ce14ad1f0ffb72361f91882  bar.qmd
-3c7f58a2884baf9f639b960185146597  boxplots.qmd
+033b1e0d515385589d375ed5a5450039  boxplots.qmd
 63d3f96dc4d62ef222b0ccb6d7a09828  colors.qmd
 69a9caf49f8ee1f7e575430351a22138  combination.qmd
 b0e01c8749da01eb1dc7f2901197039d  consort.qmd
 58aae7a40fcd1560ff66b176da44f42c  data_governance.qmd
-1268618fe3b45350431c84aec7e97d78  data_tables.qmd
+18e2f7242bdcfeb89f487f4c8b5dfbf8  data_tables.qmd
 2ec97fe1a7cb6267c811c4459b8038c2  density.qmd
 aad0e579f94b4ed1b523714383d0a8e0  describe.qmd
 ea2c05fdc78b5c0d8de48c964627544c  figure_tables.qmd
@@ -20,7 +20,7 @@ aabff65c3446e00fc662365ea0f3b22a  legends.qmd
 3a60b660dfc9b91c4281a586edf6d3ad  manuscripts.qmd
 744e07505ba9d764420db00a00db046e  nnt.qmd
 2953869c841935b2e5e6035151d22179  numbering.qmd
-178e5814dad36bfcd24d4c836737cebe  packages.qmd
+db1faa3e100d5d79df59583a20914290  packages.qmd
 5e75441a058ceec4a1ca0a6f833df3b5  postagestamp.qmd
 dd37d0fc4681ed54aff41bb7dca990d3  presentations.qmd
 dfcdefad79693cf72fcd6eedc8b6c1a7  publications.qmd

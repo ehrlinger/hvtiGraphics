@@ -125,8 +125,11 @@ not after a co-author asks what `lvmsi_b` means.
 
 ### What the numbers look like: `proc_means()`
 
-`proc_means()` summarises the numeric columns you name, defaulting to SAS's own
-default five statistics.
+`proc_means()` summarises the numeric columns you name. Its default statistics
+are the ones our reports print: `n`, mean, standard deviation, minimum, the 15th
+percentile, median, 85th percentile and maximum. That departs from SAS, whose
+`PROC MEANS` prints five statistics and no percentiles unless asked, so a parity
+check against a SAS job has to request the same list on both sides.
 
 ```{r}
 #| label: dd-means
