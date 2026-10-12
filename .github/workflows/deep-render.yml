@@ -91,7 +91,10 @@ jobs:
           ))
 
           # What the chapters load that no family package depends on.
-          pak::pak(c("gt", "ggraph", "kernelshap", "mlbench", "ggsci", "jsonlite", "knitr", "rmarkdown"))
+          # broom is a Suggests of cardx, which gtsummary's comparison tests call. Without
+          # it every p-value in hv_tables came back blank, silently, from 2026-10-05
+          # until 2026-10-12.
+          pak::pak(c("gt", "ggraph", "kernelshap", "mlbench", "ggsci", "broom", "jsonlite", "knitr", "rmarkdown"))
         shell: Rscript {0}
 
       - name: Record what was actually installed

@@ -67,6 +67,10 @@ What each one is for:
   to draw a ROC curve worth reading. It loads only in that chapter. Version 2.1-11
   or newer, which is where that synthetic set replaced the withdrawn Pima Indians
   data. On an older `mlbench` the chapter stops at `object not found`.
+- **broom** [@R-broom]: no chapter calls it, but `gtsummary`'s comparison tests
+  do. Without it the p-value column of a `compare = "pvalue"` table comes back
+  blank, with only a warning to say why, and `hv_test_footnotes_jtcvs()` then has
+  no tests to footnote.
 - **ggsci** [@R-ggsci]: colour scales drawn from the figures of particular
   journals (NEJM, Lancet, JAMA, BMJ and others). It loads only in the colour
   chapter, for the journal palettes recipe.
@@ -110,11 +114,11 @@ then `update()` instead.
 That call installs the twelve family packages, and their dependencies bring in
 most of the rest of the stack with them: `ggplot2`, `patchwork`, `survival` and
 `ggalluvial` arrive with `hvtiPlotR`, `gtsummary` and `flextable` with
-`hvtiRtables`, `randomForestSRC` and `varPro` with `ggRandomForests`. Six
+`hvtiRtables`, `randomForestSRC` and `varPro` with `ggRandomForests`. Seven
 packages the book uses are not reachable that way, and install on their own:
 
 ```r
-pak::pak(c("gt", "ggraph", "kernelshap", "mlbench", "ggsci",
+pak::pak(c("gt", "ggraph", "kernelshap", "mlbench", "ggsci", "broom",
            "ehrlinger/ggsankey"))
 ```
 
