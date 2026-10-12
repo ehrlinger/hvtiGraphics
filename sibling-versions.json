@@ -1,10 +1,10 @@
 {
-  "rendered": "2026-10-05",
+  "rendered": "2026-10-12",
   "r": "4.6.1",
   "packages": {
     "hvtiR": "1.2.5",
     "hvtiPlotR": "2.8.5",
-    "hvtiRutilities": "1.4.4",
+    "hvtiRutilities": "1.5.2",
     "hvtiRtables": "1.0.3",
     "TemporalHazard": "1.2.12",
     "ggRandomForests": "4.0.0",
@@ -13,6 +13,7 @@
   "cran": {
     "randomForestSRC": "3.9.0",
     "varPro": "3.3.0",
-    "mlbench": "2.1-11"
+    "mlbench": "2.1-11",
+    "ggsci": "5.2.0"
   }
 }

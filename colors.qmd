@@ -21,7 +21,8 @@ overuse. Reach for a manual colour scale when the groups have a convention you
 want to honour (a brand colour, red for the high-risk arm) or when you have one
 series and want it off the default grey. Reach for a ColorBrewer palette
 when the groups are arbitrary and you want a set of hues that stay distinct in
-print and for colour-blind readers. And reach for legend suppression whenever
+print and for colour-blind readers. Reach for a journal palette when a
+co-author wants the figure to look like the target journal's own. And reach for legend suppression whenever
 the figure already names its groups some other way, since a colour that needs no
 key earns back panel space.
 
@@ -174,6 +175,98 @@ second channel still has work to do. And the colours are only half the recipe.
 The deck-wide decorator that assigns them, and the theme that rides along with
 them, are in [slides and presentations](presentations.qmd).
 
+## Journal palettes
+
+Sooner or later a co-author asks for a figure "in the NEJM colours". The
+`ggsci` package [@R-ggsci] packages those looks: each palette is a list of hues
+taken from figures a journal has published, wrapped as a pair of ggplot2 scales.
+Eight of its palettes are journals.
+
+| Journal | Colour scale | Fill scale | Colours |
+|---|---|---|---|
+| New England Journal of Medicine | `scale_colour_nejm()` | `scale_fill_nejm()` | 8 |
+| The Lancet | `scale_colour_lancet()` | `scale_fill_lancet()` | 9 |
+| JAMA | `scale_colour_jama()` | `scale_fill_jama()` | 7 |
+| BMJ | `scale_colour_bmj()` | `scale_fill_bmj()` | 9 |
+| Journal of Clinical Oncology | `scale_colour_jco()` | `scale_fill_jco()` | 10 |
+| Science (AAAS) | `scale_colour_aaas()` | `scale_fill_aaas()` | 10 |
+| Nature (NPG) | `scale_colour_npg()` | `scale_fill_npg()` | 10 |
+| Frontiers | `scale_colour_frontiers()` | `scale_fill_frontiers()` | 10 |
+
+: Journal palettes in `ggsci`, with the number of colours each holds. {#tbl-colors-journal}
+
+The rest of the package's palettes are not journals (genome browsers, web
+frameworks, television), and none of the cardiothoracic journals we publish in
+most, *JTCVS*, *The Annals of Thoracic Surgery* or *EJCTS*, has one. For those
+the house palette stays the default.
+
+A journal scale drops in exactly where the house palette went. Keep the shape
+scale, for the reason the next paragraphs give.
+
+```{r}
+#| label: fig-colors-journal
+#| fig-cap: "Grouped trends plot coloured by the NEJM palette from ggsci, with a matched point shape per group"
+library(ggsci)
+
+p_base +
+  scale_colour_nejm(name = "Group") +
+  scale_shape_manual(
+    values = c("Group I" = 15, "Group II" = 19,
+               "Group III" = 17, "Group IV" = 18),
+    name = "Group"
+  ) +
+  labs(x = "Surgery Year", y = "Outcome") +
+  theme_hv_manuscript()
+```
+
+When you need the colours themselves, for an annotation or a table cell, each
+scale has a `pal_*()` twin. `pal_nejm()(4)` returns the first four NEJM hex
+codes, in the order the scale assigns them. They carry an eighth and ninth
+digit, `FF`, which is the opacity, and ggplot2 takes them as they are.
+@fig-colors-journal-swatches lays the journal palettes side by side in that
+order.
+
+```{r}
+#| label: fig-colors-journal-swatches
+#| fig-cap: "The eight journal palettes in ggsci, in the order each scale assigns colours to groups"
+#| fig-height: 3.5
+swatch <- function(journal, pal, n) {
+  data.frame(journal = journal, position = seq_len(n), hex = pal()(n))
+}
+swatches <- rbind(
+  swatch("NEJM", pal_nejm, 8),   swatch("Lancet", pal_lancet, 9),
+  swatch("JAMA", pal_jama, 7),   swatch("BMJ", pal_bmj, 9),
+  swatch("JCO", pal_jco, 10),    swatch("AAAS", pal_aaas, 10),
+  swatch("NPG", pal_npg, 10),    swatch("Frontiers", pal_frontiers, 10)
+)
+swatches$journal <- factor(swatches$journal, levels = rev(unique(swatches$journal)))
+
+ggplot(swatches, aes(position, journal, fill = hex)) +
+  geom_tile(colour = "white", linewidth = 1) +
+  scale_fill_identity() +
+  scale_x_continuous(breaks = 1:10) +
+  labs(x = "Position in palette", y = NULL) +
+  theme_hv_manuscript()
+```
+
+None of this relaxes the rule from [choosing a palette](#choosing-a-palette).
+These palettes were picked to match a journal's look, not to survive colour
+blindness, and they differ a good deal. We ran the first four colours of each,
+the ones a two-to-four group figure uses, through `colorspace`'s simulations of
+the two red-green deficiencies. Lancet puts its red second and its green third,
+the exact pairing the house rule bans. BMJ's first and fourth colours, a blue and
+a purple, become almost the same colour under deuteranopia, and AAAS's navy and
+purple come close. Frontiers opens with red, orange, yellow and green, a run of
+neighbouring hues that crowd together under either deficiency. JAMA, JCO and NPG held up about as well as the house palette,
+and NEJM nearly so. So a journal palette is a choice to check, not one to trust,
+and the shape channel stays on either way.
+
+Last, a journal look is not a journal requirement. What author guidelines ask of
+a figure is usually resolution, file format and legibility rather than
+particular hues, and some journals redraw accepted figures in their own style
+regardless. Read the target journal's figure instructions before choosing a
+palette on looks.
+
 ## Suppressing legends
 
 Pass `guide = "none"` to any scale and that aesthetic drops out of the legend.
@@ -215,3 +308,8 @@ below.
   to confetti. When you have many series, consider showing fewer at once,
   faceting into small panels, or muting the background series in grey and
   colouring only the one or two you are making a point about.
+- **Running a journal palette past its length.** Each `ggsci` palette is a
+  fixed list (@tbl-colors-journal). Give the seven-colour JAMA scale an eighth
+  group and it warns, then leaves that group with no colour at all. Unlike
+  `hv_ppt_palette()`, it does not stop the script, so the warning is the only
+  sign. Check the group count against the palette before you trust the figure.
