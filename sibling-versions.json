@@ -13,6 +13,7 @@
   "cran": {
     "randomForestSRC": "3.9.0",
     "varPro": "3.3.0",
-    "mlbench": "2.1-11"
+    "mlbench": "2.1-11",
+    "ggsci": "5.2.0"
   }
 }
