@@ -119,14 +119,16 @@ Overlaying the raw observations with `geom_jitter()` shows the underlying sample
 size and spread that a box plot alone hides. We turn off the box's own outlier
 points (`outlier.shape = NA`) so they are not drawn twice, then scatter the
 points with a little horizontal jitter and low alpha so dense regions read as
-darker.
+darker. Jitter is random, so give it a `seed` through `position_jitter()`, or
+the points land somewhere new on every render.
 
 ```{r}
 #| label: fig-boxplots-jitter
 #| fig-cap: "Box plot with the raw observations jittered over each box, exposing the sample size and spread the summary hides"
 ggplot(dat, aes(x = .data[[grp]], y = .data[[num]])) +
   geom_boxplot(outlier.shape = NA) +
-  geom_jitter(width = 0.15, alpha = 0.3, size = 0.7) +
+  geom_jitter(position = position_jitter(width = 0.15, seed = 42),
+              alpha = 0.3, size = 0.7) +
   labs(
     title = "Box plot with jittered observations",
     x = "Valve morphology",
