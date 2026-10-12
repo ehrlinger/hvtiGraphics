@@ -14,6 +14,12 @@ name: Sibling version check
 # render: it reads six sibling DESCRIPTION files over HTTPS, plus CRAN's for the
 # non-family packages recorded under "cran", and compares strings.
 #
+# It also compares the commit each sibling was installed from ("sha" in the
+# record) against the head of its main, because a version string misses work
+# that lands under an unchanged number: ggRandomForests moved 67 commits under
+# "4.0.0" before 2026-10-12 and this check reported nothing. A SHA recorded as
+# "unknown" (a local install, which leaves none) is shown and never flagged.
+#
 # It reports by opening or updating a tracking issue, and always exits 0. A red
 # scheduled workflow on main would say "the book is broken", which is not what
 # was learned -- what was learned is "a re-render is due". Failing here would
@@ -50,6 +56,8 @@ jobs:
 
       - name: Compare the recorded versions against each sibling's main
         id: compare
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
 
@@ -71,7 +79,12 @@ jobs:
           ggsankey:ggsankey"
 
           : > rows.md
+          : > sharows.md
           drift=0
+          shadrift=0
+          # A full SHA prints as its 7-character prefix; "unknown" and
+          # "unreachable" print as they are.
+          short() { if [ "${#1}" -eq 40 ]; then echo "${1:0:7}"; else echo "$1"; fi; }
 
           while IFS= read -r line; do
             pkg="${line%%:*}"; pkg="$(echo "$pkg" | tr -d '[:space:]')"
@@ -88,6 +101,18 @@ jobs:
             else
               printf '| `%s` | %s | **%s** |\n' "$pkg" "$built" "$latest" >> rows.md
               [ "$latest" != "unreachable" ] && drift=1
+            fi
+
+            built_sha=$(jq -r --arg p "$pkg" '(.sha // {})[$p] // "unknown"' sibling-versions.json)
+            head_sha=$(gh api "repos/ehrlinger/$repo/commits/main" --jq .sha 2>/dev/null) || head_sha=""
+            [ -z "$head_sha" ] && head_sha="unreachable"
+
+            if [ "$built_sha" = "unknown" ] || [ "$head_sha" = "unreachable" ] \
+               || [ "$built_sha" = "$head_sha" ]; then
+              printf '| `%s` | %s | %s |\n' "$pkg" "$(short "$built_sha")" "$(short "$head_sha")" >> sharows.md
+            else
+              printf '| `%s` | %s | **%s** |\n' "$pkg" "$(short "$built_sha")" "$(short "$head_sha")" >> sharows.md
+              shadrift=1
             fi
           done <<< "$repos"
 
@@ -116,18 +141,38 @@ jobs:
             sort rows.md
           } > table.md
 
+          {
+            printf '| package | built at commit | `main` is at |\n'
+            printf '|---|---|---|\n'
+            sort sharows.md
+          } > shatable.md
+
           rendered=$(jq -r '.rendered // "an unrecorded date"' sibling-versions.json)
           {
-            printf 'The committed `_freeze/` cache was built on **%s**. Since then, at least one tracked package has moved:\n\n' "$rendered"
+            printf 'The committed `_freeze/` cache was built on **%s**. Since then, at least one tracked package has moved.\n\n' "$rendered"
+            printf '### Versions\n\n'
+            if [ "$drift" -eq 1 ]; then
+              printf 'At least one version number has changed.\n\n'
+            else
+              printf 'No version number has changed.\n\n'
+            fi
             cat table.md
-            printf '\n**What this does and does not mean.** The versions have moved; that is all this check can see. It does not mean a figure is wrong. It means the published figures are output from package code that is no longer current, and nothing else in CI will notice.\n'
+            printf '\n### Commits\n\n'
+            if [ "$shadrift" -eq 1 ]; then
+              printf 'At least one sibling has new commits on `main` since the build, whether or not its version number moved.\n\n'
+            else
+              printf 'No sibling has new commits on `main` since the build.\n\n'
+            fi
+            cat shatable.md
+            printf '\nA commit recorded as `unknown` was installed locally, which leaves no SHA to compare, so only its version is checked.\n'
+            printf '\n**What this does and does not mean.** The packages have moved; that is all this check can see. It does not mean a figure is wrong. It means the published figures are output from package code that is no longer current, and nothing else in CI will notice.\n'
             printf '\nA divergence can also mean the last re-render ran against unreleased local code — a sibling checkout sitting on a feature branch — rather than against `main`. Worth ruling out before re-rendering.\n'
             printf '\n**To resolve:** run the `Deep re-render` workflow from the Actions tab. It installs the siblings from GitHub and renders with the freeze bypassed, which is the only thing that catches actual breakage. If it renders clean and the figures still look right, force a local re-render and commit the refreshed `_freeze/` and `sibling-versions.json`.\n'
-            printf '\n<sub>Updated automatically by `version-check.yml`. This issue is reused rather than reopened, and closes itself when the recorded versions match `main` again.</sub>\n'
+            printf '\n<sub>Updated automatically by `version-check.yml`. This issue is reused rather than reopened, and closes itself when the recorded versions and commits match `main` again.</sub>\n'
           } > body.md
 
-          echo "status=$([ "$drift" -eq 1 ] && echo drift || echo clean)" >> "$GITHUB_OUTPUT"
-          cat table.md
+          echo "status=$([ "$drift" -eq 1 ] || [ "$shadrift" -eq 1 ] && echo drift || echo clean)" >> "$GITHUB_OUTPUT"
+          cat table.md shatable.md
 
       - name: Open or update the tracking issue
         if: steps.compare.outputs.status == 'drift'
@@ -161,7 +206,7 @@ jobs:
                      --json number --jq '.[0].number // empty')
           if [ -n "$existing" ]; then
             gh issue close "$existing" \
-              --comment "The recorded versions match each sibling's \`main\` again — the freeze has been refreshed. Closing automatically."
+              --comment "The recorded versions and commits match each sibling's \`main\` again — the freeze has been refreshed. Closing automatically."
           else
             echo "No drift and no open issue. Nothing to do."
           fi

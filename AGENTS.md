@@ -109,7 +109,12 @@ Job A compares `sibling-versions.json`, written by the render itself and
 described under "What this build used" in `packages.qmd`, against each sibling's `DESCRIPTION`
 on `main`, and the non-family packages it records under `cran` (randomForestSRC,
 varPro, mlbench, consort, ggsci) against CRAN's. Added 2026-09-25, after randomForestSRC changed
-three chapters' output while untracked. On divergence it opens or updates one reused tracking issue and
+three chapters' output while untracked. It also compares each sibling's
+recorded install commit (`sha`, from pak's `RemoteSha`) against the head of its
+`main`, reported in a separate table, because ggRandomForests moved 67 commits
+under an unchanged `4.0.0` before 2026-10-12 and the version comparison saw
+nothing. A local `R CMD INSTALL` records no SHA; it is written as `unknown` and
+never flagged, so render from a GitHub install if you want the commit tracked. On divergence it opens or updates one reused tracking issue and
 **exits 0 regardless**. A red scheduled run on `main` would claim the book is
 broken, which is not what it learned; it learned that a re-render is due.
 
