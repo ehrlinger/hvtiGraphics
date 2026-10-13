@@ -7,7 +7,7 @@ the cloud a direction.
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -94,7 +94,12 @@ any styling. Build the object with `x_col`/`y_col`; the `y_label` argument sets
 the axis and legend text in place of the raw column name.
 
 ```{r}
-#| label: eda_bare
+#| label: fig-scatter-bare
+#| fig-cap: >-
+#|   Bare scatter plot before any styling. Small black filled circles mark
+#|   patients, the blue line is the LOESS smooth with a gray band for its
+#|   confidence limits, and gray ticks along the x-axis mark observations missing
+#|   EF.
 p_scatter <- plot(eda_scatter)
 p_scatter
 ```
@@ -107,13 +112,18 @@ needs no legend.
 
 ```{r}
 #| label: fig-scatter
-#| fig-cap: "Ejection fraction against years from first surgery, with a LOESS smoother and a rug of observations missing EF"
+#| fig-cap: >-
+#|   Ejection fraction against years from first surgery, with a LOESS smoother
+#|   and a rug of observations missing EF. Small black filled circles mark
+#|   patients, the blue line is the LOESS smooth with a gray band for its
+#|   confidence limits, and gray ticks along the x-axis mark observations
+#|   missing EF.
 p_scatter +
   scale_x_continuous(breaks = seq(0, 15, 5)) +
   scale_y_continuous(limits = c(20, 80), breaks = seq(20, 80, 20)) +
   labs(x = "Years from First Surgery Year",
        caption = "Tick marks on x-axis: observations with missing EF") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 Swap in `theme_hv_poster()` when you want the larger, poster-sized text for
@@ -152,13 +162,18 @@ whether a bump is real, compare two spans before you commit to a story.
 
 ```{r}
 #| label: fig-scatter-span
-#| fig-cap: "The same scatter with a narrower LOESS span (0.5), which follows local structure more closely than the default"
+#| fig-cap: >-
+#|   The same scatter with a narrower LOESS span (0.5), which follows local
+#|   structure more closely than the default. Small black filled circles mark
+#|   patients, the blue line is the LOESS smooth with a gray band for its
+#|   confidence limits, and gray ticks along the x-axis mark observations
+#|   missing EF.
 plot(eda_scatter, smooth_method = "loess", smooth_span = 0.5) +
   scale_x_continuous(breaks = seq(0, 15, 5)) +
   scale_y_continuous(limits = c(20, 80), breaks = seq(20, 80, 20)) +
   labs(x = "Years from First Surgery Year",
        y = "Ejection Fraction (%)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Deliver it

@@ -4,7 +4,7 @@
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
-                      fig.width = 7, fig.height = 4.5, dpi = 150)
+                      dpi = 150)
 library(TemporalHazard)
 library(survival)
 library(ggplot2)
@@ -102,7 +102,11 @@ parametric curve; the step line is the empirical reference.
 
 ```{r}
 #| label: fig-temporal-prediction-survival
-#| fig-cap: "Weibull survival with a 95% delta-method confidence band, overlaid on empirical Kaplan-Meier survival for the CABG cohort"
+#| fig-cap: >-
+#|   Weibull survival with a 95% delta-method confidence band, overlaid on
+#|   empirical Kaplan-Meier survival for the CABG cohort. The solid steel-blue
+#|   line is the Weibull curve with its pale steel-blue band, and the thin solid
+#|   grey step line is Kaplan-Meier.
 km <- hzr_kaplan(cabgkul$int_dead, cabgkul$dead)
 
 ggplot() +
@@ -128,7 +132,7 @@ ggplot() +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
                      labels = function(x) paste0(x, "%")) +
   labs(x = "Months after CABG", y = "Freedom from death") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 
@@ -145,7 +149,11 @@ months, has units of events per patient-month.
 
 ```{r}
 #| label: fig-temporal-prediction-cumhaz
-#| fig-cap: "Weibull cumulative hazard with a 95% delta-method confidence band, overlaid on the empirical Nelson-Aalen estimate"
+#| fig-cap: >-
+#|   Weibull cumulative hazard with a 95% delta-method confidence band, overlaid
+#|   on the empirical Nelson-Aalen estimate. The solid firebrick line is the
+#|   Weibull curve with its pale firebrick band, and the thin solid grey step
+#|   line is Nelson-Aalen.
 na <- hzr_nelson(cabgkul$int_dead, cabgkul$dead)
 
 ggplot() +
@@ -169,7 +177,7 @@ ggplot() +
     name = NULL
   ) +
   labs(x = "Months after CABG", y = "Cumulative hazard, H(t)") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 
@@ -269,7 +277,11 @@ The total must equal the phase sum at every time.
 
 ```{r}
 #| label: fig-temporal-prediction-phase-hazard
-#| fig-cap: "Fitted AVC hazard per patient-month: the total with its 95% confidence band and the additive early and constant contributions"
+#| fig-cap: >-
+#|   Fitted AVC hazard per patient-month: the total with its 95% confidence band
+#|   and the additive early and constant contributions. The thick solid dark grey
+#|   line is the total with a pale grey band, the dashed firebrick line the early
+#|   phase and the dashed steel-blue line the constant phase.
 hazard_df <- rbind(
   data.frame(time = phase_grid$time, hazard = total_hazard$fit,
              component = "Total"),
@@ -314,7 +326,7 @@ ggplot(hazard_df, aes(time, hazard, colour = component,
   ) +
   labs(x = "Months after AVC repair (log scale)",
        y = "Deaths per patient-month (log scale)") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 
@@ -327,7 +339,11 @@ specification.
 
 ```{r}
 #| label: fig-temporal-prediction-phase-cumhaz
-#| fig-cap: "Fitted AVC cumulative hazard: the total with its 95% confidence band and the additive early and constant contributions"
+#| fig-cap: >-
+#|   Fitted AVC cumulative hazard: the total with its 95% confidence band and the
+#|   additive early and constant contributions. The thick solid dark grey line is
+#|   the total with a pale grey band, the dashed firebrick line the early phase
+#|   and the dashed steel-blue line the constant phase.
 cumhaz_df <- rbind(
   data.frame(time = phase_grid$time, cumhaz = total_cumhaz$fit,
              component = "Total"),
@@ -363,7 +379,7 @@ ggplot(cumhaz_df, aes(time, cumhaz, colour = component,
     guide = "none"
   ) +
   labs(x = "Months after AVC repair", y = "Cumulative hazard, H(t)") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 

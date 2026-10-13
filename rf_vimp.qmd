@@ -4,7 +4,7 @@
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
-                      fig.width = 7, fig.height = 5, dpi = 150)
+                      dpi = 150)
 library(randomForestSRC)
 library(ggRandomForests)
 library(ggplot2)
@@ -116,10 +116,17 @@ data.frame(
 
 ```{r}
 #| label: fig-rf_vimp
-#| fig-cap: "Permutation VIMP overall and by iris class; display labels do not alter the stored predictor names"
+#| fig-cap: >-
+#|   Permutation VIMP overall and by iris class; display labels do not alter
+#|   the stored predictor names. Teal bars mark predictors whose permutation
+#|   worsened prediction (VIMP above zero), salmon-red bars those whose
+#|   permutation improved it, and the gray horizontal line marks zero.
+#| fig-width: 7
+#| fig-height: 5
+# Free size: four facets (overall and one per class), until hvtiPlotR's hv_panel_size() sizes it.
 vimp_plot +
   geom_hline(yintercept = 0, color = "grey45", linewidth = 0.35) +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   scale_y_continuous(
     breaks = function(x) pretty(x, n = 3),
     expand = expansion(mult = c(0.05, 0.05))

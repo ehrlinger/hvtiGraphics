@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(varPro)
 library(ggRandomForests)
 library(ggplot2)
@@ -76,8 +76,15 @@ On a regression fit the y-axis is the response in its own units. Here that is
 
 ```{r}
 #| label: fig-varpro_partial
-#| fig-cap: "Partial-dependence curves for the top six predictors of the housing regression fit, plotted on the response scale in dollars of sale price"
-plot(gg_partial_varpro(object = o_reg, nvars = 6, method = "rnd")) & theme_hv_manuscript()
+#| fig-cap: >-
+#|   Partial-dependence curves for the top six predictors of the housing regression
+#|   fit, plotted on the response scale in dollars of sale price. Each panel is one
+#|   variable, with the black dashed line the parametric curve and the black solid
+#|   line the nonparametric curve.
+#| fig-width: 7
+#| fig-height: 5
+# Free size: one small-multiple panel per variable, until hvtiPlotR's hv_panel_size() sizes it.
+plot(gg_partial_varpro(object = o_reg, nvars = 6, method = "rnd")) & theme_hv_manuscript(base_size = 12)
 ```
 
 `plot()` returns a `patchwork` panel, so we theme it with `&`. A rising curve is
@@ -98,9 +105,15 @@ bounded 0 to 1 and the scale a clinician expects.
 
 ```{r}
 #| label: fig-varpro_partial-prob
-#| fig-cap: "Partial dependence for the breast classification fit on the probability scale, bounded zero to one"
+#| fig-cap: >-
+#|   Partial dependence for the breast classification fit on the probability scale,
+#|   bounded zero to one. Each panel is one variable, with the black dashed line
+#|   the parametric curve and the black solid line the nonparametric curve.
+#| fig-width: 7
+#| fig-height: 5
+# Free size: one small-multiple panel per variable, until hvtiPlotR's hv_panel_size() sizes it.
 plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "prob", method = "rnd")) &
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 Setting `scale = "logodds"` plots the same effect on the log-odds scale, which is
@@ -111,10 +124,18 @@ communicate and log-odds to diagnose.
 
 ```{r}
 #| label: fig-varpro_partial-logodds
-#| fig-cap: "The same classification partial dependence on the log-odds scale, linear in the model's own terms and the only scale showing the causal contrast"
+#| fig-cap: >-
+#|   The same classification partial dependence on the log-odds scale, linear in
+#|   the model's own terms and the only scale showing the causal contrast. Each
+#|   panel is one variable, with the black dotted line the parametric curve, the
+#|   black dashed line the nonparametric curve, and the black solid line the causal
+#|   contrast.
+#| fig-width: 7
+#| fig-height: 5
+# Free size: one small-multiple panel per variable, until hvtiPlotR's hv_panel_size() sizes it.
 plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "logodds", method = "rnd"),
      type = c("parametric", "nonparametric", "causal")) &
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Survival: probability, RMST, or mortality
@@ -129,9 +150,16 @@ units-safe horizon without guessing.
 
 ```{r}
 #| label: fig-varpro_partial-surv
-#| fig-cap: "Partial dependence for the pbc survival fit on the survival-probability scale at the median follow-up horizon"
+#| fig-cap: >-
+#|   Partial dependence for the pbc survival fit on the survival-probability scale
+#|   at the median follow-up horizon. Each panel is one variable, with the black
+#|   dashed line the parametric curve and the black solid line the nonparametric
+#|   curve.
+#| fig-width: 7
+#| fig-height: 5
+# Free size: one small-multiple panel per variable, until hvtiPlotR's hv_panel_size() sizes it.
 plot(gg_partial_varpro(object = o_surv, nvars = 4, scale = "surv", method = "rnd")) &
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 `scale = "rmst"` plots **restricted mean survival time**: the expected event-free
@@ -141,9 +169,16 @@ higher-is-better. It answers "how much time does this variable buy?" rather than
 
 ```{r}
 #| label: fig-varpro_partial-rmst
-#| fig-cap: "Partial dependence for the pbc survival fit on the restricted-mean-survival-time scale, read as event-free time within the horizon"
+#| fig-cap: >-
+#|   Partial dependence for the pbc survival fit on the restricted-mean-survival-time
+#|   scale, read as event-free time within the horizon. Each panel is one variable,
+#|   with the black dashed line the parametric curve and the black solid line the
+#|   nonparametric curve.
+#| fig-width: 7
+#| fig-height: 5
+# Free size: one small-multiple panel per variable, until hvtiPlotR's hv_panel_size() sizes it.
 plot(gg_partial_varpro(object = o_surv, nvars = 4, scale = "rmst", method = "rnd")) &
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 The third option, `scale = "mortality"`, is the unbounded ensemble-mortality
@@ -206,12 +241,15 @@ adds the nonparametric curve, which the band says nothing about.
 
 ```{r}
 #| label: fig-varpro_partial-band
-#| fig-cap: "Partial dependence of sale price on above-ground living area for the housing regression fit, with a pointwise 95% band from 25 subsample refits"
+#| fig-cap: >-
+#|   Partial dependence of sale price on above-ground living area for the housing
+#|   regression fit, with a pointwise 95% band from 25 subsample refits. The solid
+#|   black line is the parametric curve and the grey ribbon the pointwise 95% band.
 plot(pd_liv, which = "continuous", type = "parametric") +
   geom_ribbon(data = band, aes(x = variable, ymin = lower, ymax = upper),
               inherit.aes = FALSE, alpha = 0.2) +
   labs(y = "Sale price (USD)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 Read it the way you read the forest band: a rise wider than the band survives

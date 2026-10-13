@@ -108,8 +108,14 @@ the same sequence.
 
 ```{r}
 #| label: fig-tables-atrisk
-#| fig-cap: "Kaplan-Meier survival with the supporting at-risk denominator aligned at 0, 5, 10, 15, and 20 years"
+#| fig-cap: >-
+#|   Kaplan-Meier survival with the supporting at-risk denominator aligned at
+#|   0, 5, 10, 15, and 20 years. The steel-blue step line is the survival
+#|   estimate, the light blue band its 95% confidence limits, and the black
+#|   numbers below the curve the patients still at risk.
+#| fig-width: 6
 #| fig-height: 5
+# Free size: curve stacked over a numbers-at-risk strip, until hvtiPlotR's hv_panel_size() sizes it.
 km_curve <- plot(km) +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
   scale_fill_manual(values = c(All = "steelblue"), guide = "none") +
@@ -118,7 +124,7 @@ km_curve <- plot(km) +
                      labels = function(x) paste0(x, "%")) +
   coord_cartesian(xlim = c(0, 20), ylim = c(0, 100)) +
   labs(x = "Years after operation", y = "Freedom from death (%)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 
 km_risk <- hv_atrisk(km)
 hv_atrisk_compose(km_curve, km_risk)
@@ -170,20 +176,33 @@ are composed with `patchwork`. Building both from the same `lc$data` keeps the
 standalone table and the in-figure panel telling one story.
 
 ```{r}
-#| label: lc_figure
+#| label: fig-tables-longitudinal
+#| fig-cap: >-
+#|   Grouped bar chart of participation counts with the matching counts in a
+#|   table panel below. Steel-blue bars and numbers mark patients and
+#|   firebrick-red bars and numbers mark measurements at each follow-up
+#|   window.
+#| fig-width: 6
 #| fig-height: 5
+# Free size: bar chart stacked over a count table, until hvtiPlotR's hv_panel_size() sizes it.
 p_bar <- plot(lc) +
   scale_fill_manual(
     values = c(Patients = "steelblue", Measurements = "firebrick"),
     name   = NULL
   ) +
-  labs(x = NULL, y = "Count (n)")
+  labs(x = NULL, y = "Count (n)") +
+  theme_hv_manuscript(base_size = 12, legend.position = "top") +
+  # Seven interval labels run together at 12 pt across 6 in; angled, as in bar.qmd.
+  theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 p_tbl <- plot(lc, type = "table") +
   scale_colour_manual(
     values = c(Patients = "steelblue", Measurements = "firebrick"),
     guide  = "none"
-  )
+  ) +
+  theme_hv_manuscript(base_size = 12) +
+  theme(axis.text.x = element_blank(), axis.ticks = element_blank(),
+        axis.title = element_blank(), axis.line = element_blank())
 
 p_bar / p_tbl + plot_layout(heights = c(3, 1))
 ```

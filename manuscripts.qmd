@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -23,9 +23,13 @@ figure set.
 final printed page rather than the screen.
 
 ```{r}
-#| label: build-manuscript
+#| label: fig-manuscripts-survival
+#| fig-cap: >-
+#|   Survival curve under theme_hv_manuscript(), the 12 pt journal style. The
+#|   salmon-red step line is the Kaplan-Meier estimate, the shaded band in the
+#|   same color its confidence limits, and the black horizontal line marks zero.
 p    <- plot(hv_survival(sample_survival_data(n = 500, seed = 42)))
-p_ms <- p + theme_hv_manuscript()
+p_ms <- p + theme_hv_manuscript(base_size = 12)
 p_ms
 ```
 
@@ -62,7 +66,7 @@ any remaining chrome. The result is a named list shaped to splat directly into
 ```{r}
 #| label: save-manuscript
 #| eval: false
-dims <- hv_ggsave_dims(p_ms, width = 6.5, height = 4.0, units = "in")
+dims <- hv_ggsave_dims(p_ms, width = 6, height = 4, units = "in")
 
 do.call(
   ggsave,

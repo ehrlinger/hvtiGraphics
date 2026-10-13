@@ -4,7 +4,7 @@
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
-                      fig.width = 7, fig.height = 4.5, dpi = 150)
+                      dpi = 150)
 library(randomForestSRC)
 library(ggRandomForests)
 library(ggplot2)
@@ -73,9 +73,12 @@ Now we plot the inspected object and add the house theme.
 
 ```{r}
 #| label: fig-rf_error
-#| fig-cap: "Cumulative OOB misclassification error by tree count, overall and for each iris class"
+#| fig-cap: >-
+#|   Cumulative OOB misclassification error by tree count, overall and for each
+#|   iris class. Solid lines show the error: salmon-red for all classes,
+#|   olive-green for setosa, teal for versicolor and purple for virginica.
 plot(error_dta) +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   labs(x = "Number of trees", y = "OOB misclassification error",
        color = "Outcome") +
   theme(legend.position = "bottom")

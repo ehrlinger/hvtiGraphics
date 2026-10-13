@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -43,7 +43,10 @@ on the rendered plot so they can be overridden per project.
 
 ```{r}
 #| label: fig-annotation
-#| fig-cap: "Overall survival curve with axis labels, percent-formatted y-axis, and a statistical caption applied via labs()"
+#| fig-cap: >-
+#|   Overall survival curve with axis labels, percent-formatted y-axis, and a
+#|   statistical caption applied via labs(). A solid steel-blue step line is the
+#|   survival estimate and the pale steel-blue band its confidence interval.
 plot(km) +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
   scale_fill_manual(values  = c(All = "steelblue"), guide = "none") +
@@ -57,7 +60,7 @@ plot(km) +
     y       = "Freedom from Death (%)",
     caption = "Logit CI, α = 0.6827 (1 SD)"
   ) +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Annotations with `annotate()`
@@ -67,7 +70,11 @@ a sample-size callout in a corner, or an arrow pointing to an event.
 
 ```{r}
 #| label: fig-annotation-callout
-#| fig-cap: "Survival curve with an in-panel sample-size callout and an arrow annotation marking median survival"
+#| fig-cap: >-
+#|   Survival curve with an in-panel sample-size callout and an arrow annotation
+#|   marking median survival. A solid steel-blue step line with a pale steel-blue
+#|   confidence band is the estimate, black text gives n, and a grey arrow with
+#|   grey text marks the median.
 plot(km) +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
   scale_fill_manual(values  = c(All = "steelblue"), guide = "none") +
@@ -83,7 +90,7 @@ plot(km) +
            arrow = arrow(length = unit(0.2, "cm")), colour = "grey40") +
   annotate("text",    x = 10.3, y = 40,
            label = "Median survival", hjust = 0, size = 3, colour = "grey40") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Naming series without a legend {#sec-annotation-series}
@@ -117,7 +124,11 @@ Not the colour of the series it names.
 
 ```{r}
 #| label: fig-annotation-series
-#| fig-cap: "Four series named on the panel in the theme's white ink, no legend, previewed against a dark slide background"
+#| fig-cap: >-
+#|   Four series named on the panel in the theme's white ink, no legend,
+#|   previewed against a dark slide background. Smooth lines and points are
+#|   yellow circles (Group I), sky-blue triangles (Group II), orange squares
+#|   (Group III) and green diamonds (Group IV) on a black panel.
 dta_trends <- sample_trends_data(n = 600, seed = 42)
 p_trends   <- plot(hv_trends(dta_trends))
 
@@ -141,7 +152,11 @@ does not change. Only the ink does, following the theme from white to black.
 
 ```{r}
 #| label: fig-annotation-series-manuscript
-#| fig-cap: "The same four labels for a journal page, where the theme's ink is black and the annotation follows it"
+#| fig-cap: >-
+#|   The same four labels for a journal page, where the theme's ink is black and
+#|   the annotation follows it. Smooth lines and points are blue circles (Group
+#|   I), vermillion triangles (Group II), green squares (Group III) and reddish
+#|   purple diamonds (Group IV).
 p_trends +
   scale_colour_manual(values = hv_ppt_palette("light")) +
   scale_shape_manual(values = c(16, 17, 15, 18)) +
@@ -151,7 +166,7 @@ p_trends +
            y     = c(64, 51.5, 41.5, 30.5),
            label = c("Group I", "Group II", "Group III", "Group IV"),
            colour = "black", size = 3.5, hjust = 0) +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 Neither scale needs `guide = "none"` here. The theme has already switched the
@@ -185,7 +200,11 @@ every time.
 
 ```{r}
 #| label: fig-annotation-crop
-#| fig-cap: "Trends plot cropped to a sub-range with coord_cartesian(), which zooms the viewport without dropping data"
+#| fig-cap: >-
+#|   Trends plot cropped to a sub-range with coord_cartesian(), which zooms the
+#|   viewport without dropping data. Smooth lines and points are blue squares
+#|   (Group I), vermillion circles (Group II), green triangles (Group III) and
+#|   reddish purple diamonds (Group IV).
 dta_trends <- sample_trends_data(n = 600, seed = 42)
 p_base     <- plot(hv_trends(dta_trends))
 
@@ -198,7 +217,7 @@ p_base +
   ) +
   labs(x = "Surgery Year", y = "Outcome") +
   coord_cartesian(xlim = c(1995, 2020), ylim = c(20, 70)) +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Draft footnotes with `make_footnote()`
@@ -226,9 +245,10 @@ time.
 
 ```{r}
 #| label: fig-annotation-footnote
-#| fig-cap: "Survival curve stamped with a draft footnote naming the source file and a timestamp"
-#| fig-width: 7
-#| fig-height: 5
+#| fig-cap: >-
+#|   Survival curve stamped with a draft footnote naming the source file and a
+#|   timestamp. A solid steel-blue step line with a pale steel-blue confidence
+#|   band is the estimate, and the grey footnote sits at the lower right.
 p_draft <- plot(km) +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
   scale_fill_manual(values  = c(All = "steelblue"), guide = "none") +
@@ -237,7 +257,7 @@ p_draft <- plot(km) +
   scale_x_continuous(breaks = seq(0, 20, 5)) +
   coord_cartesian(xlim = c(0, 20), ylim = c(0, 100)) +
   labs(x = "Years after Operation", y = "Survival (%)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 
 book_stamp <- "2026-08-29 20:44"   # your own work: drop this and the timestamp
                                    # argument, and let make_footnote() stamp now
@@ -248,9 +268,12 @@ make_footnote(paste("annotation.qmd", book_stamp), timestamp = FALSE)
 Pass any string as `text` and set `timestamp = FALSE` for a stable analyst tag.
 
 ```{r}
-#| label: footnote_analyst
-#| fig-width: 7
-#| fig-height: 5
+#| label: fig-annotation-footnote-analyst
+#| fig-cap: >-
+#|   The same survival curve stamped with the analyst's name and date in place of
+#|   the draft prefix. A solid steel-blue step line with a pale steel-blue
+#|   confidence band is the estimate, and the grey footnote sits at the lower
+#|   right.
 book_date <- "2026-08-29"   # your own work: use Sys.Date()
 
 print(p_draft)

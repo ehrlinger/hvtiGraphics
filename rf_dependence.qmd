@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(randomForestSRC)
 library(ggRandomForests)
 library(ggplot2)
@@ -69,18 +69,25 @@ t_eval
 a survival forest the `plot()` method needs both a `time` to evaluate at and an
 `xvar` selection naming which predictors to draw; without a time point it has
 nothing to put on the y-axis. Setting `panel = TRUE` lays the chosen predictors
-out side by side. Each point is one patient and the blue curve is a loess smooth
-through the cloud.
+out side by side. Each point is one patient, and each event group has a loess smooth through
+its cloud, drawn in that group's color.
 
 ```{r}
 #| label: fig-rf_dependence
-#| fig-cap: "Variable dependence for bilirubin, age, and albumin: predicted survival at the median follow-up against each patient's predictor value, with a loess smooth through the cloud"
+#| fig-cap: >-
+#|   Variable dependence for bilirubin, age, and albumin: predicted survival at
+#|   the median follow-up against each patient's predictor value, with a loess
+#|   smooth through the cloud. Salmon-red circles mark censored patients and
+#|   teal triangles patients who died, each group with a loess smooth in the
+#|   same color.
+#| fig-width: 7
 #| fig-height: 4
+# Free size: three facet panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
 gg_v <- gg_variable(rf, time = t_eval)
 plot(gg_v, xvar = c("bili", "age", "albumin"), time = t_eval,
      panel = TRUE) +
   labs(y = paste0("Survival at ", t_eval, " days")) +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 The horizon goes on `gg_variable()`, not on `plot()`, and that is the easiest
@@ -135,10 +142,14 @@ modest evaluation grid (`n_eval`) to keep the render quick.
 
 ```{r}
 #| label: fig-rf_dependence-partial
-#| fig-cap: "Partial dependence for bilirubin at the median follow-up: the forest's predicted survival averaged over the other predictors' observed values"
+#| fig-cap: >-
+#|   Partial dependence for bilirubin at the median follow-up: the forest's
+#|   predicted survival averaged over the other predictors' observed values.
+#|   The salmon-red line joins the averaged predictions and the salmon-red
+#|   circles mark the grid values at which they were computed.
 gg_p <- gg_partial_rfsrc(rf, xvar.names = "bili",
                          partial.time = t_eval, n_eval = 25)
-plot(gg_p) + geom_point() + theme_hv_manuscript()
+plot(gg_p) + geom_point() + theme_hv_manuscript(base_size = 12)
 ```
 
 The partial-dependence curve is the averaged version of the bilirubin panel
@@ -167,8 +178,15 @@ ones a reviewer will see.
 
 ```{r}
 #| label: fig-rf_dependence-labels
-#| fig-cap: "The same variable dependence with reader-facing labels on the facet strips, showing age in the days the dataset actually stores rather than the years a reader would assume"
+#| fig-cap: >-
+#|   The same variable dependence with reader-facing labels on the facet
+#|   strips, showing age in the days the dataset actually stores rather than
+#|   the years a reader would assume. Salmon-red circles mark censored patients
+#|   and teal triangles patients who died, each group with a loess smooth in the
+#|   same color.
+#| fig-width: 7
 #| fig-height: 4
+# Free size: three facet panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
 pbc_labels <- c(
   bili    = "Serum bilirubin (mg/dL)",
   age     = "Age (days)",
@@ -178,7 +196,7 @@ pbc_labels <- c(
 plot(gg_v, xvar = c("bili", "age", "albumin"), time = t_eval,
      panel = TRUE, labels = pbc_labels) +
   labs(y = paste0("Survival at ", t_eval, " days")) +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 Labelling is where unit errors surface, which is a good reason to do it early.
@@ -271,11 +289,15 @@ picking up the plot's own mappings, and it lands in the right panel because
 
 ```{r}
 #| label: fig-rf_dependence-band
-#| fig-cap: "Partial dependence for bilirubin at the median follow-up with a pointwise 95% band from 25 subsample refits, showing how far the curve moves when the forest is grown on a different sample of patients"
+#| fig-cap: >-
+#|   Partial dependence for bilirubin at the median follow-up with a pointwise
+#|   95% band from 25 subsample refits, showing how far the curve moves when
+#|   the forest is grown on a different sample of patients. The salmon-red line
+#|   is the averaged prediction and the gray ribbon the pointwise 95% band.
 plot(gg_p) +
   geom_ribbon(data = band, aes(x = x, ymin = lower, ymax = upper),
               inherit.aes = FALSE, alpha = 0.2) +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 Read the band as a statement about the forest. It is narrow where most

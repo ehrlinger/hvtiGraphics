@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -109,7 +109,14 @@ show only some of them.
 
 ```{r}
 #| label: fig-consort
-#| fig-cap: "CONSORT patient-flow diagram tracing a cardiac-surgery cohort from screening through exclusions to the analysed set"
+#| fig-cap: >-
+#|   CONSORT patient-flow diagram tracing a cardiac-surgery cohort from
+#|   screening through exclusions to the analyzed set. Black-outlined white
+#|   boxes give the patients at each stage, side boxes the number excluded and
+#|   why, and black arrows the flow from one stage to the next.
+#| fig-width: 7
+#| fig-height: 5
+# Free size: a flow diagram whose height grows with its stages, until hvtiPlotR's hv_panel_size() sizes it.
 fig <- hv_consort(tracker)
 plot(fig)
 ```

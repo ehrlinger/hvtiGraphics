@@ -4,7 +4,7 @@
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
-                      fig.width = 7, fig.height = 4.5, dpi = 150)
+                      dpi = 150)
 library(TemporalHazard)
 library(survival)
 library(ggplot2)
@@ -76,7 +76,10 @@ risk is changing with time.
 
 ```{r}
 #| label: fig-temporal-fit-kaplan
-#| fig-cap: "Empirical Kaplan-Meier survival for the CABG cohort, with logit-transform 95% confidence limits"
+#| fig-cap: >-
+#|   Empirical Kaplan-Meier survival for the CABG cohort, with logit-transform
+#|   95% confidence limits. The steel-blue step line is the survival estimate
+#|   and the light blue band its 95% confidence limits.
 ggplot(km, aes(time, survival * 100)) +
   geom_ribbon(aes(ymin = cl_lower * 100, ymax = cl_upper * 100),
               fill = "steelblue", alpha = 0.18) +
@@ -84,7 +87,7 @@ ggplot(km, aes(time, survival * 100)) +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
                      labels = function(x) paste0(x, "%")) +
   labs(x = "Months after CABG", y = "Freedom from death") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 The curve alone does not say how much cohort is left behind each part of it, and
@@ -96,8 +99,14 @@ that happens to resemble it.
 
 ```{r}
 #| label: fig-temporal-fit-kaplan-atrisk
-#| fig-cap: "The same Kaplan-Meier estimate with an aligned numbers-at-risk table, showing how little cohort supports the late tail"
+#| fig-cap: >-
+#|   The same Kaplan-Meier estimate with an aligned numbers-at-risk table,
+#|   showing how little cohort supports the late tail. The steel-blue step line
+#|   is the survival estimate, the light blue band its 95% confidence limits,
+#|   and the black numbers below the curve the patients still at risk.
+#| fig-width: 6
 #| fig-height: 5
+# Free size: curve stacked over a numbers-at-risk table, until hvtiPlotR's hv_panel_size() sizes it.
 curve <- ggplot(km, aes(time, survival * 100)) +
   geom_ribbon(aes(ymin = cl_lower * 100, ymax = cl_upper * 100),
               fill = "steelblue", alpha = 0.18) +
@@ -107,7 +116,7 @@ curve <- ggplot(km, aes(time, survival * 100)) +
   scale_x_continuous(breaks = seq(0, 144, 48)) +
   coord_cartesian(xlim = c(0, 168)) +
   labs(x = "Months after CABG", y = "Freedom from death") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 
 risk_panel <- hv_atrisk(cabgkul, time = "int_dead", status = "dead",
                         report_times = seq(0, 144, 48))
@@ -125,13 +134,17 @@ observed event.
 
 ```{r}
 #| label: fig-temporal-fit-nelson
-#| fig-cap: "Empirical Nelson-Aalen cumulative hazard for the CABG cohort, with lognormal 95% confidence limits"
+#| fig-cap: >-
+#|   Empirical Nelson-Aalen cumulative hazard for the CABG cohort, with
+#|   lognormal 95% confidence limits. The firebrick-red step line is the
+#|   cumulative hazard estimate and the light red band its 95% confidence
+#|   limits.
 ggplot(na, aes(time, cumhaz)) +
   geom_ribbon(aes(ymin = cl_lower, ymax = cl_upper),
               fill = "firebrick", alpha = 0.18) +
   geom_step(colour = "firebrick", linewidth = 0.7) +
   labs(x = "Months after CABG", y = "Cumulative hazard, H(t)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Fit a reviewed Weibull model

@@ -38,6 +38,15 @@ Refer to them as `@fig-km-repair` and `@tbl-cohort`; Quarto writes "Figure
 2.1" and "Table 3.4" and links to them. In a book the chapter number comes
 first, so renumbering a chapter renumbers its figures without your help.
 
+## What a figure caption says
+
+A figure caption has two sentences. The first says what is plotted. The second
+is the key: it names each mark by its shape or line type and its color, so a
+reader can decode the figure from the caption alone. The `fig-cap` in the
+example above would carry that second sentence in a real report, for instance
+"Black lines are the Kaplan-Meier estimates and dashed lines their 95%
+confidence limits." The chapters in this book follow the same pattern.
+
 ## Table captions go in `tbl-cap`
 
 `knitr::kable(caption = "...")` is the habit most of us bring from R Markdown,

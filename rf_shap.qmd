@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(randomForestSRC)
 library(ggRandomForests)
 library(ggplot2)
@@ -116,9 +116,14 @@ labels run into each other.
 
 ```{r}
 #| label: fig-rf_shap-importance
-#| fig-cap: "Global SHAP importance for the breast classification forest, ranking predictors by mean absolute attribution across the explained observations"
+#| fig-cap: >-
+#|   Global SHAP importance for the breast classification forest, ranking
+#|   predictors by mean absolute attribution across the explained observations.
+#|   Dark grey horizontal bars give each predictor's mean absolute SHAP value.
 #| fig-height: 8
-shap_importance(gs) + theme_hv_manuscript()
+#| fig-width: 6
+# Free size: one row per predictor, so the height grows with the variable list, until hvtiPlotR's hv_panel_size() sizes it.
+shap_importance(gs) + theme_hv_manuscript(base_size = 12)
 ```
 
 Three bars separate from the pack, each about twice the fourth, and only two of
@@ -152,9 +157,16 @@ ordering rule as the [legends](legends.qmd) chapter: what runs last wins.
 
 ```{r}
 #| label: fig-rf_shap-beeswarm
-#| fig-cap: "The per-observation attributions behind that ranking, one point per patient per variable, showing the spread a mean absolute value hides"
+#| fig-cap: >-
+#|   The per-observation attributions behind that ranking, one point per patient
+#|   per variable, showing the spread a mean absolute value hides. Each
+#|   translucent filled circle is one patient, colored from dark purple (low
+#|   value of the variable) to yellow (high), and the dashed grey vertical line
+#|   marks zero.
 #| fig-height: 8
-shap_beeswarm(gs) + theme_hv_manuscript(legend.position = "right")
+#| fig-width: 6
+# Free size: one row per predictor, so the height grows with the variable list, until hvtiPlotR's hv_panel_size() sizes it.
+shap_beeswarm(gs) + theme_hv_manuscript(base_size = 12, legend.position = "right")
 ```
 
 The plot encodes two variables at once, and getting them straight is the whole
@@ -194,9 +206,12 @@ and the trimmed variables keep their slots on the axis as empty rows.
 
 ```{r}
 #| label: fig-rf_shap-importance-top
-#| fig-cap: "The same SHAP ranking restricted to the top ten predictors, the version that goes in a results figure"
+#| fig-cap: >-
+#|   The same SHAP ranking restricted to the top ten predictors, the version that
+#|   goes in a results figure. Dark grey horizontal bars give each predictor's
+#|   mean absolute SHAP value.
 top10 <- tail(levels(gs$vars), 10)
-shap_importance(droplevels(gs[gs$vars %in% top10, ])) + theme_hv_manuscript()
+shap_importance(droplevels(gs[gs$vars %in% top10, ])) + theme_hv_manuscript(base_size = 12)
 ```
 
 Ten is the cut the [variable importance](rf_vimp.qmd) chapter suggests with
@@ -212,8 +227,11 @@ per patient rather than per grid point.
 
 ```{r}
 #| label: fig-rf_shap-dependence
-#| fig-cap: "SHAP dependence for pnodes, plotting each patient's attribution against their own number of positive nodes"
-shap_dependence(gs, xvar = "pnodes") + theme_hv_manuscript()
+#| fig-cap: >-
+#|   SHAP dependence for pnodes, plotting each patient's attribution against
+#|   their own number of positive nodes. Translucent dark grey filled circles are
+#|   patients, and the dashed grey horizontal line marks zero.
+shap_dependence(gs, xvar = "pnodes") + theme_hv_manuscript(base_size = 12)
 ```
 
 The trend is clear and it runs downward. The eleven node-negative patients sit
