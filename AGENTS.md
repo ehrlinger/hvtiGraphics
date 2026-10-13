@@ -253,8 +253,17 @@ against `main`; rule that out before re-rendering.
   unchanged had not been drawn at all. The clean command is:
 
   ```
-  rm -rf _freeze .quarto _book *_files && quarto render
+  rm -rf _freeze .quarto _book &&
+    find . -maxdepth 1 -type d -name '*_files' -exec rm -rf {} + &&
+    quarto render
   ```
+
+  The `*_files` directories go through `find`, not a shell glob. zsh, the macOS
+  default, aborts the whole command when a glob matches nothing, so `rm -rf
+  _freeze .quarto _book *_files` fails without deleting anything whenever there
+  are no intermediates yet, and a `;` after it then renders against the full
+  warm cache. Measured 2026-10-13: that happened twice before a clean rebuild
+  ran. Chain with `&&` so the render cannot start unless the cleanup succeeded.
 
   Nothing in that list is tracked. After it the cache holds only what a live
   chunk emits, which is the only version of it worth committing.
@@ -308,8 +317,10 @@ against `main`; rule that out before re-rendering.
   HTML caches forces it and leaves the PDF ones alone:
 
   ```
-  rm -f _freeze/*/execute-results/html.json
-  rm -rf _freeze/*/figure-html .quarto _book *_files
+  find _freeze -path '*/execute-results/html.json' -delete
+  find _freeze . -maxdepth 2 -type d \( -name figure-html -o -name '*_files' \) \
+    -prune -exec rm -rf {} +
+  rm -rf .quarto _book
   ```
 
   That contradicts the `quartz_pdf` entry above, which records a device change
