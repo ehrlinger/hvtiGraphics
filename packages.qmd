@@ -119,7 +119,7 @@ packages the book uses are not reachable that way, and install on their own:
 
 ```r
 pak::pak(c("gt", "ggraph", "kernelshap", "mlbench", "ggsci", "broom",
-           "ehrlinger/ggsankey"))
+           "davidsjoberg/ggsankey"))
 ```
 
 Expect that second list to get shorter. It holds only what no family package
@@ -169,12 +169,16 @@ eng_versions <- vapply(engines, version_of, character(1))
 # misses work that lands under an unchanged number: ggRandomForests moved 67
 # commits under "4.0.0" before 2026-10-12 and the weekly check saw nothing.
 # pak records RemoteSha for a GitHub install. A local `R CMD INSTALL` records
-# none, and an install from someone else's fork records a SHA the check would
-# compare against the wrong repository, so both are written as "unknown" and
-# the check does not flag them.
+# none, and an install from a fork other than the one the check reads records a
+# SHA it would compare against the wrong repository, so both are written as
+# "unknown" and the check does not flag them. ggsankey is read from upstream,
+# where hvtiPlotR's Remotes field sends every install; version-check.yml holds
+# the same owner, and the two must agree.
+owner <- c(ggsankey = "davidsjoberg")
 sha_of <- function(p) {
   d <- utils::packageDescription(p)
-  if (identical(d$RemoteType, "github") && identical(d$RemoteUsername, "ehrlinger") &&
+  want <- if (p %in% names(owner)) owner[[p]] else "ehrlinger"
+  if (identical(d$RemoteType, "github") && identical(d$RemoteUsername, want) &&
       !is.null(d$RemoteSha) && nzchar(d$RemoteSha)) d$RemoteSha else "unknown"
 }
 shas <- vapply(siblings, sha_of, character(1))

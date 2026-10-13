@@ -67,17 +67,19 @@ jobs:
             exit 0
           fi
 
-          # package -> repo. No name differs any more: the 2026-08 renames aligned
-          # every sibling. The mapping is kept rather than derived so that a future
-          # divergence has somewhere to land, and so this list stays the one place
-          # the set of checked siblings is written down.
-          repos="hvtiR:hvtiR
-          hvtiPlotR:hvtiPlotR
-          hvtiRutilities:hvtiRutilities
-          hvtiRtables:hvtiRtables
-          TemporalHazard:TemporalHazard
-          ggRandomForests:ggRandomForests
-          ggsankey:ggsankey"
+          # package -> owner/repo. This list is the one place the set of checked
+          # siblings is written down. ggsankey is checked against upstream, not
+          # the ehrlinger fork: hvtiPlotR's `Remotes: davidsjoberg/ggsankey`
+          # decides what every install actually gets, so upstream is what the
+          # book renders against. The sibling-versions chunk in packages.qmd
+          # holds the same owner, and the two must agree.
+          repos="hvtiR:ehrlinger/hvtiR
+          hvtiPlotR:ehrlinger/hvtiPlotR
+          hvtiRutilities:ehrlinger/hvtiRutilities
+          hvtiRtables:ehrlinger/hvtiRtables
+          TemporalHazard:ehrlinger/TemporalHazard
+          ggRandomForests:ehrlinger/ggRandomForests
+          ggsankey:davidsjoberg/ggsankey"
 
           : > rows.md
           : > sharows.md
@@ -93,7 +95,7 @@ jobs:
             [ -z "$pkg" ] && continue
 
             built=$(jq -r --arg p "$pkg" '.packages[$p] // "not recorded"' sibling-versions.json)
-            latest=$(curl -fsSL "https://raw.githubusercontent.com/ehrlinger/$repo/main/DESCRIPTION" 2>/dev/null \
+            latest=$(curl -fsSL "https://raw.githubusercontent.com/$repo/main/DESCRIPTION" 2>/dev/null \
                      | awk '/^Version:/ {print $2; exit}') || latest=""
             [ -z "$latest" ] && latest="unreachable"
 
@@ -105,7 +107,7 @@ jobs:
             fi
 
             built_sha=$(jq -r --arg p "$pkg" '(.sha // {})[$p] // "unknown"' sibling-versions.json)
-            head_sha=$(gh api "repos/ehrlinger/$repo/commits/main" --jq .sha 2>/dev/null) || head_sha=""
+            head_sha=$(gh api "repos/$repo/commits/main" --jq .sha 2>/dev/null) || head_sha=""
             [ -z "$head_sha" ] && head_sha="unreachable"
 
             if [ "$built_sha" = "unknown" ] || [ "$head_sha" = "unreachable" ] \

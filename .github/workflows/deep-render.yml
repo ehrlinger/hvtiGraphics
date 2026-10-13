@@ -87,7 +87,7 @@ jobs:
             "ehrlinger/hvtiRtables",
             "ehrlinger/TemporalHazard",
             "ehrlinger/ggRandomForests",
-            "ehrlinger/ggsankey"
+            "davidsjoberg/ggsankey"
           ))
 
           # What the chapters load that no family package depends on.
