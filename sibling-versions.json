@@ -19,6 +19,7 @@
     "ggRandomForests": "37530519966b022f2ec1d3a75f2a5911dcf475c1",
     "ggsankey": "b675d0d5144b1b5758d3b2b41e86ceee66a1e071"
   },
+  "ignore_paths": "^(dev|docs|man|news|pkgdown|tests|vignettes|\\.github|\\.claude|\\.vscode)/|^[^/]+\\.md$|^_pkgdown\\.yml$",
   "cran": {
     "randomForestSRC": "3.9.0",
     "varPro": "3.3.0",

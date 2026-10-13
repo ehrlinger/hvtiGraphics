@@ -183,6 +183,56 @@ sha_of <- function(p) {
 }
 shas <- vapply(siblings, sha_of, character(1))
 
+# Say so in the render log when an installed sibling is not what GitHub main
+# holds. On 2026-10-13 a full rebuild ran against a stale shared library and
+# wrote last week's versions into this record without a word. The message goes
+# to stderr, so the render log shows it and the page does not. A commit that
+# touches only these paths cannot change what the book renders, so it does not
+# count; the pattern is written into the record below, and version-check.yml
+# reads it from there rather than keeping a second copy.
+ignore_paths <- paste0(
+  "^(dev|docs|man|news|pkgdown|tests|vignettes|\\.github|\\.claude|\\.vscode)/",
+  "|^[^/]+\\.md$|^_pkgdown\\.yml$"
+)
+gh_json <- function(path) {
+  token <- Sys.getenv("GITHUB_PAT", Sys.getenv("GH_TOKEN"))
+  headers <- c(Accept = "application/vnd.github+json")
+  if (nzchar(token)) headers <- c(headers, Authorization = paste("Bearer", token))
+  con <- url(paste0("https://api.github.com/", path), headers = headers)
+  on.exit(close(con))
+  jsonlite::fromJSON(paste(readLines(con, warn = FALSE), collapse = "\n"))
+}
+behind_main <- function(p) {
+  if (shas[[p]] == "unknown") {
+    return("has no recorded commit (a local install), so it cannot be checked")
+  }
+  repo <- paste0(if (p %in% names(owner)) owner[[p]] else "ehrlinger", "/", p)
+  cmp <- tryCatch(
+    gh_json(sprintf("repos/%s/compare/%s...main", repo, shas[[p]])),
+    error = function(e) NULL
+  )
+  if (is.null(cmp)) return("could not be checked: GitHub did not answer")
+  if (identical(cmp$status, "identical")) return("")
+  if (!identical(cmp$status, "ahead")) {
+    return(sprintf("is %s main: installed from unmerged work", cmp$status))
+  }
+  # The compare API lists at most 300 files; past that, assume code moved.
+  files <- cmp$files$filename
+  if (length(files) > 0 && length(files) < 300 && all(grepl(ignore_paths, files))) {
+    return("")
+  }
+  sprintf("is %d commit(s) behind main, and they touch code", cmp$ahead_by)
+}
+stale <- vapply(siblings, behind_main, character(1))
+stale <- stale[nzchar(stale)]
+if (length(stale) > 0) {
+  cat("\nWARNING: this render is not against the family's GitHub main.\n",
+      sprintf("  %s %s %s\n", names(stale), versions[names(stale)], stale),
+      "  sibling-versions.json will record these versions. Install the family\n",
+      "  from GitHub (hvtiR::install()) and re-render before committing _freeze/.\n\n",
+      sep = "", file = stderr())
+}
+
 # Written to the repository root, where the scheduled version check reads it.
 jsonlite::write_json(
   list(
@@ -190,6 +240,7 @@ jsonlite::write_json(
     r = paste(R.version$major, R.version$minor, sep = "."),
     packages = as.list(versions),
     sha = as.list(shas),
+    ignore_paths = ignore_paths,
     cran = as.list(eng_versions)
   ),
   "sibling-versions.json",
