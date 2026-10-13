@@ -123,7 +123,7 @@ data.frame(
 #|   permutation improved it, and the gray horizontal line marks zero.
 #| fig-width: 7
 #| fig-height: 5
-# Free size: four facets (overall and one per class), until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: four facets (overall and one per class).
 vimp_plot +
   geom_hline(yintercept = 0, color = "grey45", linewidth = 0.35) +
   theme_hv_manuscript(base_size = 12) +

@@ -245,7 +245,7 @@ mattering entirely once patients are past the risky window.
 #|   priority and small light grey circles the lowest.
 #| fig-width: 8
 #| fig-height: 5.25
-# Free size: one row per variable and one column per time window, so the height grows with the variable list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per variable and one column per time window, so the height grows with the variable list.
 rhf_priority <- gg_rhf_importance(bundle$fit, importance_fit = bundle$importance)
 
 windows <- unique(as.data.frame(rhf_priority)[, c("time_window", "start", "stop")])

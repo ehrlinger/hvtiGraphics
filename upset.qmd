@@ -144,7 +144,7 @@ sub-panels at once.
 #|   in it, and steel-blue bars in the sidebar give each procedure's total.
 #| fig-width: 9
 #| fig-height: 5
-# Free size: matrix plot with intersection bars, dot matrix and sidebar, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: matrix plot with intersection bars, dot matrix and sidebar.
 plot(hu) &
   theme_hv_manuscript(base_size = 12)
 ```
@@ -187,7 +187,7 @@ just the intersection-bar ggplot, which you then finish with the usual `+`.
 #|   dots joined by vertical lines mark the procedures in it.
 #| fig-width: 9
 #| fig-height: 5
-# Free size: matrix plot with intersection bars, dot matrix and sidebar, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: matrix plot with intersection bars, dot matrix and sidebar.
 plot(hu, bar_fill = "steelblue", set_size = FALSE) +
   ggplot2::labs(y = "Patients (n)") +
   theme_hv_manuscript(base_size = 12)
@@ -209,7 +209,7 @@ to assign the colours explicitly.
 #|   joined by vertical lines mark the procedures in each combination.
 #| fig-width: 9
 #| fig-height: 5
-# Free size: matrix plot with intersection bars, dot matrix and sidebar, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: matrix plot with intersection bars, dot matrix and sidebar.
 upset_dta$era <- ifelse(seq_len(nrow(upset_dta)) <= 200, "Early", "Recent")
 hu_era <- hv_upset(upset_dta, intersect = sets)
 

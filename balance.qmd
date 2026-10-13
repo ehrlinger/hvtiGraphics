@@ -117,7 +117,7 @@ yet.
 #|   10 percent, and thin dashed horizontal lines guide the eye along each row.
 #| fig-width: 6
 #| fig-height: 5
-# Free size: one row per covariate, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per covariate, so the height grows with the list.
 plot(cb, alpha = 0.8)
 ```
 
@@ -136,7 +136,7 @@ breaks around zero make the plus-or-minus-ten-percent threshold easy to eyeball.
 #|   eye along each row.
 #| fig-width: 6
 #| fig-height: 5
-# Free size: one row per covariate, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per covariate, so the height grows with the list.
 plot(cb, alpha = 0.8) +
   scale_color_manual(
     values = c("Before match" = "red4", "After match" = "blue3"),
@@ -170,7 +170,7 @@ figure is exported.
 #|   thin dashed horizontal lines guide the eye along each row.
 #| fig-width: 6
 #| fig-height: 5
-# Free size: one row per covariate, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per covariate, so the height grows with the list.
 cb_final <- plot(cb, alpha = 0.8) +
   scale_color_manual(
     values = c("Before match" = "red4", "After match" = "blue3"),
@@ -229,7 +229,7 @@ top, rather than by data-frame order.
 #|   percent, and thin dashed horizontal lines guide the eye along each row.
 #| fig-width: 6
 #| fig-height: 5
-# Free size: one row per covariate, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per covariate, so the height grows with the list.
 cb_ord <- hv_balance(dta_cb, var_levels = rev(unique(dta_cb$variable)))
 
 plot(cb_ord, alpha = 0.8) +
