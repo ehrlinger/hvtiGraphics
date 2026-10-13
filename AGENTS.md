@@ -114,7 +114,11 @@ recorded install commit (`sha`, from pak's `RemoteSha`) against the head of its
 `main`, reported in a separate table, because ggRandomForests moved 67 commits
 under an unchanged `4.0.0` before 2026-10-12 and the version comparison saw
 nothing. A local `R CMD INSTALL` records no SHA; it is written as `unknown` and
-never flagged, so render from a GitHub install if you want the commit tracked. On divergence it opens or updates one reused tracking issue and
+never flagged, so render from a GitHub install if you want the commit tracked. A move that touches only documentation, `dev/`, tests or CI configuration is listed
+but not flagged; the pattern lives in the `sibling-versions` chunk, which writes it into the
+record for the workflow to read. The same chunk prints a warning to the render log when an
+installed sibling is behind `main` by a commit that touches code, or has no recorded commit,
+because a full rebuild against a stale shared library regressed the record on 2026-10-13. On divergence it opens or updates one reused tracking issue and
 **exits 0 regardless**. A red scheduled run on `main` would claim the book is
 broken, which is not what it learned; it learned that a re-render is due.
 

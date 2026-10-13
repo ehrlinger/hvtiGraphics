@@ -88,6 +88,11 @@ jobs:
           # A full SHA prints as its 7-character prefix; "unknown" and
           # "unreachable" print as they are.
           short() { if [ "${#1}" -eq 40 ]; then echo "${1:0:7}"; else echo "$1"; fi; }
+          # Paths a commit can touch without changing what the book renders
+          # (docs, dev/, tests, CI). packages.qmd writes the pattern into the
+          # record so there is one copy of it. An older record has none, and
+          # then every commit counts.
+          ignore=$(jq -r '.ignore_paths // ""' sibling-versions.json)
 
           while IFS= read -r line; do
             pkg="${line%%:*}"; pkg="$(echo "$pkg" | tr -d '[:space:]')"
@@ -113,6 +118,25 @@ jobs:
             if [ "$built_sha" = "unknown" ] || [ "$head_sha" = "unreachable" ] \
                || [ "$built_sha" = "$head_sha" ]; then
               printf '| `%s` | %s | %s |\n' "$pkg" "$(short "$built_sha")" "$(short "$head_sha")" >> sharows.md
+              continue
+            fi
+
+            # main has moved. It counts only if main is strictly ahead of the
+            # recorded commit and some changed file falls outside the ignored
+            # paths. A failed lookup, a record ahead of or diverged from main,
+            # or a list at the API's 300-file cap all count.
+            cmp=$(gh api "repos/$repo/compare/$built_sha...main" 2>/dev/null) || cmp="{}"
+            status=$(jq -r '.status // "unknown"' <<< "$cmp")
+            nfiles=$(jq '(.files // []) | length' <<< "$cmp")
+            if [ -n "$ignore" ]; then
+              ncode=$(jq --arg re "$ignore" '[(.files // [])[].filename | select(test($re) | not)] | length' <<< "$cmp")
+            else
+              ncode=$nfiles
+            fi
+
+            if [ "$status" = "ahead" ] && [ "$nfiles" -gt 0 ] && [ "$nfiles" -lt 300 ] \
+               && [ "$ncode" -eq 0 ]; then
+              printf '| `%s` | %s | %s (docs, dev or tests only) |\n' "$pkg" "$(short "$built_sha")" "$(short "$head_sha")" >> sharows.md
             else
               printf '| `%s` | %s | **%s** |\n' "$pkg" "$(short "$built_sha")" "$(short "$head_sha")" >> sharows.md
               shadrift=1
@@ -167,7 +191,7 @@ jobs:
               printf 'No sibling has new commits on `main` since the build.\n\n'
             fi
             cat shatable.md
-            printf '\nA commit recorded as `unknown` was installed locally, which leaves no SHA to compare, so only its version is checked.\n'
+            printf '\nA commit recorded as `unknown` was installed locally, which leaves no SHA to compare, so only its version is checked. A move that touches only documentation, `dev/`, tests or CI configuration is listed but not flagged, since it cannot change what the book renders.\n'
             printf '\n**What this does and does not mean.** The packages have moved; that is all this check can see. It does not mean a figure is wrong. It means the published figures are output from package code that is no longer current, and nothing else in CI will notice.\n'
             printf '\nA divergence can also mean the last re-render ran against unreleased local code — a sibling checkout sitting on a feature branch — rather than against `main`. Worth ruling out before re-rendering.\n'
             printf '\n**To resolve:** run the `Deep re-render` workflow from the Actions tab. It installs the siblings from GitHub and renders with the freeze bypassed, which is the only thing that catches actual breakage. If it renders clean and the figures still look right, force a local re-render and commit the refreshed `_freeze/` and `sibling-versions.json`.\n'
