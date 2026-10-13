@@ -10,6 +10,15 @@
     "ggRandomForests": "4.0.0",
     "ggsankey": "0.0.99999"
   },
+  "sha": {
+    "hvtiR": "8d32846ad6156fb688c36006ede93012852921db",
+    "hvtiPlotR": "2db6628b19847734fb2c6b28f3f9e28d81abdd13",
+    "hvtiRutilities": "91420ffb4886cb2b922ca45204964987bb5757a5",
+    "hvtiRtables": "63eb13f4de08c8e8d434dd3c9ad71ab236351d32",
+    "TemporalHazard": "db4934d64b87f4adb5d05e026f9ab718c7e9e211",
+    "ggRandomForests": "37530519966b022f2ec1d3a75f2a5911dcf475c1",
+    "ggsankey": "b675d0d5144b1b5758d3b2b41e86ceee66a1e071"
+  },
   "cran": {
     "randomForestSRC": "3.9.0",
     "varPro": "3.3.0",

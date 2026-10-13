@@ -165,12 +165,27 @@ version_of <- function(p) utils::packageDescription(p, fields = "Version")
 versions     <- vapply(siblings, version_of, character(1))
 eng_versions <- vapply(engines, version_of, character(1))
 
+# The commit each family package was installed from. A version string alone
+# misses work that lands under an unchanged number: ggRandomForests moved 67
+# commits under "4.0.0" before 2026-10-12 and the weekly check saw nothing.
+# pak records RemoteSha for a GitHub install. A local `R CMD INSTALL` records
+# none, and an install from someone else's fork records a SHA the check would
+# compare against the wrong repository, so both are written as "unknown" and
+# the check does not flag them.
+sha_of <- function(p) {
+  d <- utils::packageDescription(p)
+  if (identical(d$RemoteType, "github") && identical(d$RemoteUsername, "ehrlinger") &&
+      !is.null(d$RemoteSha) && nzchar(d$RemoteSha)) d$RemoteSha else "unknown"
+}
+shas <- vapply(siblings, sha_of, character(1))
+
 # Written to the repository root, where the scheduled version check reads it.
 jsonlite::write_json(
   list(
     rendered = format(Sys.Date()),
     r = paste(R.version$major, R.version$minor, sep = "."),
     packages = as.list(versions),
+    sha = as.list(shas),
     cran = as.list(eng_versions)
   ),
   "sibling-versions.json",
@@ -181,6 +196,8 @@ knitr::kable(
   data.frame(
     Package = c(siblings, engines),
     Version = unname(c(versions, eng_versions)),
+    Commit  = c(ifelse(shas == "unknown", "", substr(shas, 1, 7)),
+                rep("", length(engines))),
     Source  = rep(c("family", "CRAN"), c(length(siblings), length(engines)))
   ),
   row.names = FALSE
