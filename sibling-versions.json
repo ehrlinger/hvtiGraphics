@@ -2,28 +2,28 @@
   "rendered": "2026-10-13",
   "r": "4.6.1",
   "packages": {
-    "hvtiR": "1.2.5",
-    "hvtiPlotR": "2.8.5",
+    "hvtiR": "1.2.7",
+    "hvtiPlotR": "2.8.9",
     "hvtiRutilities": "1.5.2",
-    "hvtiRtables": "1.0.3",
-    "TemporalHazard": "1.2.12",
+    "hvtiRtables": "1.0.4",
+    "TemporalHazard": "1.2.15",
     "ggRandomForests": "4.0.0",
     "ggsankey": "0.0.99999"
   },
   "sha": {
-    "hvtiR": "06d27aeacfd18776f1a79a9b735c4760bfa8bacd",
-    "hvtiPlotR": "unknown",
-    "hvtiRutilities": "unknown",
-    "hvtiRtables": "bcb58928a78914fd349a8d48cb093dd928371f14",
-    "TemporalHazard": "e9ab82728ba4173df78c77286857e1923b22eb90",
+    "hvtiR": "8d32846ad6156fb688c36006ede93012852921db",
+    "hvtiPlotR": "f0cb13623f38f3192f50ec730a98b8ad8d2d0b11",
+    "hvtiRutilities": "7e0ff023743fafc4e1657b668029f98c9ea86f3f",
+    "hvtiRtables": "57c2b8c1537f408f9ef4a13c873ea40d244b90dd",
+    "TemporalHazard": "db4934d64b87f4adb5d05e026f9ab718c7e9e211",
     "ggRandomForests": "37530519966b022f2ec1d3a75f2a5911dcf475c1",
-    "ggsankey": "unknown"
+    "ggsankey": "b675d0d5144b1b5758d3b2b41e86ceee66a1e071"
   },
   "cran": {
     "randomForestSRC": "3.9.0",
     "varPro": "3.3.0",
     "mlbench": "2.1-11",
-    "consort": "1.2.3",
+    "consort": "1.2.4",
     "ggsci": "5.2.0"
   }
 }
