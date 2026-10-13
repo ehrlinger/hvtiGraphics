@@ -290,7 +290,7 @@ data.frame(
 The trace names the criterion and records each accepted addition or removal.
 This run adds five phase-specific terms. The final model converges with a
 positive-definite covariance matrix, but intermediate candidate fits produce
-ill-conditioned Hessians, non-positive variances, and one unidentified phase.
+ill-conditioned Hessians and non-positive variances.
 That instability is part of the selection result. The entry and stay thresholds
 are a search rule, not a correction for repeated testing, and the selected path
 is conditional on this sample. Preserve clinically required covariates with
