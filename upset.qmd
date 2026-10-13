@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -57,11 +57,15 @@ venn$tables$regions
 ### Build it
 
 ```{r}
-#| label: venn
-#| fig-width: 7
-#| fig-height: 5
-#| fig-cap: "Three-set Venn of co-occurring procedures, each region labelled with its patient count and percent"
-plot(venn, set_name_size = 5)
+#| label: fig-upset-venn
+#| fig-cap: >-
+#|   Three-set Venn of co-occurring procedures, each region labelled with its
+#|   patient count and percent. Black-outlined circles shaded blue (aortic
+#|   valve replacement), yellow (mitral valve replacement) and green (CABG)
+#|   mark the three procedures, and the overlaps show patients who had more
+#|   than one.
+# 4.2 mm is 12 pt, the book standard; at 5 mm the two replacement set names collide on a 6 in figure.
+plot(venn, set_name_size = 4.2)
 ```
 
 Each region carries its patient count and percentage. The empty
@@ -133,11 +137,16 @@ sub-panels at once.
 
 ```{r}
 #| label: fig-upset
-#| fig-cap: "The ten most frequent procedure combinations as intersection bars, with a set-size sidebar of marginal totals"
+#| fig-cap: >-
+#|   The ten most frequent procedure combinations as intersection bars, with a
+#|   set-size sidebar of marginal totals. Dark gray bars give the patients in
+#|   each combination, black dots joined by vertical lines mark the procedures
+#|   in it, and steel-blue bars in the sidebar give each procedure's total.
 #| fig-width: 9
 #| fig-height: 5
+# Free size: matrix plot with intersection bars, dot matrix and sidebar, until hvtiPlotR's hv_panel_size() sizes it.
 plot(hu) &
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Read it
@@ -172,12 +181,16 @@ just the intersection-bar ggplot, which you then finish with the usual `+`.
 
 ```{r}
 #| label: fig-upset-fill
-#| fig-cap: "The intersection bars alone, recoloured and with the set-size sidebar dropped"
+#| fig-cap: >-
+#|   The intersection bars alone, recolored and with the set-size sidebar
+#|   dropped. Steel-blue bars give the patients in each combination and black
+#|   dots joined by vertical lines mark the procedures in it.
 #| fig-width: 9
 #| fig-height: 5
+# Free size: matrix plot with intersection bars, dot matrix and sidebar, until hvtiPlotR's hv_panel_size() sizes it.
 plot(hu, bar_fill = "steelblue", set_size = FALSE) +
   ggplot2::labs(y = "Patients (n)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ### Colour bars by era
@@ -189,9 +202,14 @@ to assign the colours explicitly.
 
 ```{r}
 #| label: fig-upset-era
-#| fig-cap: "Each intersection bar split and stacked by era, showing whether the mix of procedure combinations shifted over time"
+#| fig-cap: >-
+#|   Each intersection bar split and stacked by era, showing whether the mix of
+#|   procedure combinations shifted over time. Gray segments mark early-era
+#|   patients and steel-blue segments recent-era patients, and black dots
+#|   joined by vertical lines mark the procedures in each combination.
 #| fig-width: 9
 #| fig-height: 5
+# Free size: matrix plot with intersection bars, dot matrix and sidebar, until hvtiPlotR's hv_panel_size() sizes it.
 upset_dta$era <- ifelse(seq_len(nrow(upset_dta)) <= 200, "Early", "Recent")
 hu_era <- hv_upset(upset_dta, intersect = sets)
 
@@ -201,7 +219,7 @@ plot(hu_era, fill_col = "era", set_size = FALSE) +
     name   = "Era"
   ) +
   ggplot2::labs(y = "Patients (n)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Pitfalls

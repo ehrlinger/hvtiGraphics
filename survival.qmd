@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -72,7 +72,11 @@ any styling. The default `type = "survival"` is the curve with a logit-transform
 95% confidence ribbon.
 
 ```{r}
-#| label: km_bare
+#| label: fig-survival-bare
+#| fig-cap: >-
+#|   The bare Kaplan-Meier panel as the constructor returns it. The solid salmon
+#|   step line is the survival curve and the light salmon ribbon its logit-transform
+#|   95% confidence band, both in the ggplot2 default color.
 plot(km)
 ```
 
@@ -83,7 +87,10 @@ an `n =` callout in the lower-left, and the manuscript theme. Swap in
 
 ```{r}
 #| label: fig-survival
-#| fig-cap: "Kaplan-Meier overall survival for the simulated cohort, styled in the CORR house style with a logit-transform 95% confidence ribbon"
+#| fig-cap: >-
+#|   Kaplan-Meier overall survival for the simulated cohort, styled in the CORR
+#|   house style. The solid steel-blue step line is the survival curve and the
+#|   light steel-blue ribbon its logit-transform 95% confidence band.
 plot(km, alpha = 0.8) +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
   scale_fill_manual(values  = c(All = "steelblue"), guide = "none") +
@@ -95,7 +102,7 @@ plot(km, alpha = 0.8) +
        title = "Overall Survival") +
   annotate("text", x = 1, y = 5, label = paste0("n = ", nrow(dta_km)),
            hjust = 0, size = 3.5) +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Read it
@@ -135,8 +142,14 @@ from the same object, and compose the two.
 
 ```{r}
 #| label: fig-survival-atrisk
-#| fig-cap: "Survival curve with an aligned numbers-at-risk table composed beneath the time axis"
+#| fig-cap: >-
+#|   Survival curve with an aligned numbers-at-risk table composed beneath the time
+#|   axis. The solid steel-blue step line is the survival curve, the light
+#|   steel-blue ribbon its 95% confidence band, and the black numbers below the
+#|   axis the patients still at risk at each tick.
+#| fig-width: 6
 #| fig-height: 5
+# Free size: curve stacked over a numbers-at-risk table, until hvtiPlotR's hv_panel_size() sizes it.
 curve <- plot(km, alpha = 0.8) +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
   scale_fill_manual(values  = c(All = "steelblue"), guide = "none") +
@@ -145,7 +158,7 @@ curve <- plot(km, alpha = 0.8) +
   scale_x_continuous(breaks = seq(0, 20, 5)) +
   coord_cartesian(xlim = c(0, 20), ylim = c(0, 100)) +
   labs(x = "Years after Operation", y = "Freedom from Death (%)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 
 risk_panel <- hv_atrisk(km)
 hv_atrisk_compose(curve, risk_panel)
@@ -166,7 +179,11 @@ windows where the treatment difference matters.
 
 ```{r}
 #| label: fig-survival-strata
-#| fig-cap: "Stratified survival curves for a two-arm valve-type cohort simulated with a 1.4x hazard ratio"
+#| fig-cap: >-
+#|   Stratified survival curves for a two-arm valve-type cohort simulated with a
+#|   1.4x hazard ratio. Solid step lines are the survival curves and light ribbons
+#|   their 95% confidence bands; steel blue marks Type A and firebrick marks
+#|   Type B.
 dta_km_s <- sample_survival_data(
   n             = 500,
   strata_levels = c("Type A", "Type B"),
@@ -190,7 +207,7 @@ plot(km_s, alpha = 0.8) +
   coord_cartesian(xlim = c(0, 20), ylim = c(0, 100)) +
   labs(x = "Years after Operation", y = "Freedom from Death (%)",
        title = "Survival by Valve Type") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 
@@ -204,13 +221,16 @@ different `type`.
 
 ```{r}
 #| label: fig-survival-cumhaz
-#| fig-cap: "Nelson-Aalen cumulative hazard, a dimensionless measure of event intensity accumulated through each follow-up time"
+#| fig-cap: >-
+#|   Nelson-Aalen cumulative hazard, a dimensionless measure of event intensity
+#|   accumulated through each follow-up time. The solid steel-blue step line is the
+#|   cumulative hazard.
 plot(km, type = "cumhaz") +
   scale_x_continuous(breaks = seq(0, 20, 5)) +
   labs(x = "Years after Operation", y = "Cumulative Hazard H(t)",
        title = "Nelson-Aalen Cumulative Hazard") +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ### Hazard rate
@@ -225,7 +245,11 @@ patient-year to keep the smooth and most points readable.
 
 ```{r}
 #| label: fig-survival-hazard
-#| fig-cap: "Instantaneous event rate per patient-year with a LOESS smooth; the y-axis stops at 1.5 so a few unstable interval spikes fall outside the displayed range"
+#| fig-cap: >-
+#|   Instantaneous event rate per patient-year with a LOESS smooth; the y-axis stops
+#|   at 1.5 so a few unstable interval spikes fall outside the displayed range.
+#|   Steel-blue filled circles are the interval hazard estimates and the solid
+#|   steel-blue line is the LOESS smooth.
 plot(km, type = "hazard") +
   geom_smooth(aes(x = mid_time, y = hazard, color = strata),
               method = "loess", se = FALSE, span = 0.6) +
@@ -235,7 +259,7 @@ plot(km, type = "hazard") +
   coord_cartesian(xlim = c(0, 20), ylim = c(0, 1.5)) +
   labs(x = "Years after Operation", y = "Hazard rate (events/patient-year)",
        title = "Hazard Rate") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ### Log-log survival (proportional-hazards check)
@@ -247,7 +271,11 @@ there are strata to compare.
 
 ```{r}
 #| label: fig-survival-loglog
-#| fig-cap: "Log-log survival plot for checking the proportional-hazards assumption across strata"
+#| fig-cap: >-
+#|   Log-log survival plot for checking the proportional-hazards assumption across
+#|   strata. Solid step lines show log(-log S(t)) against log time, steel blue for
+#|   Type A and firebrick for Type B; roughly parallel lines support proportional
+#|   hazards.
 plot(km_s, type = "loglog") +
   scale_color_manual(
     values = c("Type A" = "steelblue", "Type B" = "firebrick"),
@@ -255,7 +283,7 @@ plot(km_s, type = "loglog") +
   ) +
   labs(x = "log(Years after Operation)", y = "log(-log S(t))",
        title = "Log-Log Survival") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ### Integrated life table (restricted mean survival)
@@ -268,14 +296,17 @@ hazards are *not* proportional and a single hazard ratio would mislead.
 
 ```{r}
 #| label: fig-survival-life
-#| fig-cap: "Integrated survivorship, the restricted mean survival time accumulated up to each horizon"
+#| fig-cap: >-
+#|   Integrated survivorship, the restricted mean survival time accumulated up to
+#|   each horizon. The solid steel-blue step line is the area under the survival
+#|   curve to each time.
 plot(km, type = "life") +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
   scale_x_continuous(breaks = seq(0, 20, 5)) +
   labs(x = "Years after Operation",
        y = "Restricted Mean Survival (years)",
        title = "Integral of Survivorship") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Pitfalls

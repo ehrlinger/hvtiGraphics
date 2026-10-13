@@ -7,7 +7,7 @@ and their denominator are made explicit.
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -83,7 +83,12 @@ The bare panel shows two mirrored bar charts, upper bars for the first group and
 lower for the second, with white fill and no scale, label, or theme yet.
 
 ```{r}
-#| label: mirror_histogram_bare
+#| label: fig-histograms-bare
+#| fig-cap: >-
+#|   Bare mirrored histogram before any scales, labels or theme, SAVR above the
+#|   zero line and TF-TAVR below it. Black-outlined bars show the patients before
+#|   matching and the matched subset, filled in four default colors, and the
+#|   black horizontal line marks zero.
 p <- plot(mh, alpha = 0.8)
 p
 ```
@@ -103,7 +108,12 @@ of the data it names.
 
 ```{r}
 #| label: fig-histograms
-#| fig-cap: "Mirrored matching histogram of propensity scores for SAVR and TF-TAVR, with the matched subset overlaid"
+#| fig-cap: >-
+#|   Mirrored matching histogram of propensity scores for SAVR and TF-TAVR,
+#|   with the matched subset overlaid. Black-outlined white bars show every
+#|   patient before matching, SAVR above the zero line and TF-TAVR below it;
+#|   light green bars (SAVR) and dark green bars (TF-TAVR) overlay the matched
+#|   patients.
 p +
   ggplot2::scale_fill_manual(
     values = c(
@@ -122,7 +132,7 @@ p +
   ggplot2::annotate("text", x = 20, y = -Inf, vjust = -1,
                     label = mh$meta$group_labels[2], size = 7) +
   ggplot2::labs(x = "Propensity Score (%)", y = "Number of Patients") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Read it
@@ -210,7 +220,12 @@ lower overlay bars mean good weighting, while bars that stay heavily one-sided
 point to extreme weights you should investigate.
 
 ```{r}
-#| label: mirror_histogram_weighted_bare
+#| label: fig-histograms-weighted-bare
+#| fig-cap: >-
+#|   Bare mirrored histogram in weighted IPTW mode before any scales, labels or
+#|   theme, Limited above the zero line and Extended below it. Black-outlined
+#|   bars show the patients before weighting and the summed weights, filled in
+#|   four default colors, and the black horizontal line marks zero.
 p_wt <- plot(mh_wt, alpha = 0.8)
 p_wt
 ```
@@ -222,7 +237,12 @@ for a conference poster.
 
 ```{r}
 #| label: fig-histograms-weighted
-#| fig-cap: "Mirrored histogram in weighted IPTW mode, with overlay heights showing the sum of inverse-probability weights for the Limited and Extended groups"
+#| fig-cap: >-
+#|   Mirrored histogram in weighted IPTW mode, with overlay heights showing the
+#|   sum of inverse-probability weights for the Limited and Extended groups.
+#|   Black-outlined white bars show every patient before weighting, Limited
+#|   above the zero line and Extended below it; blue bars (Limited) and red bars
+#|   (Extended) overlay the summed weights.
 p_wt +
   ggplot2::scale_fill_manual(
     values = c(
@@ -241,7 +261,7 @@ p_wt +
   ggplot2::annotate("text", x = 15, y = -Inf, vjust = -1,
                     label = mh_wt$meta$group_labels[2], color = "red",  size = 5) +
   ggplot2::labs(x = "Propensity Score (%)", y = "#") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 The weight totals describe the scale of the weighted histogram, while the
@@ -283,7 +303,10 @@ differently composed.
 
 ```{r}
 #| label: fig-histograms-stacked-count
-#| fig-cap: "Stacked histogram of annual counts, with each bar split into category contributions"
+#| fig-cap: >-
+#|   Stacked histogram of annual counts, with each bar split into category
+#|   contributions. Blue, vermillion and green segments mark Groups A, B and C,
+#|   as in the legend.
 sh <- hv_stacked(hist_dta, x_col = "year", group_col = "category")
 class(sh)
 sh$meta[c("x_col", "group_col", "binwidth", "position", "n_obs", "n_groups")]
@@ -297,7 +320,7 @@ p_count +
   ) +
   scale_colour_manual(values = hv_ppt_palette("light"), guide = "none") +
   labs(x = "Year", y = "Count") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "right")
 ```
 
@@ -317,7 +340,10 @@ a distraction.
 
 ```{r}
 #| label: fig-histograms-stacked-fill
-#| fig-cap: "Stacked histogram rescaled to proportions, showing category composition over time independent of cohort volume"
+#| fig-cap: >-
+#|   Stacked histogram rescaled to proportions, showing category composition
+#|   over time independent of cohort volume. Pink, cyan and orange-red segments
+#|   mark Groups A, B and C, as in the legend.
 sh2 <- hv_stacked(hist_dta, x_col = "year", group_col = "category",
                   position = "fill")
 sh2$meta[c("x_col", "group_col", "binwidth", "position", "n_obs", "n_groups")]
@@ -334,7 +360,7 @@ p_fill +
     guide  = "none"
   ) +
   labs(x = "Year", y = "Proportion") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "right")
 ```
 

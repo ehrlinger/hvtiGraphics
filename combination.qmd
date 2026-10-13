@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 library(patchwork)
@@ -51,7 +51,7 @@ p_km <- plot(km) +
   scale_y_continuous(breaks = seq(0, 100, 20),
                      labels = function(x) paste0(x, "%")) +
   labs(x = "Years after Operation", y = "Freedom from Death (%)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 
 cb <- hv_balance(sample_covariate_balance_data(n_vars = 12))
 
@@ -65,7 +65,7 @@ p_cb <- plot(cb, alpha = 0.8) +
     name   = NULL
   ) +
   labs(x = "Standardized difference (%)", y = "") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Build it
@@ -75,8 +75,16 @@ places `p_cb` and `p_km` next to each other, sharing the figure height. We widen
 the chunk (`fig-width: 10`) so neither panel is squeezed.
 
 ```{r}
-#| label: combo_side_by_side
+#| label: fig-combination-side-by-side
+#| fig-cap: >-
+#|   The covariate balance and survival panels placed side by side, sharing the
+#|   figure height. Panel at left: Dark-red filled triangles mark covariates
+#|   before matching and blue filled squares after matching, with a solid
+#|   vertical line at zero difference and dotted lines at plus and minus 10
+#|   percent. Panel at right: The salmon-red step line is the Kaplan-Meier
+#|   estimate and the shaded band in the same color its confidence limits.
 #| fig-width: 10
+# Free size: two panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
 p_cb | p_km
 ```
 
@@ -114,8 +122,16 @@ long labels. `heights` does the same for stacked layouts.
 
 ```{r}
 #| label: fig-combination-layout
-#| fig-cap: "Two-panel composite with the balance panel set twice as wide as the survival panel to fit its long covariate labels"
+#| fig-cap: >-
+#|   Two-panel composite with the balance panel set twice as wide as the survival
+#|   panel to fit its long covariate labels. Left panel: Dark-red filled
+#|   triangles mark covariates before matching and blue filled squares after
+#|   matching, with a solid vertical line at zero difference and dotted lines at
+#|   plus and minus 10 percent. Right panel: The salmon-red step line is the
+#|   Kaplan-Meier estimate and the shaded band in the same color its confidence
+#|   limits.
 #| fig-width: 10
+# Free size: two panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
 (p_cb | p_km) +
   plot_layout(widths = c(2, 1))   # left panel twice as wide as right
 ```
@@ -130,8 +146,14 @@ keeps the table strip short.
 
 ```{r}
 #| label: fig-combination-risk-table
-#| fig-cap: "Survival curve stacked above its numbers-at-risk strip, the two panels sharing a common x-axis"
+#| fig-cap: >-
+#|   Survival curve stacked above its numbers-at-risk strip, the two panels
+#|   sharing a common x-axis. The salmon-red step line is the Kaplan-Meier
+#|   estimate and the shaded band in the same color its confidence limits. Black
+#|   numbers in the strip are the patients still at risk.
+#| fig-width: 6
 #| fig-height: 5
+# Free size: curve stacked over a numbers-at-risk strip, until hvtiPlotR's hv_panel_size() sizes it.
 risk_df <- km$tables$risk
 
 rt_panel <- ggplot(risk_df,
@@ -139,7 +161,7 @@ rt_panel <- ggplot(risk_df,
                        label = n.risk)) +
   geom_text(size = 3) +
   labs(x = "Years after Operation", y = NULL) +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(
     axis.line  = element_blank(),
     axis.ticks = element_blank()
@@ -158,8 +180,15 @@ one place rather than per panel.
 
 ```{r}
 #| label: fig-combination
-#| fig-cap: "Finished combination figure pairing the covariate balance and survival panels with a shared title and A, B panel tags"
+#| fig-cap: >-
+#|   Finished combination figure pairing the covariate balance and survival
+#|   panels with a shared title and A, B panel tags. Panel A: Dark-red filled
+#|   triangles mark covariates before matching and blue filled squares after
+#|   matching, with a solid vertical line at zero difference and dotted lines at
+#|   plus and minus 10 percent. Panel B: The salmon-red step line is the Kaplan-
+#|   Meier estimate and the shaded band in the same color its confidence limits.
 #| fig-width: 10
+# Free size: two panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
 (p_cb | p_km) +
   plot_annotation(
     title = "Figure 1. Outcomes after cardiac surgery",

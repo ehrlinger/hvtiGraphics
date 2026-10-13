@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -83,7 +83,12 @@ roles. The curve is on the percentage scale, so 80 means 80% surviving, not
 
 ```{r}
 #| label: fig-hazard
-#| fig-cap: "Smooth parametric survival curve with its confidence band and overlaid binned Kaplan-Meier points with error bars"
+#| fig-cap: >-
+#|   Smooth parametric survival curve with its confidence band and overlaid binned
+#|   Kaplan-Meier points with error bars. The solid black line is the parametric
+#|   survival curve, the gray ribbon its confidence band, open black circles the
+#|   binned Kaplan-Meier estimates, and the vertical black bars their confidence
+#|   limits.
 plot(haz_surv) +
   scale_colour_manual(values = c("steelblue"), guide = "none") +
   scale_fill_manual(values = c("steelblue"), guide = "none") +
@@ -91,7 +96,7 @@ plot(haz_surv) +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
                      labels = function(x) paste0(x, "%")) +
   labs(x = "Years", y = "Survival (%)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ## Read it
@@ -122,8 +127,16 @@ cannot tell you how many patients stood behind each part of it.
 
 ```{r}
 #| label: fig-hazard-atrisk
-#| fig-cap: "The parametric survival curve and its Kaplan-Meier overlay with an aligned numbers-at-risk table, counted from the subject-level cohort the overlay was computed from"
+#| fig-cap: >-
+#|   The parametric survival curve and its Kaplan-Meier overlay with an aligned
+#|   numbers-at-risk table, counted from the subject-level cohort the overlay was
+#|   computed from. The solid black line is the parametric curve, the gray ribbon
+#|   its confidence band, open black circles the binned Kaplan-Meier estimates with
+#|   vertical black confidence bars, and the black numbers below the axis the
+#|   patients still at risk at each time.
+#| fig-width: 6
 #| fig-height: 5
+# Free size: curve stacked over a numbers-at-risk table, until hvtiPlotR's hv_panel_size() sizes it.
 curve_hp <- plot(haz_surv) +
   scale_colour_manual(values = c("steelblue"), guide = "none") +
   scale_fill_manual(values = c("steelblue"), guide = "none") +
@@ -131,7 +144,7 @@ curve_hp <- plot(haz_surv) +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
                      labels = function(x) paste0(x, "%")) +
   labs(x = "Years", y = "Survival (%)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 
 risk_hp <- hv_atrisk(coh_hp, time = "time", status = "status",
                      report_times = seq(0, 10, 2))
@@ -162,7 +175,10 @@ events occur fastest rather than *how many* survive.
 
 ```{r}
 #| label: fig-hazard-rate
-#| fig-cap: "Instantaneous event rate per 100 patient-years, showing when post-operative events occur fastest among patients still at risk"
+#| fig-cap: >-
+#|   Instantaneous event rate per 100 patient-years, showing when post-operative
+#|   events occur fastest among patients still at risk. The solid black line is the
+#|   hazard rate and the gray ribbon its confidence band.
 haz_rate <- hv_hazard(
   dat_hp,
   estimate_col = "hazard",
@@ -176,7 +192,7 @@ plot(haz_rate) +
   scale_x_continuous(limits = c(0, 10), breaks = 0:10) +
   scale_y_continuous(limits = c(0, 30)) +
   labs(x = "Years", y = "Events per 100 patient-years") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ### Cumulative hazard
@@ -190,7 +206,10 @@ surviving fraction.
 
 ```{r}
 #| label: fig-hazard-cumhaz
-#| fig-cap: "Scaled cumulative hazard, 100 × H(t), a dimensionless quantity whose local slope is the event rate per 100 patient-years"
+#| fig-cap: >-
+#|   Scaled cumulative hazard, 100 × H(t), a dimensionless quantity whose local
+#|   slope is the event rate per 100 patient-years. The solid black line is the
+#|   scaled cumulative hazard and the gray ribbon its confidence band.
 haz_cumhaz <- hv_hazard(
   dat_hp,
   estimate_col  = "cumhaz",
@@ -203,7 +222,7 @@ plot(haz_cumhaz) +
   scale_fill_manual(values = c("darkorange"), guide = "none") +
   scale_x_continuous(limits = c(0, 10), breaks = 0:10) +
   labs(x = "Years", y = "Scaled cumulative hazard, 100 × H(t)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ### Stratified by group
@@ -214,7 +233,12 @@ in the windows where the treatment difference matters.
 
 ```{r}
 #| label: fig-hazard-stratified
-#| fig-cap: "Survival curves, bands, and empirical overlays for two groups in a single panel"
+#| fig-cap: >-
+#|   Survival curves, bands, and empirical overlays for two groups in a single
+#|   panel. Solid lines are the parametric survival curves with light ribbons for
+#|   their confidence bands, and open circles with vertical bars the binned
+#|   Kaplan-Meier estimates and their confidence limits; steel blue marks No
+#|   Takedown and firebrick marks Takedown.
 dat_strat <- sample_hazard_data(
   n = 400, time_max = 10,
   groups = c("No Takedown" = 1.0, "Takedown" = 0.65)
@@ -248,7 +272,7 @@ plot(haz_strat) +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
                      labels = function(x) paste0(x, "%")) +
   labs(x = "Years after Surgery", y = "Survival (%)") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 
@@ -262,7 +286,13 @@ mortality attributable to the condition rather than to ageing.
 
 ```{r}
 #| label: fig-hazard-lifetable
-#| fig-cap: "Age-stratified study survival curves set against dashed population life-table references"
+#| fig-cap: >-
+#|   Age-stratified study survival curves set against dashed population life-table
+#|   references. Solid lines with light ribbons are the study survival curves and
+#|   their confidence bands, open circles with vertical bars the binned
+#|   Kaplan-Meier estimates and their limits, and black dashed lines the
+#|   population life table; steel blue marks under 65, green 65 to 80, and
+#|   firebrick 80 and over.
 dat_age <- sample_hazard_data(
   n = 600, time_max = 12,
   groups = c("<65" = 0.5, "65–80" = 1.0, "≥80" = 1.8)
@@ -311,7 +341,7 @@ plot(haz_age) +
                      labels = function(x) paste0(x, "%")) +
   labs(x = "Years", y = "Survival (%)",
        caption = "Dashed lines: US population life table") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 
@@ -354,7 +384,11 @@ or a bootstrap distribution. A flat curve where you expected a trend is a hint
 that the `outcome_type` or CI columns are misspecified.
 
 ```{r}
-#| label: np_curve_single_bare
+#| label: fig-hazard-nonparametric-bare
+#| fig-cap: >-
+#|   The bare nonparametric temporal-trend curve in default colors. The solid black
+#|   line is the average curve, the grey ribbon its 68% interval, and black filled
+#|   circles the binned summary points.
 plot(np)
 ```
 
@@ -364,7 +398,11 @@ standard error on the scale used by the helper. Pass `ci_level = 0.95` to
 
 ```{r}
 #| label: fig-hazard-nonparametric
-#| fig-cap: "Nonparametric temporal-trend curve with its 68% formula-based normal-quantile interval and binned summary points"
+#| fig-cap: >-
+#|   Nonparametric temporal-trend curve with its 68% formula-based normal-quantile
+#|   interval and binned summary points. The solid black line is the average curve,
+#|   the gray ribbon its interval, and black filled circles the binned summary
+#|   points.
 plot(np) +
   scale_colour_manual(values = c("steelblue"), guide = "none") +
   scale_fill_manual(values   = c("steelblue"), guide = "none") +
@@ -373,7 +411,7 @@ plot(np) +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2),
                      labels = scales::percent) +
   labs(x = "Follow-up (years)", y = "Prevalence (%)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 Pass `group_col` to the constructor to compare two average curves in a single
@@ -381,7 +419,11 @@ panel; each group gets its own CI ribbon.
 
 ```{r}
 #| label: fig-hazard-nonparametric-groups
-#| fig-cap: "Two nonparametric average curves compared in one panel, each with its own formula-based normal-quantile interval"
+#| fig-cap: >-
+#|   Two nonparametric average curves compared in one panel, each with its own
+#|   formula-based normal-quantile interval. Solid lines are the average curves,
+#|   light ribbons their intervals, and filled circles the binned summary points;
+#|   steel blue marks Ozaki and firebrick marks CE-Pericardial.
 curve_grp <- sample_nonparametric_curve_data(
   n            = 400,
   time_max     = 7,
@@ -413,7 +455,7 @@ p_haz_grp <- plot(np_grp) +
   ) +
   scale_x_continuous(limits = c(0, 7), breaks = 0:7) +
   labs(x = "Follow-up (years)", y = "AV Peak Gradient (mmHg)") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 
 # Rising curves leave the upper-left empty; pin the key there.
 hv_legend_inside(p_haz_grp, prefer = "topleft")
@@ -449,7 +491,11 @@ severity to firebrick for Severe so the eye reads worsening as warming.
 
 ```{r}
 #| label: fig-hazard-ordinal
-#| fig-cap: "One probability curve per regurgitation grade over time, coloured from grey to firebrick as severity worsens"
+#| fig-cap: >-
+#|   One probability curve per regurgitation grade over time, colored from grey to
+#|   firebrick as severity worsens. Solid lines are the grade curves and filled
+#|   circles the binned summary points; grey marks None, steel blue Mild, dark
+#|   orange Moderate, and firebrick Severe.
 np_ord <- hv_ordinal(curve_data = ord_dat, data_points = ord_pts)
 np_ord$meta
 
@@ -463,7 +509,7 @@ plot(np_ord) +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2),
                      labels = scales::percent) +
   labs(x = "Follow-up (years)", y = "Grade prevalence (%)") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = c(0.75, 0.6))
 ```
 
@@ -474,7 +520,10 @@ one. Here we combine None with Mild and Moderate with Severe.
 
 ```{r}
 #| label: fig-hazard-ordinal-collapsed
-#| fig-cap: "Two-level ordinal version after summing adjacent grade probabilities; the two curves account for the full cohort at each time"
+#| fig-cap: >-
+#|   Two-level ordinal version after summing adjacent grade probabilities; the two
+#|   curves account for the full cohort at each time. Solid steel-blue line marks
+#|   None or Mild and solid firebrick line marks Moderate or Severe.
 ord_two <- transform(
   ord_dat,
   grade = ifelse(grade %in% c("None", "Mild"),
@@ -494,7 +543,7 @@ plot(np_ord_two) +
   scale_y_continuous(limits = c(0, 1), breaks = seq(0, 1, 0.2),
                      labels = scales::percent) +
   labs(x = "Follow-up (years)", y = "Grade prevalence (%)") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 

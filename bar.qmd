@@ -7,7 +7,7 @@ proportions when cohort size would otherwise dominate the story.
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 library(patchwork)
@@ -84,7 +84,11 @@ constructor produced before any styling. Reuse the inspected object across both
 panels below.
 
 ```{r}
-#| label: lc_bare
+#| label: fig-bar-default
+#| fig-cap: >-
+#|   Default look of the grouped bar chart before any house styling. Bars are
+#|   ggplot2's default salmon (Measurements) and teal (Patients), side by side at
+#|   each follow-up window on a grey panel.
 plot(lc)
 ```
 
@@ -96,7 +100,10 @@ upper-left corner where the short early-window bars leave room.
 
 ```{r}
 #| label: fig-bar
-#| fig-cap: "Grouped bar chart of patient and measurement counts at each follow-up window"
+#| fig-cap: >-
+#|   Grouped bar chart of patient and measurement counts at each follow-up
+#|   window. Steel-blue bars show patients and firebrick bars measurements, side
+#|   by side at each window.
 p_lc_bar <- plot(lc) +
   ggplot2::scale_fill_manual(
     values = c(Patients = "steelblue", Measurements = "firebrick"),
@@ -108,7 +115,7 @@ p_lc_bar <- plot(lc) +
   ) +
   ggplot2::coord_cartesian(ylim = c(0, 700)) +
   ggplot2::labs(x = NULL, y = "Count (n)") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(axis.text.x = element_text(angle = 30, hjust = 1))
 
 hv_legend_inside(p_lc_bar)
@@ -149,7 +156,11 @@ of the raw column name. Here, sex by surgery year.
 
 ```{r}
 #| label: fig-bar-binary-count
-#| fig-cap: "Count bars of a binary categorical variable by surgery year, with missing values kept as an explicit level"
+#| fig-cap: >-
+#|   Count bars of a binary categorical variable by surgery year, with missing
+#|   values kept as an explicit level. Steel-blue segments count women, firebrick
+#|   segments men and light grey segments missing values, stacked within each
+#|   year.
 eda_male <- hv_eda(dta_eda, x_col = "year", y_col = "male",
                    y_label = "Sex")
 class(eda_male)
@@ -163,7 +174,7 @@ plot(eda_male) +
   ) +
   scale_x_discrete(breaks = seq(2005, 2020, 5)) +
   labs(x = "Surgery Year", y = "Count") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "right")
 ```
 
@@ -183,7 +194,11 @@ raw count would tell you more about volume than about case mix.
 
 ```{r}
 #| label: fig-bar-binary-percent
-#| fig-cap: "Percentage bars of a binary categorical variable by year, with each bar filling the full height to show case mix"
+#| fig-cap: >-
+#|   Percentage bars of a binary categorical variable by year, with each bar
+#|   filling the full height to show case mix. Grey segments are patients without
+#|   concomitant CABG, steel-blue segments patients with CABG and pale grey
+#|   segments missing values.
 plot(hv_eda(dta_eda, x_col = "year", y_col = "cabg",
             y_label = "Concomitant CABG", show_percent = TRUE)) +
   scale_fill_manual(
@@ -194,7 +209,7 @@ plot(hv_eda(dta_eda, x_col = "year", y_col = "cabg",
   scale_x_discrete(breaks = seq(2005, 2020, 5)) +
   scale_y_continuous(labels = scales::percent) +
   labs(x = "Surgery Year", y = "Proportion") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "right")
 ```
 
@@ -219,7 +234,10 @@ run.
 
 ```{r}
 #| label: fig-bar-ordinal
-#| fig-cap: "Stacked count bars of an ordinal NYHA class by year, with a diverging palette carrying the severity ordering"
+#| fig-cap: >-
+#|   Stacked count bars of an ordinal NYHA class by year, with a diverging
+#|   palette carrying the severity ordering. Class I is blue, II pale blue, III
+#|   salmon, IV dark red and missing values light grey.
 plot(hv_eda(dta_eda, x_col = "year", y_col = "nyha",
             y_label = "Preoperative NYHA Class")) +
   scale_fill_manual(
@@ -231,7 +249,7 @@ plot(hv_eda(dta_eda, x_col = "year", y_col = "nyha",
   ) +
   scale_x_discrete(breaks = seq(2005, 2020, 5)) +
   labs(x = "Surgery Year", y = "Count") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "right")
 ```
 
@@ -244,7 +262,10 @@ colours that carry clinical meaning, here one hue per valve morphology type.
 
 ```{r}
 #| label: fig-bar-char-cat
-#| fig-cap: "Stacked count bars of a character categorical variable by year, with one hue per valve morphology type"
+#| fig-cap: >-
+#|   Stacked count bars of a character categorical variable by year, with one hue
+#|   per valve morphology type. Bicuspid is steel blue, tricuspid firebrick,
+#|   unicuspid goldenrod and missing values light grey.
 plot(hv_eda(dta_eda, x_col = "year", y_col = "valve_morph",
             y_label = "Valve Morphology")) +
   scale_fill_manual(
@@ -256,7 +277,7 @@ plot(hv_eda(dta_eda, x_col = "year", y_col = "valve_morph",
   ) +
   scale_x_discrete(breaks = seq(2005, 2020, 5)) +
   labs(x = "Surgery Year", y = "Count") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "right")
 ```
 
@@ -267,13 +288,17 @@ the same counts as coloured text below the x-axis labels, the numeric companion
 to the bars. On its own it is sparse; it is meant to sit under the bar chart.
 
 ```{r}
-#| label: lc_table
+#| label: fig-bar-longitudinal-table
+#| fig-cap: >-
+#|   Counts of patients and measurements at each follow-up window, printed as
+#|   text with the window labels removed. Steel-blue numbers are patients (lower
+#|   row) and firebrick numbers measurements (upper row).
 p_lc_tbl <- plot(lc, type = "table") +
   ggplot2::scale_colour_manual(
     values = c(Patients = "steelblue", Measurements = "firebrick"),
     guide  = "none"
   ) +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   labs(x = NULL, y = NULL) +
   theme(
     axis.text.x  = element_blank(),
@@ -293,8 +318,13 @@ table gives the reader the exact counts.
 
 ```{r}
 #| label: fig-bar-longitudinal-composite
-#| fig-cap: "Two-panel longitudinal display with the grouped bar chart above and the matching count table below"
+#| fig-cap: >-
+#|   Two-panel longitudinal display with the grouped bar chart above and the
+#|   matching count table below. Steel-blue bars and numbers are patients and
+#|   firebrick bars and numbers measurements.
 #| fig-height: 5
+#| fig-width: 6
+# Free size: two stacked panels (bars above a count table), until hvtiPlotR's hv_panel_size() sizes it.
 p_lc_bar / p_lc_tbl +
   patchwork::plot_layout(heights = c(3, 1))
 ```

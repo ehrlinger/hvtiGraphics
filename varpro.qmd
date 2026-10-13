@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(varPro)
 library(ggRandomForests)
 library(ggplot2)
@@ -47,12 +47,19 @@ earns its keep when there are far more candidates than you can eyeball.
 
 ```{r}
 #| label: fig-varpro
-#| fig-cap: "Variable priority for the top 20 predictors of the housing regression fit, with the dashed cutoff line separating selected from unselected variables"
+#| fig-cap: >-
+#|   Variable priority for the top 20 predictors of the housing regression fit.
+#|   Boxes span the 15th to 85th percentiles of each variable's importance with the
+#|   median as a black line and whiskers the 5th and 95th; steel-blue boxes mark
+#|   selected variables, grey boxes unselected ones, and the dashed red vertical
+#|   line the selection cutoff.
+#| fig-width: 7
 #| fig-height: 5.5
+# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
 set.seed(42)
 data(housing, package = "randomForestSRC")
 o <- varpro(SalePrice ~ ., data = housing, ntree = 100)
-plot(gg_varpro(o, nvar = 20)) + theme_hv_manuscript()
+plot(gg_varpro(o, nvar = 20)) + theme_hv_manuscript(base_size = 12)
 ```
 
 `gg_varpro()` returns a percentile boxplot for each variable: hinges at the
@@ -72,9 +79,16 @@ behind the boxplot, exposing the spread that the summary hides:
 
 ```{r}
 #| label: fig-varpro-faithful
-#| fig-cap: "The same priority boxplots with per-tree importance draws shown as jittered points behind each box, exposing the spread the summary hides"
+#| fig-cap: >-
+#|   The same priority boxplots with per-tree importance draws shown behind each
+#|   box. Small steel-blue jittered points mark the per-tree draws, open
+#|   steel-blue circles with white fill the mean of each variable, lighter boxes
+#|   the 15th to 85th percentile range (steel blue selected, grey unselected), and
+#|   the dashed red vertical line the selection cutoff.
+#| fig-width: 7
 #| fig-height: 5.5
-plot(gg_varpro(o, faithful = TRUE, nvar = 20)) + theme_hv_manuscript()
+# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+plot(gg_varpro(o, faithful = TRUE, nvar = 20)) + theme_hv_manuscript(base_size = 12)
 ```
 
 Setting `nvar` lower restricts the display further, handy when a wide problem
@@ -82,8 +96,13 @@ like this one would otherwise crowd the panel and you only want the leaders:
 
 ```{r}
 #| label: fig-varpro-nvar
-#| fig-cap: "Variable priority restricted to the top eight predictors, the leaders-only view for a crowded wide problem"
-plot(gg_varpro(o, nvar = 8)) + theme_hv_manuscript()
+#| fig-cap: >-
+#|   Variable priority restricted to the top eight predictors, the leaders-only
+#|   view for a crowded wide problem. Boxes span the 15th to 85th percentiles with
+#|   the median as a black line and whiskers the 5th and 95th; steel blue marks
+#|   selected variables, grey unselected ones, and the dashed red vertical line
+#|   the cutoff.
+plot(gg_varpro(o, nvar = 8)) + theme_hv_manuscript(base_size = 12)
 ```
 
 ## Read it
@@ -116,9 +135,15 @@ and magnitude of its local linear effect.
 
 ```{r}
 #| label: fig-varpro-beta
-#| fig-cap: "Beta-refined importance for the housing regression fit, reporting lasso slope coefficients that carry direction and magnitude rather than VIMP-style scores"
+#| fig-cap: >-
+#|   Beta-refined importance for the housing regression fit, reporting lasso slope
+#|   coefficients that carry direction and magnitude rather than VIMP-style scores.
+#|   Bars give each variable's mean slope, steel blue for selected variables and
+#|   grey for unselected ones, and the dashed red vertical line marks the cutoff.
+#| fig-width: 7
 #| fig-height: 6
-plot(gg_beta_varpro(o)) + theme_hv_manuscript()
+# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+plot(gg_beta_varpro(o)) + theme_hv_manuscript(base_size = 12)
 ```
 
 The per-rule lasso refinement (`beta.varpro`) is the expensive step; under
@@ -136,12 +161,18 @@ the dependency graph in @fig-varpro-udependent.
 
 ```{r}
 #| label: fig-varpro-beta-uvarpro
-#| fig-cap: "Beta-refined importance for the unsupervised housing fit, the outcome-free counterpart to the regression beta plot above"
+#| fig-cap: >-
+#|   Beta-refined importance for the unsupervised housing fit, the outcome-free
+#|   counterpart to the regression beta plot above. Bars give each variable's mean
+#|   absolute lasso coefficient, steel blue for selected variables and grey for
+#|   unselected ones, and the dashed red vertical line marks the cutoff.
+#| fig-width: 7
 #| fig-height: 6
+# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
 set.seed(42)
 num_cols <- names(housing)[vapply(housing, is.numeric, logical(1))]
 uv <- uvarpro(housing[, setdiff(num_cols, "SalePrice")], ntree = 100)
-plot(gg_beta_uvarpro(uv)) + theme_hv_manuscript()
+plot(gg_beta_uvarpro(uv)) + theme_hv_manuscript(base_size = 12)
 ```
 
 The two are told apart by the object you hand them. `gg_beta_varpro()` needs a
@@ -162,12 +193,18 @@ recurrence outcome (`N` = no recurrence, `R` = recurrence).
 
 ```{r}
 #| label: fig-varpro-ivarpro
-#| fig-cap: "Individual variable priority for the breast classification fit, decomposing forest importance down to each observation"
+#| fig-cap: >-
+#|   Individual variable priority for the breast classification fit, decomposing
+#|   forest importance down to each observation. Each point is one patient's local
+#|   importance for a variable, steel blue for selected variables and grey for
+#|   unselected ones, and the dashed red vertical line marks the cutoff.
+#| fig-width: 7
 #| fig-height: 5.5
+# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
 set.seed(42)
 data(breast, package = "randomForestSRC")
 oc <- varpro(status ~ ., data = breast, ntree = 100)
-plot(gg_ivarpro(oc)) + theme_hv_manuscript()
+plot(gg_ivarpro(oc)) + theme_hv_manuscript(base_size = 12)
 ```
 
 Each row shows how strongly individual patients' predictions rely on one
@@ -182,9 +219,16 @@ the slopes for `N` are the same slopes with the sign reversed, which
 
 ```{r}
 #| label: fig-varpro-ivarpro-class
-#| fig-cap: "Individual variable priority for the no-recurrence class of the breast fit, chosen with which_class: the recurrence slopes with their sign reversed"
+#| fig-cap: >-
+#|   Individual variable priority for the no-recurrence class of the breast fit,
+#|   chosen with which_class: the recurrence slopes with their sign reversed. Each
+#|   point is one patient's local importance for a variable, steel blue for
+#|   selected variables and grey for unselected ones, and the dashed red vertical
+#|   line marks the cutoff.
+#| fig-width: 7
 #| fig-height: 5.5
-plot(gg_ivarpro(oc, which_class = "N")) + theme_hv_manuscript()
+# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+plot(gg_ivarpro(oc, which_class = "N")) + theme_hv_manuscript(base_size = 12)
 ```
 
 `which_class` earns its keep on an outcome with three or more levels, where each
@@ -199,9 +243,15 @@ the regression fit.
 
 ```{r}
 #| label: fig-varpro-conditional
-#| fig-cap: "Conditional variable priority faceted by outcome class, showing which predictors separate which classes in the breast fit"
+#| fig-cap: >-
+#|   Conditional variable priority faceted by outcome class, showing which
+#|   predictors separate which classes in the breast fit. Bars give each
+#|   variable's importance as a z score within the class, steel blue above the
+#|   cutoff and grey below it, and the dashed red vertical line marks the cutoff.
+#| fig-width: 7
 #| fig-height: 5.5
-plot(gg_varpro(oc, conditional = TRUE, nvar = 15)) + theme_hv_manuscript()
+# Free size: facets by outcome class with one row per variable, until hvtiPlotR's hv_panel_size() sizes it.
+plot(gg_varpro(oc, conditional = TRUE, nvar = 15)) + theme_hv_manuscript(base_size = 12)
 ```
 
 Every facet keeps the overall ranking, ordered by each variable's median
@@ -218,9 +268,16 @@ to `gg_isopro()`.
 
 ```{r}
 #| label: fig-varpro-isopro
-#| fig-cap: "In-sample anomaly scores from an isolation forest, where higher scores flag observations the forest separates with few splits"
+#| fig-cap: >-
+#|   In-sample anomaly scores from an isolation forest, where higher scores flag
+#|   observations the forest separates with few splits. The left panel ranks
+#|   observations by score with a black line, and the right panel shows the score
+#|   distribution as a grey filled density with a black outline.
+#| fig-width: 7
+#| fig-height: 4.5
+# Free size: two panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
 iso <- isopro(object = o, ntree = 100)
-plot(gg_isopro(iso)) + theme_hv_manuscript()
+plot(gg_isopro(iso)) & theme_hv_manuscript(base_size = 12)
 ```
 
 Higher isolation scores flag observations the forest separates with few splits,
@@ -251,9 +308,15 @@ collinear measurements.
 
 ```{r}
 #| label: fig-varpro-udependent
-#| fig-cap: "Unsupervised dependency graph among the numeric housing predictors, where thick edges mark strongly interdependent variables"
-#| fig-height: 5.5
-plot(gg_udependent(uv)) + theme_hv_manuscript()
+#| fig-cap: >-
+#|   Unsupervised dependency graph among the numeric housing predictors, where
+#|   thick edges mark strongly interdependent variables. Circles mark variables,
+#|   sized by degree, steel blue for the detected signal set and grey otherwise,
+#|   and steel-blue lines mark dependencies, thicker and darker as the dependence
+#|   strengthens.
+# Padding the x scale keeps the node labels at the left and right edges inside a 6 in figure.
+plot(gg_udependent(uv)) + theme_hv_manuscript(base_size = 12) +
+  ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = 0.15))
 ```
 
 This is the same `uv` fit, built on the numeric `housing` predictors with the
@@ -273,9 +336,15 @@ for it when you need to *name* the variables rather than point at a picture.
 
 ```{r}
 #| label: fig-varpro-sdependent
-#| fig-cap: "Signal-variable detection for the same unsupervised housing fit, ranking each variable by its dependency signal score with the detected signal set highlighted"
+#| fig-cap: >-
+#|   Signal-variable detection for the same unsupervised housing fit, ranking each
+#|   variable by its dependency signal score. Each variable is a line from zero
+#|   ending in a filled circle at its score, steel blue for the detected signal
+#|   set and grey for the rest.
+#| fig-width: 7
 #| fig-height: 5.5
-plot(gg_sdependent(uv)) + theme_hv_manuscript()
+# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+plot(gg_sdependent(uv)) + theme_hv_manuscript(base_size = 12)
 ```
 
 Both `gg_udependent()` and `gg_sdependent()` take a `labels` argument, the same

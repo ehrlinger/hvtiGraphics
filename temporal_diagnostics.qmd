@@ -4,7 +4,7 @@
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
-                      fig.width = 7, fig.height = 4.5, dpi = 150)
+                      dpi = 150)
 library(TemporalHazard)
 library(survival)
 library(ggplot2)
@@ -87,7 +87,10 @@ data.frame(
 
 ```{r}
 #| label: fig-temporal-diagnostics-gof
-#| fig-cap: "Kaplan-Meier survival for the AVC cohort compared with Weibull survival evaluated at the mean covariate profile"
+#| fig-cap: >-
+#|   Kaplan-Meier survival for the AVC cohort compared with Weibull survival
+#|   evaluated at the mean covariate profile. The solid grey step line is
+#|   Kaplan-Meier and the dashed steel-blue line the Weibull curve.
 ggplot() +
   geom_step(
     data = gof,
@@ -114,7 +117,7 @@ ggplot() +
   scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, 20),
                      labels = function(x) paste0(x, "%")) +
   labs(x = "Months after AVC repair", y = "Freedom from death") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 
@@ -149,7 +152,11 @@ cal
 
 ```{r}
 #| label: fig-temporal-diagnostics-calibration
-#| fig-cap: "Observed binary death proportion by age group, shown on the logit scale as a functional-form check"
+#| fig-cap: >-
+#|   Observed binary death proportion by age group, shown on the logit scale as a
+#|   functional-form check. Steel-blue filled circles mark the age groups, a
+#|   steel-blue solid line joins them, and the dashed grey line is the linear
+#|   fit.
 ggplot(cal, aes(mean, link_value)) +
   geom_point(size = 2.4, colour = "steelblue") +
   geom_line(colour = "steelblue", linewidth = 0.6) +
@@ -157,7 +164,7 @@ ggplot(cal, aes(mean, link_value)) +
               colour = "grey35", linetype = "dashed", linewidth = 0.65) +
   labs(x = "Mean age at repair within group (months)",
        y = "Logit of observed death proportion") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 Strong curvature would argue for a transformation, spline, or clinically
@@ -194,7 +201,10 @@ dec
 
 ```{r}
 #| label: fig-temporal-diagnostics-deciles
-#| fig-cap: "Full-follow-up observed and expected event rates within groups ranked by predicted 120-month risk"
+#| fig-cap: >-
+#|   Full-follow-up observed and expected event rates within groups ranked by
+#|   predicted 120-month risk. Grey bars are the observed rate and steel-blue
+#|   bars the expected rate, side by side in each group.
 dec_long <- rbind(
   data.frame(group = dec$group, rate = dec$observed_rate * 100,
              series = "Observed"),
@@ -209,7 +219,7 @@ ggplot(dec_long, aes(group, rate, fill = series)) +
   scale_x_continuous(breaks = 1:10) +
   labs(x = "Predicted-risk group (1 = lowest)",
        y = "Full-follow-up events per 100 patients") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 
@@ -309,7 +319,11 @@ boot$summary
 
 ```{r}
 #| label: fig-temporal-diagnostics-bootstrap
-#| fig-cap: "Teaching-run percentile intervals for the four Weibull covariate coefficients across 30 bootstrap refits"
+#| fig-cap: >-
+#|   Teaching-run percentile intervals for the four Weibull covariate
+#|   coefficients across 30 bootstrap refits. Steel-blue filled circles mark the
+#|   bootstrap mean, horizontal steel-blue bars the percentile interval, and the
+#|   dashed grey vertical line zero.
 boot_beta <- subset(
   boot$summary,
   parameter %in% c("age", "status", "mal", "com_iv")
@@ -332,7 +346,7 @@ ggplot(boot_beta, aes(mean, parameter)) +
   geom_point(size = 2.4, colour = "steelblue") +
   labs(x = "Bootstrap mean and percentile interval",
        y = "Covariate coefficient") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 The `mal` interval crosses zero in this small run, while the other displayed
@@ -386,7 +400,11 @@ head(as.data.frame(cr)[
 
 ```{r}
 #| label: fig-temporal-diagnostics-competing-risks
-#| fig-cap: "Estimator demonstration using OMC follow-up classification; the public extract does not contain the thromboembolism time required for clinical incidence"
+#| fig-cap: >-
+#|   Estimator demonstration using OMC follow-up classification; the public
+#|   extract does not contain the thromboembolism time required for clinical
+#|   incidence. The solid steel-blue step line is any thromboembolism recorded
+#|   and the dashed firebrick step line death without recorded thromboembolism.
 cif <- rbind(
   data.frame(time = cr$time, incidence = cr$incid_1 * 100,
              cause = "Any thromboembolism recorded"),
@@ -408,7 +426,7 @@ ggplot(cif, aes(time, incidence, colour = cause, linetype = cause)) +
   ) +
   labs(x = "Months to death or last contact",
        y = "Cumulative incidence in constructed example (%)") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 

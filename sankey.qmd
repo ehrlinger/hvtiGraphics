@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 library(ggalluvial)
@@ -81,7 +81,12 @@ Start from the bare panel so you can see what the constructor produced before
 any styling. Build the object once, then call `plot()` on it.
 
 ```{r}
-#| label: alluvial_bare
+#| label: fig-sankey-alluvial-bare
+#| fig-cap: >-
+#|   The bare alluvial panel as the constructor returns it. Grey bands connect each
+#|   pathway across the pre-operative grade, procedure, and post-operative grade
+#|   axes, each as wide as its patient count, between light grey stratum boxes
+#|   labeled in black.
 plot(al)
 ```
 
@@ -98,7 +103,11 @@ the count display.
 
 ```{r}
 #| label: fig-sankey-alluvial
-#| fig-cap: "Alluvial diagram tracing AR-grade transitions from before surgery, through procedure, to after, with bands coloured by pre-operative grade"
+#| fig-cap: >-
+#|   Alluvial diagram tracing AR-grade transitions from before surgery, through
+#|   procedure, to after, with bands colored by pre-operative grade. Band width is
+#|   the patient count; steel blue marks None, gold Mild, dark orange Moderate, and
+#|   firebrick Severe, between light grey stratum boxes labeled in black.
 al_filled <- hv_alluvial(dta_al, axes = axes, y_col = "freq",
                          fill_col = "pre_ar")
 
@@ -134,7 +143,7 @@ plot(al_filled, show_labels = FALSE) +
   scale_y_continuous(expand = expansion(mult = c(0.02, 0.02))) +
   labs(y = "Patients (n)",
        title = "AV Regurgitation: Pre- to Post-operative") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ### Read it
@@ -168,7 +177,12 @@ against red survives colour blindness; the familiar green against red does not.
 
 ```{r}
 #| label: fig-sankey-alluvial-twoaxis
-#| fig-cap: "Two-axis alluvial comparing AR grade before and after surgery, with annotation marking the direction of improvement"
+#| fig-cap: >-
+#|   Two-axis alluvial comparing AR grade before and after surgery, with annotation
+#|   marking the direction of improvement. Band width is the patient count and
+#|   bands are colored by pre-operative grade on a reversed red-blue palette, blue
+#|   for the lowest grade through red for the highest, between light grey stratum
+#|   boxes labeled in black.
 al2 <- hv_alluvial(
   dta_al,
   axes        = c("pre_ar", "post_ar"),
@@ -197,7 +211,7 @@ plot(al2, show_labels = FALSE) +
            size = 3.5, fontface = "italic") +
   labs(y = "Patients (n)",
        title = "AV Regurgitation Before and After Surgery") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 #### Milestone patient-flow with a clean y-axis
@@ -214,9 +228,12 @@ blank the y elements again after it.
 
 ```{r}
 #| label: fig-sankey-alluvial-milestones
-#| fig-cap: "Milestone patient-flow alluvial across the mechanical circulatory support device course, with the count axis suppressed to emphasise pathway shape"
-#| fig-width: 8
-#| fig-height: 5
+#| fig-cap: >-
+#|   Milestone patient-flow alluvial across the mechanical circulatory support
+#|   device course, with the count axis suppressed to emphasize pathway shape.
+#|   Band width is the patient count and band color is the discharge outcome, blue
+#|   for Dead, vermillion for HTx, green for LVAD, and reddish purple for NHS,
+#|   between light grey stratum boxes labeled in black.
 set.seed(1)
 n_pt <- 444
 flow <- data.frame(
@@ -244,7 +261,7 @@ plot(al_ms, show_labels = FALSE, show_yaxis = FALSE) +
   scale_fill_manual(values = hv_palette(), name = NULL) +
   scale_colour_manual(values = hv_palette(), guide = "none") +
   labs(title = "Mechanical circulatory support across the device course") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(axis.title.y = element_blank(), axis.text.y = element_blank(),
         axis.ticks.y = element_blank(), axis.line.y  = element_blank())
 ```
@@ -317,12 +334,14 @@ stack stay distinct.
 
 ```{r}
 #| label: fig-sankey
-#| fig-cap: "Cluster-stability Sankey tracing how patient assignments split across K = 2 through K = 9"
-#| fig-width: 8
-#| fig-height: 5
+#| fig-cap: >-
+#|   Cluster-stability Sankey tracing how patient assignments split across K = 2
+#|   through K = 9. Each flow band is the patients moving between consecutive K
+#|   values and each labeled box a cluster with its patient count, one color per
+#|   cluster letter, and dashed vertical lines mark the K columns.
 plot(sk) +
   labs(title = "Cluster Stability: K = 2 to 9") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 ### Read it
@@ -352,14 +371,16 @@ from A through I to replace the palette outright.
 
 ```{r}
 #| label: fig-sankey-custom-cols
-#| fig-cap: "Cluster-stability Sankey with clusters F and G recoloured and the other clusters left at the default palette"
-#| fig-width: 8
-#| fig-height: 5
+#| fig-cap: >-
+#|   Cluster-stability Sankey with clusters F and G recolored and the other
+#|   clusters left at the default palette. Flow bands and labeled cluster boxes
+#|   take one color per cluster letter, orange for F, vermillion for G, and dashed
+#|   vertical lines mark the K columns.
 my_cols <- c(F = "#E69F00", G = "#D55E00")
 sk_custom <- hv_sankey(dta_san, node_colours = my_cols)
 plot(sk_custom) +
   labs(title = "Cluster Stability: K = 2 to 9") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 #### Subset of K values
@@ -371,13 +392,14 @@ read in print.
 
 ```{r}
 #| label: fig-sankey-subset
-#| fig-cap: "Cluster-stability Sankey trimmed to K = 2 through K = 6 to keep the bands legible in a manuscript panel"
-#| fig-width: 6
-#| fig-height: 5
+#| fig-cap: >-
+#|   Cluster-stability Sankey trimmed to K = 2 through K = 6 to keep the bands
+#|   legible in a manuscript panel. Flow bands and labeled cluster boxes take one
+#|   color per cluster letter, and dashed vertical lines mark the K columns.
 sk_sub <- hv_sankey(dta_san, cluster_cols = paste0("C", 2:6))
 plot(sk_sub) +
   labs(title = "Cluster Stability: K = 2 to 6") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 #### Milestone labels under the K axis
@@ -391,9 +413,10 @@ panel needs a lighter touch.
 
 ```{r}
 #| label: fig-sankey-milestones
-#| fig-cap: "Cluster-stability Sankey with group-count milestone labels printed beneath selected K columns"
-#| fig-width: 8
-#| fig-height: 5
+#| fig-cap: >-
+#|   Cluster-stability Sankey with group-count milestone labels printed beneath
+#|   selected K columns. Flow bands and labeled cluster boxes take one color per
+#|   cluster letter, and dashed vertical lines mark the K columns.
 plot(
   hv_sankey(dta_san),
   group_labels = c(C2 = "2 groups", C4 = "4 groups",
@@ -402,7 +425,7 @@ plot(
   label_alpha  = 0.3
 ) +
   labs(title = "Cluster Stability with group-count milestones") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 The flow geometry is unchanged; only the x-axis gains the annotations under the

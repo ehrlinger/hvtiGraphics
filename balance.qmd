@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -109,7 +109,15 @@ per row, points at their SMD values, and no colour, shape, axis limits, or theme
 yet.
 
 ```{r}
-#| label: cov_balance_bare
+#| label: fig-balance-bare
+#| fig-cap: >-
+#|   Bare covariate balance panel before any scales, labels or theme. Salmon-red
+#|   circles mark covariates after matching and teal triangles before matching,
+#|   the solid vertical line marks zero, the dotted vertical lines plus and minus
+#|   10 percent, and thin dashed horizontal lines guide the eye along each row.
+#| fig-width: 6
+#| fig-height: 5
+# Free size: one row per covariate, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
 plot(cb, alpha = 0.8)
 ```
 
@@ -119,7 +127,16 @@ years, and widen the x-axis enough to hold the largest pre-match SMD. Symmetric
 breaks around zero make the plus-or-minus-ten-percent threshold easy to eyeball.
 
 ```{r}
-#| label: cov_balance_scales
+#| label: fig-balance-scales
+#| fig-cap: >-
+#|   Covariate balance panel with the team colors and shapes applied. Dark-red
+#|   filled triangles mark covariates before matching and blue filled squares
+#|   after matching, the solid vertical line marks zero, the dotted vertical
+#|   lines plus and minus 10 percent, and thin dashed horizontal lines guide the
+#|   eye along each row.
+#| fig-width: 6
+#| fig-height: 5
+# Free size: one row per covariate, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
 plot(cb, alpha = 0.8) +
   scale_color_manual(
     values = c("Before match" = "red4", "After match" = "blue3"),
@@ -144,7 +161,16 @@ figure is exported.
 
 ```{r}
 #| label: fig-balance
-#| fig-cap: "Covariate balance plot showing standardized mean differences before and after matching; negative values favour TF-TAVR and positive values favour SAVR"
+#| fig-cap: >-
+#|   Covariate balance plot showing standardized mean differences before and
+#|   after matching; negative values favor TF-TAVR and positive values favor
+#|   SAVR. Dark-red filled triangles mark each covariate before matching and
+#|   blue filled squares after matching, the solid vertical line marks zero
+#|   difference, the dotted vertical lines mark plus and minus 10 percent, and
+#|   thin dashed horizontal lines guide the eye along each row.
+#| fig-width: 6
+#| fig-height: 5
+# Free size: one row per covariate, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
 cb_final <- plot(cb, alpha = 0.8) +
   scale_color_manual(
     values = c("Before match" = "red4", "After match" = "blue3"),
@@ -163,7 +189,7 @@ cb_final <- plot(cb, alpha = 0.8) +
     y = "",
     caption = "Negative: more likely TF-TAVR    Positive: more likely SAVR"
   ) +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 
 cb_final
@@ -195,7 +221,15 @@ top, rather than by data-frame order.
 
 ```{r}
 #| label: fig-balance-order
-#| fig-cap: "Covariate balance plot with the row order reversed to control how a reader scans the covariates"
+#| fig-cap: >-
+#|   Covariate balance plot with the row order reversed to control how a reader
+#|   scans the covariates. Dark-red filled triangles mark each covariate before
+#|   matching and blue filled squares after matching, the solid vertical line
+#|   marks zero difference, the dotted vertical lines mark plus and minus 10
+#|   percent, and thin dashed horizontal lines guide the eye along each row.
+#| fig-width: 6
+#| fig-height: 5
+# Free size: one row per covariate, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
 cb_ord <- hv_balance(dta_cb, var_levels = rev(unique(dta_cb$variable)))
 
 plot(cb_ord, alpha = 0.8) +
@@ -208,7 +242,7 @@ plot(cb_ord, alpha = 0.8) +
     name   = NULL
   ) +
   labs(x = "Standardized difference (%)", y = "") +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 
@@ -277,7 +311,11 @@ Start with the bare panel: each patient is a point and tick, with no scales or
 labels yet.
 
 ```{r}
-#| label: gfup_basic
+#| label: fig-balance-followup-bare
+#| fig-cap: >-
+#|   Bare goodness-of-follow-up panel before any scales or labels. Salmon-red
+#|   circles mark patients alive at close, teal triangles deaths, and the dashed
+#|   orange diagonal the longest follow-up the study window allows.
 # Bare plot, no scales or labels yet
 plot(gf)
 ```
@@ -289,7 +327,12 @@ view to the study window; `annotate()` labels the two states on the panel; and
 
 ```{r}
 #| label: fig-balance-followup
-#| fig-cap: "Goodness-of-follow-up plot showing each patient's operation date against follow-up duration, coloured by vital status, with the maximum-follow-up diagonal"
+#| fig-cap: >-
+#|   Goodness-of-follow-up plot showing each patient's operation date against
+#|   follow-up duration, colored by vital status, with the maximum-follow-up
+#|   diagonal. Blue open circles mark patients alive at close, red crosses mark
+#|   deaths, and the dashed orange diagonal marks the longest follow-up the
+#|   study window allows.
 gfup_final <- plot(gf, alpha = 0.8) +
   scale_color_manual(
     values   = c("#377EB8", "#E41A1C"),
@@ -315,7 +358,7 @@ gfup_final <- plot(gf, alpha = 0.8) +
   annotate("text", x = 1993, y = 28, label = "Deceased",
            hjust = 0, size = 3.5, color = "#E41A1C") +
   theme(legend.position = "none") +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 
 gfup_final
 ```
@@ -375,7 +418,12 @@ before interpreting the panel.
 
 ```{r}
 #| label: fig-balance-followup-event
-#| fig-cap: "Goodness-of-follow-up plot showing three-way event status (no event, non-fatal event, death) for each patient"
+#| fig-cap: >-
+#|   Goodness-of-follow-up plot showing three-way event status (no event,
+#|   non-fatal event, death) for each patient. Blue open circles mark patients
+#|   with no event, green open triangles a relapse, red crosses death, and the
+#|   dashed orange diagonal marks the longest follow-up the study window
+#|   allows.
 plot(gf2, type = "event", alpha = 0.8) +
   scale_color_manual(
     values = c("No event" = "blue", "Relapse" = "green3", "Death" = "red"),
@@ -395,7 +443,7 @@ plot(gf2, type = "event", alpha = 0.8) +
   ) +
   annotate("text", x = 1993, y = 31,
            label = "Systematic follow-up", hjust = 0, size = 3.5) +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "top")
 ```
 

@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -22,13 +22,18 @@ margin key in mind while tracking a curve. @sec-annotation-series has the recipe
 
 ## A poster-styled plot
 
-`theme_hv_poster()` uses a 16 pt base, and every text element scales from it, so a
-single argument controls overall legibility.
+`theme_hv_poster()` uses a 16 pt base by default, and every text element scales
+from it, so a single argument controls overall legibility. The figure below sets
+`base_size = 12`, the size every single-panel figure in this book draws at.
 
 ```{r}
-#| label: build-poster
+#| label: fig-researchday-survival
+#| fig-cap: >-
+#|   Survival curve under theme_hv_poster(). The salmon-red step line is the
+#|   Kaplan-Meier estimate, the shaded band in the same color its confidence
+#|   limits, and the black horizontal line marks zero.
 p        <- plot(hv_survival(sample_survival_data(n = 500, seed = 42)))
-p_poster <- p + theme_hv_poster()
+p_poster <- p + theme_hv_poster(base_size = 12)
 p_poster
 ```
 

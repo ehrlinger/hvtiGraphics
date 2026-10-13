@@ -4,7 +4,7 @@
 #| label: setup
 #| include: false
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE,
-                      fig.width = 7, fig.height = 4.5, dpi = 150)
+                      dpi = 150)
 library(ggRandomForests)
 library(ggplot2)
 library(hvtiPlotR)
@@ -125,11 +125,15 @@ frame, one row per subject per point on the forest's working time grid.
 
 ```{r}
 #| label: fig-rhf-hazard
-#| fig-cap: "Out-of-bag pointwise hazard for five of six requested subjects, each curve ending where that subject's follow-up ends; subject 22 has no grid point inside its records and so draws nothing"
+#| fig-cap: >-
+#|   Out-of-bag pointwise hazard for five of six requested subjects, each curve
+#|   ending where that subject's follow-up ends; subject 22 has no grid point
+#|   inside its records and so draws nothing. Each solid line is one subject, one
+#|   color per subject, as in the legend.
 case_ids   <- c(1, 2, 3, 11, 14, 22)
 rhf_curves <- gg_rhf(bundle$fit)
 
-p_hazard <- plot(rhf_curves, idx = case_ids) + theme_hv_manuscript()
+p_hazard <- plot(rhf_curves, idx = case_ids) + theme_hv_manuscript(base_size = 12)
 hv_legend_inside(p_hazard)
 ```
 
@@ -167,9 +171,13 @@ The same object carries the cumulative hazard. Set `hazard.only = FALSE` to draw
 
 ```{r}
 #| label: fig-rhf-cumhaz
-#| fig-cap: "Cumulative hazard for the same six subjects, all present this time, drawn across the whole grid because it accumulates interval overlap rather than being masked outside the records"
+#| fig-cap: >-
+#|   Cumulative hazard for the same six subjects, all present this time, drawn
+#|   across the whole grid because it accumulates interval overlap rather than
+#|   being masked outside the records. Each solid line is one subject, one color
+#|   per subject, as in the legend.
 p_cumhaz <- plot(rhf_curves, idx = case_ids, hazard.only = FALSE) +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 hv_legend_inside(p_cumhaz)
 ```
 
@@ -196,11 +204,14 @@ That is a question about local failures, so it uses the local hazard marker.
 
 ```{r}
 #| label: fig-rhf-auct
-#| fig-cap: "Incident/dynamic time-varying AUC from the saved calculation, with the 0.5 chance line for reference"
+#| fig-cap: >-
+#|   Incident/dynamic time-varying AUC from the saved calculation, with the 0.5
+#|   chance line for reference. The solid black line is the AUC at each time and
+#|   the dashed grey horizontal line the 0.5 chance level.
 auct_incident <- gg_auct(bundle$fit, marker = "haz", method = "incident",
                          auct_fit = bundle$auct_incident)
 
-plot(auct_incident) + theme_hv_manuscript()
+plot(auct_incident) + theme_hv_manuscript(base_size = 12)
 ```
 
 The saved curve has a Uno integrated AUC of
@@ -227,9 +238,14 @@ mattering entirely once patients are past the risky window.
 
 ```{r}
 #| label: fig-rhf-importance
-#| fig-cap: "Time-localized variable priority across five time windows, with point size and colour showing the same priority value"
+#| fig-cap: >-
+#|   Time-localized variable priority across five time windows, with point size
+#|   and color showing the same priority value. Each filled circle is one
+#|   variable in one window; larger, darker steel-blue circles mark higher
+#|   priority and small light grey circles the lowest.
 #| fig-width: 8
 #| fig-height: 5.25
+# Free size: one row per variable and one column per time window, so the height grows with the variable list, until hvtiPlotR's hv_panel_size() sizes it.
 rhf_priority <- gg_rhf_importance(bundle$fit, importance_fit = bundle$importance)
 
 windows <- unique(as.data.frame(rhf_priority)[, c("time_window", "start", "stop")])
@@ -239,7 +255,7 @@ window_labels <- setNames(sprintf("%.2f to %.2f", windows$start, windows$stop),
 
 plot(rhf_priority) +
   scale_x_discrete(labels = window_labels) +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "right", plot.margin = margin(l = 80))
 ```
 
@@ -276,10 +292,14 @@ candidates were tried rather than a tidied-up sort.
 
 ```{r}
 #| label: fig-rhf-tune-risk
-#| fig-cap: "Out-of-bag risk tuning path, with the emphasized point marking the size the upstream search selected"
+#| fig-cap: >-
+#|   Out-of-bag risk tuning path, with the emphasized point marking the size the
+#|   upstream search selected. Small dark grey filled circles joined by a grey
+#|   solid line mark each tree size tried, and the larger steel-blue circle with
+#|   a black outline marks the selected size.
 risk_tuning <- gg_tune_rhf(bundle$tune_risk)
 
-plot(risk_tuning) + theme_hv_manuscript()
+plot(risk_tuning) + theme_hv_manuscript(base_size = 12)
 ```
 
 The risk search evaluated sizes `r paste(risk_tuning$treesize, collapse = ", ")` and
@@ -292,10 +312,14 @@ has no ribbon.
 
 ```{r}
 #| label: fig-rhf-tune-iauc
-#| fig-cap: "The same tuning display for the integrated-AUC search, which selected a different tree size than the risk search did"
+#| fig-cap: >-
+#|   The same tuning display for the integrated-AUC search, which selected a
+#|   different tree size than the risk search did. Small dark grey filled circles
+#|   joined by a grey solid line mark each tree size tried, and the larger
+#|   steel-blue circle with a black outline marks the selected size.
 iauc_tuning <- gg_tune_rhf(bundle$tune_iauc)
 
-plot(iauc_tuning) + theme_hv_manuscript()
+plot(iauc_tuning) + theme_hv_manuscript(base_size = 12)
 ```
 
 This search evaluated `r paste(iauc_tuning$treesize, collapse = ", ")` and selected

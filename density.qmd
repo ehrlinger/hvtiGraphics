@@ -7,7 +7,7 @@ of histogram bins.
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -77,7 +77,10 @@ block.
 
 ```{r}
 #| label: fig-density
-#| fig-cap: "Kernel density estimate of a single continuous variable, scaled so the area under the curve is one"
+#| fig-cap: >-
+#|   Kernel density estimate of a single continuous variable, scaled so the
+#|   area under the curve is one. The black line is the density estimate and
+#|   the gray fill the area beneath it.
 ggplot(dat, aes(x = .data[[num]])) +
   geom_density(fill = "grey70", alpha = 0.7) +
   labs(
@@ -85,7 +88,7 @@ ggplot(dat, aes(x = .data[[num]])) +
     x = "Ejection fraction (%)",
     y = "Density"
   ) +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 That curve is a smoothed version of the histogram you would otherwise draw. The
@@ -127,7 +130,11 @@ like" but "does it look different across valve morphologies?"
 
 ```{r}
 #| label: fig-density-grouped
-#| fig-cap: "Overlaid density curves by valve morphology, each normalised to area one so groups of different sizes compare on shape"
+#| fig-cap: >-
+#|   Overlaid density curves by valve morphology, each normalized to area one
+#|   so groups of different sizes compare on shape. Black lines outline the
+#|   curves, with salmon-red fill for bicuspid, green for tricuspid and blue
+#|   for unicuspid valves.
 ggplot(dat, aes(x = .data[[num]], fill = .data[[grp]])) +
   geom_density(alpha = 0.5) +
   labs(
@@ -136,7 +143,7 @@ ggplot(dat, aes(x = .data[[num]], fill = .data[[grp]])) +
     y = "Density",
     fill = "Valve morphology"
   ) +
-  theme_hv_manuscript() +
+  theme_hv_manuscript(base_size = 12) +
   theme(legend.position = "right")
 ```
 
@@ -154,7 +161,11 @@ the honest way to show how much of a bump is signal and how much is the smoother
 
 ```{r}
 #| label: fig-density-bandwidth
-#| fig-cap: "The same data drawn at a narrow and a wide bandwidth, showing how the smoothing choice shapes apparent structure"
+#| fig-cap: >-
+#|   The same data drawn at a narrow and a wide bandwidth, showing how the
+#|   smoothing choice shapes apparent structure. The firebrick-red line is the
+#|   narrow bandwidth (adjust = 0.4) and the steel-blue line the wide
+#|   bandwidth (adjust = 1.5).
 ggplot(dat, aes(x = .data[[num]])) +
   geom_density(aes(colour = "wiggly (adjust = 0.4)"),
                adjust = 0.4, fill = NA, linewidth = 0.8) +
@@ -168,7 +179,7 @@ ggplot(dat, aes(x = .data[[num]])) +
     x = "Ejection fraction (%)",
     y = "Density"
   ) +
-  theme_hv_manuscript()
+  theme_hv_manuscript(base_size = 12)
 ```
 
 If a feature survives both settings it is less sensitive to the smoothing

@@ -3,7 +3,7 @@
 ```{r}
 #| label: setup
 #| include: false
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, fig.width = 7, fig.height = 4.5, dpi = 150)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 150)
 library(hvtiPlotR)
 library(ggplot2)
 ```
@@ -77,19 +77,30 @@ Font sizes tuned for letter-size PDFs reduced to a column width.
 
 ```{r}
 #| label: fig-themes
-#| fig-cap: "Grouped trends plot under theme_hv_manuscript(), the journal default with white background and minimal chrome"
-decorate(p_base) + theme_hv_manuscript()
+#| fig-cap: >-
+#|   Grouped trends plot under theme_hv_manuscript(), the journal default with
+#|   white background and minimal chrome. Smooth lines with shaded bands and
+#|   points mark each group: blue squares, vermillion circles, green triangles
+#|   and reddish-purple diamonds for Groups I to IV.
+decorate(p_base) + theme_hv_manuscript(base_size = 12)
 ```
 
 ## Poster
 
 Larger axis text and tick weights, panel grid removed: reads at arm's length
-on a foam board, and holds up on a projector.
+on a foam board, and holds up on a projector. The theme's default size is 16
+points; the manuscript and poster figures in this book draw at 12, so the calls
+below set `base_size = 12`. The two slide themes keep their default size of
+32 points, because a slide is read at a distance.
 
 ```{r}
 #| label: fig-themes-poster
-#| fig-cap: "The same plot under theme_hv_poster(), with larger axis text and heavier tick weights for arm's-length reading"
-decorate(p_base) + theme_hv_poster()
+#| fig-cap: >-
+#|   The same plot under theme_hv_poster(), with larger axis text and heavier
+#|   tick weights for arm's-length reading. Smooth lines with shaded bands and
+#|   points mark each group: blue squares, vermillion circles, green triangles
+#|   and reddish-purple diamonds for Groups I to IV.
+decorate(p_base) + theme_hv_poster(base_size = 12)
 ```
 
 ## Light PowerPoint
@@ -99,7 +110,11 @@ Clinic standard template and most default Office decks.
 
 ```{r}
 #| label: fig-themes-ppt-light
-#| fig-cap: "The same plot under theme_hv_ppt_light(), with dark text and lines for white or light-grey slide backgrounds"
+#| fig-cap: >-
+#|   The same plot under theme_hv_ppt_light(), with dark text and lines for white
+#|   or light-grey slide backgrounds. Smooth lines with shaded bands and points
+#|   mark each group: blue squares, vermillion circles, green triangles and
+#|   reddish-purple diamonds for Groups I to IV.
 decorate(p_base) + theme_hv_ppt_light()
 ```
 
@@ -112,7 +127,11 @@ when saving to an actual `.pptx`.
 
 ```{r}
 #| label: fig-themes-ppt-dark
-#| fig-cap: "The same plot under theme_hv_ppt_dark(), with white-on-dark styling for navy or dark-gradient decks"
+#| fig-cap: >-
+#|   The same plot under theme_hv_ppt_dark(), with white-on-dark styling for navy
+#|   or dark-gradient decks. Smooth lines with shaded bands and points mark each
+#|   group: blue squares, vermillion circles, green triangles and reddish-purple
+#|   diamonds for Groups I to IV.
 decorate(p_base) +
   theme_hv_ppt_dark() +
   theme(plot.background = element_rect(fill = "navy", colour = "navy"))
@@ -131,9 +150,14 @@ Resize tick labels (`axis.text`) and axis titles (`axis.title`) independently,
 useful when scaling a figure down for a two-column layout.
 
 ```{r}
-#| label: axis_text
+#| label: fig-themes-axis-text
+#| fig-cap: >-
+#|   The poster theme with tick labels and axis titles resized independently.
+#|   Smooth lines with shaded bands and points mark each group: blue squares,
+#|   vermillion circles, green triangles and reddish-purple diamonds for Groups I
+#|   to IV.
 decorate(p_base) +
-  theme_hv_poster() +
+  theme_hv_poster(base_size = 12) +
   theme(
     axis.text  = element_text(size = 10),
     axis.title = element_text(size = 12)
@@ -146,9 +170,13 @@ Minor grid lines add density without precision. Blank them while keeping the
 major grid.
 
 ```{r}
-#| label: grid
+#| label: fig-themes-grid
+#| fig-cap: >-
+#|   The poster theme with the minor grid lines blanked. Smooth lines with shaded
+#|   bands and points mark each group: blue squares, vermillion circles, green
+#|   triangles and reddish-purple diamonds for Groups I to IV.
 decorate(p_base) +
-  theme_hv_poster() +
+  theme_hv_poster(base_size = 12) +
   theme(panel.grid.minor = element_blank())
 ```
 
@@ -158,9 +186,13 @@ For time-point or long category labels. `angle = 45` with `hjust = 1, vjust = 1`
 keeps the rotated label right-aligned to its tick.
 
 ```{r}
-#| label: rotate
+#| label: fig-themes-rotate
+#| fig-cap: >-
+#|   The poster theme with the x-axis labels rotated 45 degrees. Smooth lines
+#|   with shaded bands and points mark each group: blue squares, vermillion
+#|   circles, green triangles and reddish-purple diamonds for Groups I to IV.
 decorate(p_base) +
-  theme_hv_poster() +
+  theme_hv_poster(base_size = 12) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
 ```
 
@@ -170,7 +202,11 @@ Titles are stripped from the base themes (rarely used in journal figures) but
 can be added back via `labs()` and styled in `theme()`.
 
 ```{r}
-#| label: title
+#| label: fig-themes-title
+#| fig-cap: >-
+#|   Overall survival with a title and subtitle added through labs() and styled
+#|   in theme(). The steel-blue step line is the Kaplan-Meier estimate and the
+#|   shaded band in the same color its confidence interval.
 dta_km <- sample_survival_data(n = 500, seed = 42)
 km     <- hv_survival(dta_km)
 
@@ -187,7 +223,7 @@ plot(km) +
     x        = "Years after Operation",
     y        = "Freedom from Death (%)"
   ) +
-  theme_hv_poster() +
+  theme_hv_poster(base_size = 12) +
   theme(
     plot.title    = element_text(size = 14, face = "bold", hjust = 0),
     plot.subtitle = element_text(size = 11, colour = "grey40", hjust = 0)
@@ -201,9 +237,13 @@ or when labels clip a tight device edge. Arguments follow top / right / bottom /
 left order.
 
 ```{r}
-#| label: margin
+#| label: fig-themes-margin
+#| fig-cap: >-
+#|   The poster theme with extra margin around the panel. Smooth lines with
+#|   shaded bands and points mark each group: blue squares, vermillion circles,
+#|   green triangles and reddish-purple diamonds for Groups I to IV.
 decorate(p_base) +
-  theme_hv_poster() +
+  theme_hv_poster(base_size = 12) +
   theme(plot.margin = margin(t = 10, r = 20, b = 10, l = 20, unit = "pt"))
 ```
 

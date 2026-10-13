@@ -80,6 +80,8 @@ bibliography:
 
 format:
   html:
+    fig-width: 6
+    fig-height: 4
     theme:
       - cosmo
       - brand
@@ -95,6 +97,8 @@ format:
       opts_chunk:
         dev: ragg_png
   pdf:
+    fig-width: 6
+    fig-height: 4
     documentclass: scrreprt
     keep-tex: true
     # Figures go through quartz, not the default pdf() device, which is
