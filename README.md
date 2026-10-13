@@ -2,7 +2,7 @@
 
 [![Publish](https://github.com/ehrlinger/hvtiGraphics/actions/workflows/publish.yml/badge.svg)](https://github.com/ehrlinger/hvtiGraphics/actions/workflows/publish.yml)
 [![Site](https://img.shields.io/badge/read-ehrlinger.github.io%2FhvtiGraphics-1f6feb)](https://ehrlinger.github.io/hvtiGraphics/)
-[![Version](https://img.shields.io/badge/edition-3.1.6-blue)](https://github.com/ehrlinger/hvtiGraphics/releases)
+[![Version](https://img.shields.io/badge/edition-3.1.7-blue)](https://github.com/ehrlinger/hvtiGraphics/releases)
 [![License: CC BY 4.0](https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey)](https://creativecommons.org/licenses/by/4.0/)
 
 A working catalog of the figures and tables we build for CORR manuscripts and
@@ -14,7 +14,7 @@ script.
 
 **Read it here:** <https://ehrlinger.github.io/hvtiGraphics/>
 
-This is the **3.1.6** edition, and it is organized around the question you
+This is the **3.1.7** edition, and it is organized around the question you
 arrived with rather than the kind of picture you end up drawing. The 3.0.0 book
 sorted its chapters by figure type, which works if you already know you want a
 box plot. It does not help when the question is "how do I describe this cohort"
@@ -40,16 +40,17 @@ It covers all 86 workflow-level exports across the family, and it is generated
 by scanning the book's own sources, so a function nothing demonstrates says so
 rather than going quietly missing.
 
-New in 3.1.6 is a recipe for numbering figures and tables, which Quarto does
-only when each has both a label and a caption. This edition also corrects a
-figure. The varPro chapter's recurrence profile was the no-recurrence class with
-its sign reversed, a labelling fault in ggRandomForests that is now fixed; if
-you took a reading from that figure, recheck it. And the book's numbers and
-colours no longer depend on where it was built. Random forests grow on one
-thread, so a seeded fit gives the same answer on every run, and HTML figures are
-drawn with `ragg`, which writes their colours exactly instead of shifting them
-darker as a Mac build did. The
-[release notes](https://github.com/ehrlinger/hvtiGraphics/releases/tag/v3.1.6)
+New in 3.1.7 is a recipe for the colour palettes of particular journals (NEJM,
+The Lancet, JAMA, BMJ and others, packaged by `ggsci`), with a check of which
+ones survive colour blindness; several do not, and none covers the
+cardiothoracic journals, where the house palette stays the default. This
+edition also corrects a table. From 3.1.5 on, the published JTCVS summary table
+in the manuscript tables chapter showed no p-values and no test footnotes,
+because the build that drew it lacked a package the tests need and said so only
+in a suppressed warning; if you copied that table's layout, the p-value column
+belongs in it. The book is re-rendered against the current family releases,
+and the box-plot jitter recipe now sets its own seed. The
+[release notes](https://github.com/ehrlinger/hvtiGraphics/releases/tag/v3.1.7)
 list the rest.
 
 ## Who it's for
