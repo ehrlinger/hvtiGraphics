@@ -324,7 +324,7 @@ table gives the reader the exact counts.
 #|   firebrick bars and numbers measurements.
 #| fig-height: 5
 #| fig-width: 6
-# Free size: two stacked panels (bars above a count table), until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: two stacked panels (bars above a count table).
 p_lc_bar / p_lc_tbl +
   patchwork::plot_layout(heights = c(3, 1))
 ```

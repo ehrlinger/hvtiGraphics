@@ -73,6 +73,19 @@ out side by side. Each point is one patient, and each event group has a loess sm
 its cloud, drawn in that group's color.
 
 ```{r}
+#| label: rf-dependence-build
+gg_v <- gg_variable(rf, time = t_eval)
+p_dep <- plot(gg_v, xvar = c("bili", "age", "albumin"), time = t_eval,
+     panel = TRUE) +
+  labs(y = paste0("Survival at ", t_eval, " days")) +
+  theme_hv_manuscript(base_size = 12)
+# About three ticks per panel: at under 2 inches wide, age's five-digit labels run together.
+p_dep <- p_dep + scale_x_continuous(n.breaks = 3)
+# Facets of one plot: hv_panel_size() gives each a 3 by 2 inch panel, shrunk to fit the page.
+dims_p_dep <- hv_panel_size(p_dep)
+```
+
+```{r}
 #| label: fig-rf_dependence
 #| fig-cap: >-
 #|   Variable dependence for bilirubin, age, and albumin: predicted survival at
@@ -80,14 +93,9 @@ its cloud, drawn in that group's color.
 #|   smooth through the cloud. Salmon-red circles mark censored patients and
 #|   teal triangles patients who died, each group with a loess smooth in the
 #|   same color.
-#| fig-width: 7
-#| fig-height: 4
-# Free size: three facet panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
-gg_v <- gg_variable(rf, time = t_eval)
-plot(gg_v, xvar = c("bili", "age", "albumin"), time = t_eval,
-     panel = TRUE) +
-  labs(y = paste0("Survival at ", t_eval, " days")) +
-  theme_hv_manuscript(base_size = 12)
+#| fig-width: !expr dims_p_dep$width
+#| fig-height: !expr dims_p_dep$height
+p_dep
 ```
 
 The horizon goes on `gg_variable()`, not on `plot()`, and that is the easiest
@@ -177,6 +185,24 @@ Variables you do not name keep their raw column name, so you can label only the
 ones a reviewer will see.
 
 ```{r}
+#| label: rf-dependence-labels-build
+pbc_labels <- c(
+  bili    = "Serum bilirubin (mg/dL)",
+  age     = "Age (days)",
+  albumin = "Serum albumin (g/dL)"
+)
+
+p_dep_labels <- plot(gg_v, xvar = c("bili", "age", "albumin"), time = t_eval,
+     panel = TRUE, labels = pbc_labels) +
+  labs(y = paste0("Survival at ", t_eval, " days")) +
+  theme_hv_manuscript(base_size = 12)
+# About three ticks per panel: at under 2 inches wide, age's five-digit labels run together.
+p_dep_labels <- p_dep_labels + scale_x_continuous(n.breaks = 3)
+# Facets of one plot: hv_panel_size() gives each a 3 by 2 inch panel, shrunk to fit the page.
+dims_p_dep_labels <- hv_panel_size(p_dep_labels)
+```
+
+```{r}
 #| label: fig-rf_dependence-labels
 #| fig-cap: >-
 #|   The same variable dependence with reader-facing labels on the facet
@@ -184,19 +210,9 @@ ones a reviewer will see.
 #|   the years a reader would assume. Salmon-red circles mark censored patients
 #|   and teal triangles patients who died, each group with a loess smooth in the
 #|   same color.
-#| fig-width: 7
-#| fig-height: 4
-# Free size: three facet panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
-pbc_labels <- c(
-  bili    = "Serum bilirubin (mg/dL)",
-  age     = "Age (days)",
-  albumin = "Serum albumin (g/dL)"
-)
-
-plot(gg_v, xvar = c("bili", "age", "albumin"), time = t_eval,
-     panel = TRUE, labels = pbc_labels) +
-  labs(y = paste0("Survival at ", t_eval, " days")) +
-  theme_hv_manuscript(base_size = 12)
+#| fig-width: !expr dims_p_dep_labels$width
+#| fig-height: !expr dims_p_dep_labels$height
+p_dep_labels
 ```
 
 Labelling is where unit errors surface, which is a good reason to do it early.

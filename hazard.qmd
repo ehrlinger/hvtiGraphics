@@ -136,7 +136,7 @@ cannot tell you how many patients stood behind each part of it.
 #|   patients still at risk at each time.
 #| fig-width: 6
 #| fig-height: 5
-# Free size: curve stacked over a numbers-at-risk table, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: curve stacked over a numbers-at-risk table.
 curve_hp <- plot(haz_surv) +
   scale_colour_manual(values = c("steelblue"), guide = "none") +
   scale_fill_manual(values = c("steelblue"), guide = "none") +

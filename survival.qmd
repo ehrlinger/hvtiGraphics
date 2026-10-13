@@ -149,7 +149,7 @@ from the same object, and compose the two.
 #|   axis the patients still at risk at each tick.
 #| fig-width: 6
 #| fig-height: 5
-# Free size: curve stacked over a numbers-at-risk table, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: curve stacked over a numbers-at-risk table.
 curve <- plot(km, alpha = 0.8) +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
   scale_fill_manual(values  = c(All = "steelblue"), guide = "none") +

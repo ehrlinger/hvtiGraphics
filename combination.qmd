@@ -84,7 +84,7 @@ the chunk (`fig-width: 10`) so neither panel is squeezed.
 #|   percent. Panel at right: The salmon-red step line is the Kaplan-Meier
 #|   estimate and the shaded band in the same color its confidence limits.
 #| fig-width: 10
-# Free size: two panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: two panels side by side.
 p_cb | p_km
 ```
 
@@ -131,7 +131,7 @@ long labels. `heights` does the same for stacked layouts.
 #|   Kaplan-Meier estimate and the shaded band in the same color its confidence
 #|   limits.
 #| fig-width: 10
-# Free size: two panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: two panels side by side.
 (p_cb | p_km) +
   plot_layout(widths = c(2, 1))   # left panel twice as wide as right
 ```
@@ -153,7 +153,7 @@ keeps the table strip short.
 #|   numbers in the strip are the patients still at risk.
 #| fig-width: 6
 #| fig-height: 5
-# Free size: curve stacked over a numbers-at-risk strip, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: curve stacked over a numbers-at-risk strip.
 risk_df <- km$tables$risk
 
 rt_panel <- ggplot(risk_df,
@@ -188,7 +188,7 @@ one place rather than per panel.
 #|   plus and minus 10 percent. Panel B: The salmon-red step line is the Kaplan-
 #|   Meier estimate and the shaded band in the same color its confidence limits.
 #| fig-width: 10
-# Free size: two panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: two panels side by side.
 (p_cb | p_km) +
   plot_annotation(
     title = "Figure 1. Outcomes after cardiac surgery",

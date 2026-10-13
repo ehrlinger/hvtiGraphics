@@ -116,7 +116,7 @@ show only some of them.
 #|   why, and black arrows the flow from one stage to the next.
 #| fig-width: 7
 #| fig-height: 5
-# Free size: a flow diagram whose height grows with its stages, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: a flow diagram whose height grows with its stages.
 fig <- hv_consort(tracker)
 plot(fig)
 ```

@@ -106,7 +106,7 @@ that happens to resemble it.
 #|   and the black numbers below the curve the patients still at risk.
 #| fig-width: 6
 #| fig-height: 5
-# Free size: curve stacked over a numbers-at-risk table, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: curve stacked over a numbers-at-risk table.
 curve <- ggplot(km, aes(time, survival * 100)) +
   geom_ribbon(aes(ymin = cl_lower * 100, ymax = cl_upper * 100),
               fill = "steelblue", alpha = 0.18) +

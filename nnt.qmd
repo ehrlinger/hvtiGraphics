@@ -176,7 +176,7 @@ round(km_dat[km_dat$time %in% c(5, 10, 20), ], 2)
 #|   table below gives the numbers at risk in each arm.
 #| fig-height: 5.5
 #| fig-width: 6
-# Free size: two stacked panels (curve above a numbers-at-risk table), until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: two stacked panels (curve above a numbers-at-risk table).
 km_nnt_obj <- hv_nnt(km_dat, lower_col = "nnt_lower", upper_col = "nnt_upper")
 
 curve_nnt <- plot(km_nnt_obj) +

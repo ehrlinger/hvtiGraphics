@@ -55,7 +55,7 @@ earns its keep when there are far more candidates than you can eyeball.
 #|   line the selection cutoff.
 #| fig-width: 7
 #| fig-height: 5.5
-# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per variable, so the height grows with the list.
 set.seed(42)
 data(housing, package = "randomForestSRC")
 o <- varpro(SalePrice ~ ., data = housing, ntree = 100)
@@ -87,7 +87,7 @@ behind the boxplot, exposing the spread that the summary hides:
 #|   the dashed red vertical line the selection cutoff.
 #| fig-width: 7
 #| fig-height: 5.5
-# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per variable, so the height grows with the list.
 plot(gg_varpro(o, faithful = TRUE, nvar = 20)) + theme_hv_manuscript(base_size = 12)
 ```
 
@@ -142,7 +142,7 @@ and magnitude of its local linear effect.
 #|   grey for unselected ones, and the dashed red vertical line marks the cutoff.
 #| fig-width: 7
 #| fig-height: 6
-# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per variable, so the height grows with the list.
 plot(gg_beta_varpro(o)) + theme_hv_manuscript(base_size = 12)
 ```
 
@@ -168,7 +168,7 @@ the dependency graph in @fig-varpro-udependent.
 #|   unselected ones, and the dashed red vertical line marks the cutoff.
 #| fig-width: 7
 #| fig-height: 6
-# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per variable, so the height grows with the list.
 set.seed(42)
 num_cols <- names(housing)[vapply(housing, is.numeric, logical(1))]
 uv <- uvarpro(housing[, setdiff(num_cols, "SalePrice")], ntree = 100)
@@ -200,7 +200,7 @@ recurrence outcome (`N` = no recurrence, `R` = recurrence).
 #|   unselected ones, and the dashed red vertical line marks the cutoff.
 #| fig-width: 7
 #| fig-height: 5.5
-# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per variable, so the height grows with the list.
 set.seed(42)
 data(breast, package = "randomForestSRC")
 oc <- varpro(status ~ ., data = breast, ntree = 100)
@@ -227,7 +227,7 @@ the slopes for `N` are the same slopes with the sign reversed, which
 #|   line marks the cutoff.
 #| fig-width: 7
 #| fig-height: 5.5
-# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per variable, so the height grows with the list.
 plot(gg_ivarpro(oc, which_class = "N")) + theme_hv_manuscript(base_size = 12)
 ```
 
@@ -250,7 +250,7 @@ the regression fit.
 #|   cutoff and grey below it, and the dashed red vertical line marks the cutoff.
 #| fig-width: 7
 #| fig-height: 5.5
-# Free size: facets by outcome class with one row per variable, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: facets by outcome class with one row per variable.
 plot(gg_varpro(oc, conditional = TRUE, nvar = 15)) + theme_hv_manuscript(base_size = 12)
 ```
 
@@ -275,7 +275,7 @@ to `gg_isopro()`.
 #|   distribution as a grey filled density with a black outline.
 #| fig-width: 7
 #| fig-height: 4.5
-# Free size: two panels side by side, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: two panels side by side.
 iso <- isopro(object = o, ntree = 100)
 plot(gg_isopro(iso)) & theme_hv_manuscript(base_size = 12)
 ```
@@ -343,7 +343,7 @@ for it when you need to *name* the variables rather than point at a picture.
 #|   set and grey for the rest.
 #| fig-width: 7
 #| fig-height: 5.5
-# Free size: one row per variable, so the height grows with the list, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one row per variable, so the height grows with the list.
 plot(gg_sdependent(uv)) + theme_hv_manuscript(base_size = 12)
 ```
 

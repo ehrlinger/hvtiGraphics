@@ -83,7 +83,7 @@ On a regression fit the y-axis is the response in its own units. Here that is
 #|   line the nonparametric curve.
 #| fig-width: 7
 #| fig-height: 5
-# Free size: one small-multiple panel per variable, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one small-multiple panel per variable.
 plot(gg_partial_varpro(object = o_reg, nvars = 6, method = "rnd")) & theme_hv_manuscript(base_size = 12)
 ```
 
@@ -111,7 +111,7 @@ bounded 0 to 1 and the scale a clinician expects.
 #|   the parametric curve and the black solid line the nonparametric curve.
 #| fig-width: 7
 #| fig-height: 5
-# Free size: one small-multiple panel per variable, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one small-multiple panel per variable.
 plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "prob", method = "rnd")) &
   theme_hv_manuscript(base_size = 12)
 ```
@@ -132,7 +132,7 @@ communicate and log-odds to diagnose.
 #|   contrast.
 #| fig-width: 7
 #| fig-height: 5
-# Free size: one small-multiple panel per variable, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one small-multiple panel per variable.
 plot(gg_partial_varpro(object = o_cls, nvars = 6, scale = "logodds", method = "rnd"),
      type = c("parametric", "nonparametric", "causal")) &
   theme_hv_manuscript(base_size = 12)
@@ -157,7 +157,7 @@ units-safe horizon without guessing.
 #|   curve.
 #| fig-width: 7
 #| fig-height: 5
-# Free size: one small-multiple panel per variable, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one small-multiple panel per variable.
 plot(gg_partial_varpro(object = o_surv, nvars = 4, scale = "surv", method = "rnd")) &
   theme_hv_manuscript(base_size = 12)
 ```
@@ -176,7 +176,7 @@ higher-is-better. It answers "how much time does this variable buy?" rather than
 #|   nonparametric curve.
 #| fig-width: 7
 #| fig-height: 5
-# Free size: one small-multiple panel per variable, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: one small-multiple panel per variable.
 plot(gg_partial_varpro(object = o_surv, nvars = 4, scale = "rmst", method = "rnd")) &
   theme_hv_manuscript(base_size = 12)
 ```

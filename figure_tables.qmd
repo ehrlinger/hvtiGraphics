@@ -115,7 +115,7 @@ the same sequence.
 #|   numbers below the curve the patients still at risk.
 #| fig-width: 6
 #| fig-height: 5
-# Free size: curve stacked over a numbers-at-risk strip, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: curve stacked over a numbers-at-risk strip.
 km_curve <- plot(km) +
   scale_color_manual(values = c(All = "steelblue"), guide = "none") +
   scale_fill_manual(values = c(All = "steelblue"), guide = "none") +
@@ -184,7 +184,7 @@ standalone table and the in-figure panel telling one story.
 #|   window.
 #| fig-width: 6
 #| fig-height: 5
-# Free size: bar chart stacked over a count table, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: bar chart stacked over a count table.
 p_bar <- plot(lc) +
   scale_fill_manual(
     values = c(Patients = "steelblue", Measurements = "firebrick"),

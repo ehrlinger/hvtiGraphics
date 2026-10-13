@@ -80,14 +80,8 @@ within each subgroup. A linear fit is stable in these small, narrow panels;
 out of width.
 
 ```{r}
-#| label: fig-postagestamp
-#| fig-cap: >-
-#|   Ejection fraction against years from surgery, faceted into a three-by-three
-#|   sheet of small multiples by operative year on shared axes. Black filled circles mark patients and the blue line is the linear fit within each panel.
-#| fig-width: 7
-#| fig-height: 5
-# Free size: nine facet panels in a three-by-three sheet, until hvtiPlotR's hv_panel_size() sizes it.
-ggplot(dat, aes(x = .data[[xvar]], y = .data[[yvar]])) +
+#| label: postagestamp-sheet-build
+p_sheet <- ggplot(dat, aes(x = .data[[xvar]], y = .data[[yvar]])) +
   geom_point(alpha = 0.4, size = 0.8) +
   geom_smooth(method = "lm", se = FALSE) +
   facet_wrap(vars(.data[[grp]]), ncol = 3) +
@@ -98,6 +92,18 @@ ggplot(dat, aes(x = .data[[xvar]], y = .data[[yvar]])) +
     y = "Ejection fraction (%)"
   ) +
   theme_hv_manuscript(base_size = 12)
+# Facets of one plot: hv_panel_size() gives each a 3 by 2 inch panel, shrunk to fit the page.
+dims_p_sheet <- hv_panel_size(p_sheet)
+```
+
+```{r}
+#| label: fig-postagestamp
+#| fig-cap: >-
+#|   Ejection fraction against years from surgery, faceted into a three-by-three
+#|   sheet of small multiples by operative year on shared axes. Black filled circles mark patients and the blue line is the linear fit within each panel.
+#| fig-width: !expr dims_p_sheet$width
+#| fig-height: !expr dims_p_sheet$height
+p_sheet
 ```
 
 All nine panels share one x-axis and one y-axis. The smooth in
@@ -141,7 +147,8 @@ stack them, set `nrow` or `ncol` directly.
 #|   comparison. Black filled circles mark patients and the blue line is the linear fit within each panel.
 #| fig-width: 12
 #| fig-height: 3.2
-# Free size: nine facet panels in one row, until hvtiPlotR's hv_panel_size() sizes it.
+# Free size: nine facet panels in one row. hv_panel_size() refuses this one: nine
+# across a 6.5 inch page leaves each panel under the 1.6 inches it needs.
 ggplot(dat, aes(x = .data[[xvar]], y = .data[[yvar]])) +
   geom_point(alpha = 0.4, size = 0.8) +
   geom_smooth(method = "lm", se = FALSE) +
@@ -165,14 +172,8 @@ heights across them, and say so in the caption, because the panels no longer lin
 up.
 
 ```{r}
-#| label: fig-postagestamp-free
-#| fig-cap: >-
-#|   Panels with a free y-axis per group, for comparing the shape within each
-#|   panel rather than heights across them. Black filled circles mark patients and the blue line is the linear fit within each panel.
-#| fig-width: 7
-#| fig-height: 5
-# Free size: nine facet panels in a grid, until hvtiPlotR's hv_panel_size() sizes it.
-ggplot(dat, aes(x = .data[[xvar]], y = .data[[yvar]])) +
+#| label: postagestamp-free-build
+p_free <- ggplot(dat, aes(x = .data[[xvar]], y = .data[[yvar]])) +
   geom_point(alpha = 0.4, size = 0.8) +
   geom_smooth(method = "lm", se = FALSE) +
   facet_wrap(vars(.data[[grp]]), scales = "free_y") +
@@ -183,6 +184,18 @@ ggplot(dat, aes(x = .data[[xvar]], y = .data[[yvar]])) +
     y = "Ejection fraction (%)"
   ) +
   theme_hv_manuscript(base_size = 12)
+# Facets of one plot: hv_panel_size() gives each a 3 by 2 inch panel, shrunk to fit the page.
+dims_p_free <- hv_panel_size(p_free)
+```
+
+```{r}
+#| label: fig-postagestamp-free
+#| fig-cap: >-
+#|   Panels with a free y-axis per group, for comparing the shape within each
+#|   panel rather than heights across them. Black filled circles mark patients and the blue line is the linear fit within each panel.
+#| fig-width: !expr dims_p_free$width
+#| fig-height: !expr dims_p_free$height
+p_free
 ```
 
 ## Deliver it
