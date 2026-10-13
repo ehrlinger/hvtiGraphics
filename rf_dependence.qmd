@@ -77,7 +77,8 @@ its cloud, drawn in that group's color.
 gg_v <- gg_variable(rf, time = t_eval)
 p_dep <- plot(gg_v, xvar = c("bili", "age", "albumin"), time = t_eval,
      panel = TRUE) +
-  labs(y = paste0("Survival at ", t_eval, " days")) +
+  # The time goes in a subtitle: panels about 1 inch tall cannot hold it in the axis title.
+  labs(y = "Survival", subtitle = paste0("Predicted at ", t_eval, " days")) +
   theme_hv_manuscript(base_size = 12)
 # About three ticks per panel: at under 2 inches wide, age's five-digit labels run together.
 p_dep <- p_dep + scale_x_continuous(n.breaks = 3)
@@ -106,11 +107,12 @@ days here) when you do not give it one. Passing `time` only to `plot()` therefor
 selects a horizon that was never extracted, and you silently get the forest's
 median instead of yours. The two differ: `t_eval` is `r t_eval`.
 
-That `labs(y = ...)` is not decoration. `plot.gg_variable()` builds its survival
+That `labs()` call is not decoration. `plot.gg_variable()` builds its survival
 y-axis label as `paste("Survival at", time, "year")`, with the unit hardcoded, so
 on `pbc`, whose follow-up is recorded in days, the default axis reads "Survival
 at `r t_eval` year" for a horizon that is `r t_eval` **days**. Set the label
-yourself on any survival dependence figure whose time is not in years.
+yourself on any survival dependence figure whose time is not in years; here the
+horizon, with its unit, sits in the subtitle, which a short panel has room for.
 
 Reading the smooths: predicted survival at `r t_eval` days falls steeply as
 serum bilirubin rises, declines gently with age, and tracks upward with higher
@@ -194,7 +196,8 @@ pbc_labels <- c(
 
 p_dep_labels <- plot(gg_v, xvar = c("bili", "age", "albumin"), time = t_eval,
      panel = TRUE, labels = pbc_labels) +
-  labs(y = paste0("Survival at ", t_eval, " days")) +
+  # The time goes in a subtitle: panels about 1 inch tall cannot hold it in the axis title.
+  labs(y = "Survival", subtitle = paste0("Predicted at ", t_eval, " days")) +
   theme_hv_manuscript(base_size = 12)
 # About three ticks per panel: at under 2 inches wide, age's five-digit labels run together.
 p_dep_labels <- p_dep_labels + scale_x_continuous(n.breaks = 3)
