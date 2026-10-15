@@ -259,10 +259,10 @@ the start.
 Each patient is a point at their operation date (x-axis) and follow-up duration
 (y-axis), with a short tick below. A dashed diagonal marks the maximum follow-up
 the study window alone could explain: a patient operated on early could be
-followed for many years, one operated on late for only a few. Points above the
-diagonal have *more* follow-up than the window explains, which happens when
-passive surveillance (registry linkage, say) extends beyond the active
-cross-sectional contact. `hv_followup()` [@R-hvtiPlotR] prepares the data; the
+followed for many years, one operated on late for only a few. A survivor
+followed right up to the close date sits on the diagonal, and one lost to
+follow-up sits below it. Nothing can sit above it, because `close_date` is the
+day the dataset was frozen. `hv_followup()` [@R-hvtiPlotR] prepares the data; the
 `type` argument picks the panel: `"followup"` (the default death-or-censoring
 scatter) or `"event"` (a competing non-fatal event).
 
@@ -314,7 +314,7 @@ labels yet.
 #| label: fig-balance-followup-bare
 #| fig-cap: >-
 #|   Bare goodness-of-follow-up panel before any scales or labels. Salmon-red
-#|   circles mark patients alive at close, teal triangles deaths, and the dashed
+#|   circles mark patients last known alive, teal triangles deaths, and the dashed
 #|   orange diagonal the longest follow-up the study window allows.
 # Bare plot, no scales or labels yet
 plot(gf)
@@ -330,7 +330,7 @@ view to the study window; `annotate()` labels the two states on the panel; and
 #| fig-cap: >-
 #|   Goodness-of-follow-up plot showing each patient's operation date against
 #|   follow-up duration, colored by vital status, with the maximum-follow-up
-#|   diagonal. Blue open circles mark patients alive at close, red crosses mark
+#|   diagonal. Blue open circles mark patients last known alive, red crosses mark
 #|   deaths, and the dashed orange diagonal marks the longest follow-up the
 #|   study window allows.
 gfup_final <- plot(gf, alpha = 0.8) +
@@ -353,7 +353,7 @@ gfup_final <- plot(gf, alpha = 0.8) +
     color = "Status",
     shape = "Status"
   ) +
-  annotate("text", x = 1993, y = 31, label = "Alive at close",
+  annotate("text", x = 1993, y = 31, label = "Last known alive",
            hjust = 0, size = 3.5) +
   annotate("text", x = 1993, y = 28, label = "Deceased",
            hjust = 0, size = 3.5, color = "#E41A1C") +
@@ -367,14 +367,18 @@ gfup_final
 
 Read the shape of the cloud:
 
-- **A solid wedge under the diagonal is good news.** Points filling the triangle
-  below the line mean patients across the whole span of operation dates were
-  followed about as long as the window allows. Gaps or thin regions flag eras
-  where follow-up was sparse.
-- **Points above the diagonal are not errors.** They mark patients whose status
-  is known beyond the active follow-up window, usually through passive linkage.
-  A scatter of them above the line is expected; if *every* point sits exactly on
-  the line, the close date is probably set wrong.
+- **Survivors on the diagonal were followed to the close date.** A blue point
+  on the line is a patient whose follow-up is complete. Deaths fall below the
+  line wherever they happened, and that is expected.
+- **Survivors below the diagonal were lost to follow-up.** Each one was last
+  contacted before the close date. A scatter of them is normal. A cluster in
+  one era of operation dates flags a stretch where follow-up lapsed, and their
+  share of the survivors is the number a reviewer will ask for.
+- **Nothing should sit above the diagonal.** Follow-up past the day the
+  dataset was frozen is impossible, so a point up there is a wrong date. The
+  opposite pattern is a warning too: if *every* survivor sits exactly on the
+  line, follow-up was probably computed to the close date rather than to last
+  contact.
 - **The colour split shows the events.** Red points are deaths. Where they
   cluster (early after surgery, or late at long follow-up) is a hint at the
   hazard pattern you will quantify in the survival analysis.
@@ -463,6 +467,7 @@ plot(gf2, type = "event", alpha = 0.8) +
   and `close_date` set where the line falls. Get one wrong and every point looks
   mis-placed relative to it. Confirm the three dates against the protocol before
   reading the figure.
-- **Above the line is not a data error.** Points above the diagonal reflect
-  passive surveillance reaching past active contact. Do not "clean" them away;
-  they are part of why the follow-up is good.
+- **Above the line is a data error.** `close_date` is when the dataset was
+  frozen, so a point above the diagonal has follow-up that cannot exist. Trace
+  it to the patient's dates and fix the record. Widening the axis to make room
+  for it hides the error.
