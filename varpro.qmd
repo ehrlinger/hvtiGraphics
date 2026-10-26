@@ -113,8 +113,11 @@ plot(gg_varpro(o, nvar = 8)) + theme_hv_manuscript(base_size = 12)
 The percentile boxplot is the figure to learn to read, and the cutoff line is what
 makes it a *selection* rather than just a ranking.
 
-- **The cutoff line decides membership.** Boxes to the right of the dashed line
-  are the variables varPro keeps; boxes to the left are set aside. Unlike a VIMP
+- **The cutoff decides membership, and the fill shows it.** Steel-blue boxes are
+  the variables varPro keeps, those whose z clears the dashed line; grey boxes are
+  set aside. Read the colour, not the box position: z is a trimmed mean across
+  trees and the box is centred on the median, so the two can sit on opposite
+  sides of the line. Unlike a VIMP
   bar chart, where you eyeball the break yourself, the method draws the line for
   you. You can move it with the `cutoff` argument when you want to be stricter or
   looser.
