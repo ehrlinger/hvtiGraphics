@@ -1,5 +1,5 @@
 {
-  "rendered": "2026-10-25",
+  "rendered": "2026-10-26",
   "r": "4.6.1",
   "packages": {
     "hvtiR": "1.3.3",
@@ -16,7 +16,7 @@
     "hvtiRutilities": "dc89e66228e27e33bf3de60a7c0694860af3f736",
     "hvtiRtables": "8646592ae6e4610bb474165e4ba2e79e1615337e",
     "TemporalHazard": "fc76a7b4b0ac1d9077abf8d6a16287acd47fa4f1",
-    "ggRandomForests": "07345cac9ab5a18c793ef576868a22590f53a22d",
+    "ggRandomForests": "99acd373f728208afb08f70c99abd6777ecb6219",
     "ggsankey": "b675d0d5144b1b5758d3b2b41e86ceee66a1e071"
   },
   "ignore_paths": "^(dev|docs|man|news|pkgdown|tests|vignettes|\\.github|\\.claude|\\.vscode)/|^[^/]+\\.md$|^_pkgdown\\.yml$",
