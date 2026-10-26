@@ -91,7 +91,11 @@ head(eda_scatter$tables$rug_data)
 
 Start from the bare panel so you can see what the constructor produced before
 any styling. Build the object with `x_col`/`y_col`; the `y_label` argument sets
-the axis and legend text in place of the raw column name.
+the text in place of the raw column name. On a continuous panel the full label
+becomes the plot title and the y-axis takes its short form, the trailing units
+in parentheses, so `"Ejection Fraction (%)"` titles the panel and the axis reads
+`%`. Pass `labs(y = ...)` when the axis needs the full label, as the span
+example below does.
 
 ```{r}
 #| label: fig-scatter-bare

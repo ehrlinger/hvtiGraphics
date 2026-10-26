@@ -87,7 +87,7 @@ tbl_corr <- tbl_summary(
   dta,
   by        = sex,
   include   = c(age, bmi, gfr_bs, diabetes),
-  statistic = list(all_continuous() ~ "{median} ({p15}, {p85})")
+  statistic = list(all_continuous() ~ "{median} [{p15}, {p85}]")
 ) |>
   remove_footnote_header() |>
   remove_footnote_body()
@@ -242,7 +242,7 @@ docx_scan <- function(path) {
 #| label: hv-vs-gtsave
 gt_out <- tempfile(fileext = ".docx")
 gt::gtsave(
-  gt::tab_source_note(as_gt(tbl_corr), "Median (15th, 85th percentile)."),
+  gt::tab_source_note(as_gt(tbl_corr), "Median [15th, 85th percentiles]."),
   gt_out
 )
 
@@ -298,7 +298,10 @@ throughout, so there is no per-variable normality decision to make or defend.
 `compare` adds the trailing comparison column: `"pvalue"`, `"smd"`, `"both"`, or
 `"none"`. The printed result is still a `gtsummary` table, so inspect it before
 conversion. Each group cell shows the non-missing N, the `|||` separator the
-renderers split on, and then the statistic. `hv_man_table_jtcvs()` turns the
+renderers split on, and then the statistic. A Variable column beside the label
+names the data column behind each row, for checking the report view against the
+data; `hv_man_table_jtcvs()` and `hv_man_table_save()` drop it, so it never
+reaches a manuscript. `hv_man_table_jtcvs()` turns the
 pair into sub-columns under a spanning header; `hv_man_table()` gives the N a
 flat `No.` column of its own. The result also carries two
 attributes that the renderer wants, and you pass them straight through.
