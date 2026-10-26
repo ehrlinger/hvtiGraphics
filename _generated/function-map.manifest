@@ -13,7 +13,7 @@ aad0e579f94b4ed1b523714383d0a8e0  describe.qmd
 43d7ccb819769282e169a3e9146d6013  gettingstarted.qmd
 5ba32d74ba82490a25205d8ee5487c48  hazard.qmd
 656c68dcc3462247e7efdefef99a6a6e  histograms.qmd
-94f00d950677517b9c9a60f7b4a3af65  hv_tables.qmd
+e7a1e20d1ee01aa8f01e3cb0efd91af3  hv_tables.qmd
 4d58357ac74f2645386e391638f82d0c  index.qmd
 f3adf53d2e6cd467b8f1e0f456fdddf2  intro.qmd
 e38d3ac1a9d4c8e1560a10fc83042cd8  legends.qmd
@@ -36,7 +36,7 @@ dfcdefad79693cf72fcd6eedc8b6c1a7  publications.qmd
 70589c518e5b365554be97be5bf5b0a8  rf_shap.qmd
 6c250a9a15546a125350baf204c01084  rf_vimp.qmd
 cf1d658467df495b28dd64d219659cb5  sankey.qmd
-e8795a28601956fb7950bdaba8f73e0d  scatter.qmd
+c595186a3fdad3480f0368a38c67f81d  scatter.qmd
 5f17f99a1800978af768a84afac6459e  slide_design.qmd
 ba6736754405e35d32438fa8f299fc37  spaghetti.qmd
 2f2ab1223687311866d55b44022eac7b  summary.qmd
