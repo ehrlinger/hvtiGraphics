@@ -51,8 +51,9 @@ earns its keep when there are far more candidates than you can eyeball.
 #|   Variable priority for the top 20 predictors of the housing regression fit.
 #|   Boxes span the 15th to 85th percentiles of each variable's importance with the
 #|   median as a black line and whiskers the 5th and 95th; steel-blue boxes mark
-#|   selected variables, grey boxes unselected ones, and the dashed red vertical
-#|   line the selection cutoff.
+#|   selected variables, grey boxes unselected ones, open boxes variables scored
+#|   in too few trees to be tested, and the dashed red vertical line the
+#|   selection cutoff.
 #| fig-width: 7
 #| fig-height: 5.5
 # Free size: one row per variable, so the height grows with the list.
@@ -67,9 +68,11 @@ plot(gg_varpro(o, nvar = 20)) + theme_hv_manuscript(base_size = 12)
 It is not a Tukey box; [box plots](boxplots.qmd) builds the same box by hand.
 With 80 predictors we pass `nvar = 20` to show the top-ranked; the box spans the
 importance values obtained when the variable is released across the rule
-ensemble, and the dashed reference line at the `cutoff` (default 0.79 of the top
-score on the local-standardized scale) separates selected from unselected
-variables. Variables whose boxes sit to the right of the cutoff are retained.
+ensemble, one value per tree. The dashed reference line is the `cutoff`, a
+threshold on varPro's z score (default 0.79). Selection follows z, the
+winsorised mean across trees, not the box: rows are ordered by the median tree,
+so a variable that a few trees find very important can be selected with most of
+its box left of the line. The steel-blue boxes are the variables retained.
 
 ## Build it
 
@@ -83,8 +86,8 @@ behind the boxplot, exposing the spread that the summary hides:
 #|   The same priority boxplots with per-tree importance draws shown behind each
 #|   box. Small steel-blue jittered points mark the per-tree draws, open
 #|   steel-blue circles with white fill the mean of each variable, lighter boxes
-#|   the 15th to 85th percentile range (steel blue selected, grey unselected), and
-#|   the dashed red vertical line the selection cutoff.
+#|   the 15th to 85th percentile range (steel blue selected, grey unselected,
+#|   open untested), and the dashed red vertical line the selection cutoff.
 #| fig-width: 7
 #| fig-height: 5.5
 # Free size: one row per variable, so the height grows with the list.
