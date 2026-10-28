@@ -281,6 +281,52 @@ so the weighting is inadequate; the figure is an example of diagnosing failed
 balance, not declaring success. Even adequate balance on the score would not by
 itself identify a causal treatment effect.
 
+### One bar too tall to read: split it
+
+Sometimes one group piles into a single bin. In a congenital cohort we worked
+with, 648 of 685 biventricular patients sat at a propensity score of 95 to
+100%. Drawn to scale, that one bar sets the y-axis, and the smaller group and
+the matched bars shrink to slivers along the zero line. The matched bars are
+the part a reviewer needs to see, so the house convention is to break the tall
+bar rather than the figure. Use it when a single "all patients" bar is several
+times taller than every matched bar and every bar of the other group. If two or
+three bars are only somewhat taller, leave the axis alone: a broken bar is one
+more thing for the reader to decode.
+
+`plot(mh, split_tall = TRUE)` does this. It sizes the y-axis to 1.5 times the
+tallest matched bar or the tallest bar of the smaller group (`split_mult`
+changes the 1.5), cuts any taller bar with a white gap, and prints the bar's
+full count on it. To show the effect we move the unmatched TF-TAVR patients
+into the top bin.
+
+```{r}
+#| label: fig-histograms-split
+#| fig-cap: >-
+#|   Mirrored histogram with one TF-TAVR bar far taller than the rest, SAVR
+#|   above the zero line and TF-TAVR below it. The axis is sized to the matched
+#|   bars and the SAVR bars; the tall TF-TAVR bar at 95 to 100% is cut by a
+#|   white gap and labelled with its full count.
+tall_dta <- mirror_dta
+unmatched_tavr <- tall_dta$tavr == 1 & tall_dta$match == 0
+tall_dta$prob_t[unmatched_tavr] <- 0.98
+
+mh_tall <- hv_mirror_hist(tall_dta, group_labels = c("SAVR", "TF-TAVR"))
+
+plot(mh_tall, split_tall = TRUE) +
+  ggplot2::labs(x = "Propensity Score (%)", y = "Number of Patients") +
+  theme_hv_manuscript(base_size = 12) +
+  ggplot2::theme(legend.position = "bottom")
+```
+
+The split sets its limits with `coord_cartesian()`, which clips a bar at the
+panel edge. A `ylim()` or `scale_y_continuous(limits = )` added on top would
+instead drop every bar that crosses the limit, the tall one included, so leave
+the limits to the split. `scale_y_continuous(labels = abs)` without limits is
+safe. The legend now reads "SAVR, all", "TF-TAVR, matched" and so on, built
+from `group_labels`. A `scale_fill_manual()` you add replaces that scale, so
+pass `labels = mh_tall$meta$fill_labels` with your colours to keep the readable
+labels.
+
 ### Stacked histogram: counts over time
 
 The stacked histogram answers the compositional question: how the mix of a
@@ -384,6 +430,10 @@ the picture is not a substitute for that number.
 - **Forgetting `labels = abs` on the y-axis.** The lower group's counts are
   stored negative so the bars mirror. Without `scale_y_continuous(labels = abs)`
   the axis shows negative patient counts, which confuses every reader.
+- **Cutting a tall bar with axis limits.** `ylim()` and
+  `scale_y_continuous(limits = )` remove any bar that runs past the limit, so a
+  tall bar silently disappears instead of being clipped. Use
+  `plot(mh, split_tall = TRUE)`, which clips the bar and prints its count.
 - **Mapping the wrong overlay column.** Pass `match_col` for matching and
   `weight_col` for weighting, not both. The overlay means something different in
   each mode, and a count overlay on a weighted analysis (or vice versa) is
