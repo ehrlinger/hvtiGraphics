@@ -148,7 +148,7 @@ plot(cb, alpha = 0.8) +
   ) +
   scale_x_continuous(
     limits = c(-120, 40),
-    breaks = seq(-120, 40, 20)
+    breaks = seq(-120, 40, 40)
   ) +
   labs(x = "Standardized difference (%)", y = "") +
   theme(legend.position = "top")
@@ -182,7 +182,7 @@ cb_final <- plot(cb, alpha = 0.8) +
   ) +
   scale_x_continuous(
     limits = c(-120, 40),
-    breaks = seq(-120, 40, 20)
+    breaks = seq(-120, 40, 40)
   ) +
   labs(
     x = "Standardized difference: SAVR - TF:TAVR (%)",

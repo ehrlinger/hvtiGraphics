@@ -407,8 +407,8 @@ variable with a middling score but a high degree is worth a second look.
   `varpro_feature_names()` maps them back.
 
 For the housing fit above, `o$xvar.names` runs 30 feature names against the
-81-column frame we handed `varpro()`, 14 of them encoded level names, and
-`varpro_feature_names()` recovers the 26 original columns:
+81-column frame we handed `varpro()`, 15 of them encoded level names, and
+`varpro_feature_names()` recovers the 25 original columns:
 
 ```{r}
 #| label: varpro-feature-names
