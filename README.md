@@ -2,7 +2,7 @@
 
 [![Publish](https://github.com/ehrlinger/hvtiGraphics/actions/workflows/publish.yml/badge.svg)](https://github.com/ehrlinger/hvtiGraphics/actions/workflows/publish.yml)
 [![Site](https://img.shields.io/badge/read-ehrlinger.github.io%2FhvtiGraphics-1f6feb)](https://ehrlinger.github.io/hvtiGraphics/)
-[![Version](https://img.shields.io/badge/edition-3.1.8-blue)](https://github.com/ehrlinger/hvtiGraphics/releases)
+[![Version](https://img.shields.io/badge/edition-3.1.9-blue)](https://github.com/ehrlinger/hvtiGraphics/releases)
 [![License: CC BY 4.0](https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey)](https://creativecommons.org/licenses/by/4.0/)
 
 A working catalog of the figures and tables we build for CORR manuscripts and
@@ -14,7 +14,7 @@ script.
 
 **Read it here:** <https://ehrlinger.github.io/hvtiGraphics/>
 
-This is the **3.1.8** edition, and it is organized around the question you
+This is the **3.1.9** edition, and it is organized around the question you
 arrived with rather than the kind of picture you end up drawing. The 3.0.0 book
 sorted its chapters by figure type, which works if you already know you want a
 box plot. It does not help when the question is "how do I describe this cohort"
@@ -57,6 +57,14 @@ Edition 3.1.8 re-renders three chapters against the 2026-10-25 family releases.
 The manuscript tables now follow the house notation, with medians in brackets
 and p-values without a leading zero, and the scatter recipe explains the short
 y-axis title `hv_eda()` now draws on a continuous panel.
+
+Edition 3.1.9 re-renders the whole book against the 2026-11-03 family releases
+and randomForestSRC 3.10.0. A manuscript table's count cell now reads `30(42)`,
+without the space, as `hvtiRtables` 1.0.12 writes it. The forest chapters' fits
+move under the new randomForestSRC, and the housing-data variable selection in
+the varPro chapter no longer keeps `PID`, the parcel identifier. Four chapters
+whose HTML figures had last been drawn on a Mac are set in the book's usual
+typeface again.
 
 ## Who it's for
 
