@@ -339,8 +339,8 @@ against `main`; rule that out before re-rendering.
   force-push around it.
 - **The version is an edition badge in `README.md`, and nothing else.** There is
   no `DESCRIPTION` to bump and no `NEWS.md` to match, so do not invent a second
-  scheme or add version strings to chapters. The badge reads `3.1.7` as of
-  2026-10-12. Rolling the minor or major digit is the maintainer's call, never an
+  scheme or add version strings to chapters. The badge reads `3.1.9` as of
+  2026-11-03. Rolling the minor or major digit is the maintainer's call, never an
   agent's; the published site is the artifact and `git log` is the history.
 
 ## Change discipline
