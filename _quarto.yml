@@ -11,6 +11,10 @@ book:
   page-footer:
     left: "Copyright 2025, John Ehrlinger"
     right:
+      - text: "Quick start"
+        href: https://ehrlinger.github.io/hvtiR/articles/start-here.html
+      - text: "Template gallery"
+        href: https://ehrlinger.github.io/hvtiRtemplates/gallery/
       - icon: github
         href: https://github.com/ehrlinger/hvtiGraphics
   chapters:
