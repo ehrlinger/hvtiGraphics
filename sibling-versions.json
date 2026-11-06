@@ -1,22 +1,22 @@
 {
-  "rendered": "2026-11-03",
+  "rendered": "2026-11-06",
   "r": "4.6.1",
   "packages": {
-    "hvtiR": "1.3.6",
+    "hvtiR": "1.3.7",
     "hvtiPlotR": "2.8.21",
-    "hvtiRutilities": "1.5.19",
+    "hvtiRutilities": "1.5.21",
     "hvtiRtables": "1.0.12",
-    "TemporalHazard": "1.2.18",
+    "TemporalHazard": "1.3.0",
     "ggRandomForests": "4.0.0",
     "ggsankey": "0.0.99999"
   },
   "sha": {
-    "hvtiR": "ee9125d00df37e350f256e088c6c96655b45a6dd",
+    "hvtiR": "b75979c66943704f45b8079a5b5f57e4cf2dd165",
     "hvtiPlotR": "43fc575040652b32bd39308edebafdb0060ae2f7",
-    "hvtiRutilities": "5359155a4da9a3b403df9acfb9e529c4d2444489",
-    "hvtiRtables": "3529e33e5ff353794f98fe990b4da2a11cc891a9",
-    "TemporalHazard": "23739d794d4776b5c24d5e2e88e7a5b4bd0cd240",
-    "ggRandomForests": "5770c56f62e1740e36a721af6ed7e5bc1ab89743",
+    "hvtiRutilities": "16218e0062f5a79f33961965f68a1be514b0ff56",
+    "hvtiRtables": "018249d280f672e5efb5a2dd4d56da42f9219675",
+    "TemporalHazard": "243879573f3d84b8e3fb75824edc55169e3757fa",
+    "ggRandomForests": "9215655193d3a25191022290838cac8efa66bd03",
     "ggsankey": "b675d0d5144b1b5758d3b2b41e86ceee66a1e071"
   },
   "ignore_paths": "^(dev|docs|man|news|pkgdown|tests|vignettes|\\.github|\\.claude|\\.vscode)/|^[^/]+\\.md$|^_pkgdown\\.yml$",
