@@ -2,7 +2,7 @@
 
 [![Publish](https://github.com/ehrlinger/hvtiGraphics/actions/workflows/publish.yml/badge.svg)](https://github.com/ehrlinger/hvtiGraphics/actions/workflows/publish.yml)
 [![Site](https://img.shields.io/badge/read-ehrlinger.github.io%2FhvtiGraphics-1f6feb)](https://ehrlinger.github.io/hvtiGraphics/)
-[![Version](https://img.shields.io/badge/edition-3.1.10-blue)](https://github.com/ehrlinger/hvtiGraphics/releases)
+[![Version](https://img.shields.io/badge/edition-3.1.11-blue)](https://github.com/ehrlinger/hvtiGraphics/releases)
 [![License: CC BY 4.0](https://img.shields.io/badge/license-CC%20BY%204.0-lightgrey)](https://creativecommons.org/licenses/by/4.0/)
 
 A working catalog of the figures and tables we build for CORR manuscripts and
@@ -14,7 +14,7 @@ script.
 
 **Read it here:** <https://ehrlinger.github.io/hvtiGraphics/>
 
-This is the **3.1.10** edition, and it is organized around the question you
+This is the **3.1.11** edition, and it is organized around the question you
 arrived with rather than the kind of picture you end up drawing. The 3.0.0 book
 sorted its chapters by figure type, which works if you already know you want a
 box plot. It does not help when the question is "how do I describe this cohort"
@@ -70,6 +70,14 @@ Edition 3.1.10 re-renders the whole book against the 2026-11-06 family releases:
 hvtiR 1.3.7, hvtiRutilities 1.5.21 and TemporalHazard 1.3.0 from `main`. No
 recipe's output changes; the version table in "What this build used" records
 the new versions and commits.
+
+Edition 3.1.11 re-renders the whole book against the 2026-11-19 family releases:
+hvtiR 1.3.10, hvtiPlotR 2.8.24, hvtiRutilities 1.5.26, hvtiRtables 1.0.14 and
+TemporalHazard 1.3.1 from `main`, and varPro 3.4.0 from CRAN. The life-table
+numbers at risk in "Survival" and "Tables in figures" drop by one at each report
+time, because `hv_survival()` now takes them from the risk table. The CONSORT
+summary gains an `n_missing` column, and the varPro dependency graph is laid
+out afresh.
 
 ## Who it's for
 
