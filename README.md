@@ -77,7 +77,8 @@ TemporalHazard 1.3.1 from `main`, and varPro 3.4.0 from CRAN. The life-table
 numbers at risk in "Survival" and "Tables in figures" drop by one at each report
 time, because `hv_survival()` now takes them from the risk table. The CONSORT
 summary gains an `n_missing` column, and the varPro dependency graph is laid
-out afresh.
+out afresh. The weighted mirror histogram reads its weight totals from
+`sum_weights`, since `effective_n_by_group` is now Kish's effective sample size.
 
 ## Who it's for
 

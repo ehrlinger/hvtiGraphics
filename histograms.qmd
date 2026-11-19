@@ -203,16 +203,14 @@ mh_wt <- hv_mirror_hist(
 )
 
 mh_wt$meta[c("score_col", "group_col", "binwidth", "n_obs", "n_dropped")]
-weight_total_by_group <- mh_wt$tables$diagnostics$effective_n_by_group
-weight_total_by_group
+mh_wt$tables$diagnostics$sum_weights
 mh_wt$tables$diagnostics[c("smd_before", "smd_weighted")]
 ```
 
-Despite the component name in hvtiPlotR 2.7.17,
-`effective_n_by_group` stores the **sum of weights** in each group. It is not the
-Kish effective sample size, $(\sum w)^2 / \sum w^2$. We give it the accurate
-local name `weight_total_by_group`; in this normalized example the totals are
-2,000 and 2,000, the same as the raw group counts.
+`sum_weights` is the **sum of weights** in each group. In this normalized example
+the totals are 2,000 and 2,000, the same as the raw group counts. Do not confuse it
+with `effective_n_by_group`, which since hvtiPlotR 2.8.23 is the Kish effective
+sample size, $(\sum w)^2 / \sum w^2$, and is smaller whenever the weights vary.
 
 The bare weighted panel looks like the binary-match bare plot, but the overlay
 encodes IPTW weight sums, not counts. Read it the same way: balanced upper and
@@ -270,7 +268,7 @@ weighted SMD evaluates balance:
 ```{r}
 #| label: mirror_histogram_weighted_diagnostics
 mh_wt$tables$diagnostics$smd_weighted
-weight_total_by_group
+mh_wt$tables$diagnostics$sum_weights
 ```
 
 Here the x-axis remains propensity score, but the overlay height is the sum of
